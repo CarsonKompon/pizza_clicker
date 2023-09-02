@@ -20,7 +20,7 @@ public class TextParticle : Panel
         Style.Left = Length.Pixels(pos.x);
 
         var rand = new Random();
-        Speed = new Vector2(rand.Float(-0.1f, 0.1f), -rand.Float(1f, 1.5f));
+        Speed = new Vector2(rand.Float(-1f, 1f), -rand.Float(100f, 150f));
 
         if(!string.IsNullOrEmpty(styles)) AddClass(styles);
         Add.Label(text, "text");
@@ -28,7 +28,7 @@ public class TextParticle : Panel
 
     public override void Tick()
     {
-        Position += Speed;
+        Position += Speed * Time.Delta;
         Style.Top = Length.Pixels(Position.y);
         Style.Left = Length.Pixels(Position.x);
 
