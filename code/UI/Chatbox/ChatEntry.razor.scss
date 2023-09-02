@@ -1,0 +1,51 @@
+ChatEntry
+{
+    gap: 4px;
+    flex-shrink: 0;
+    align-items: center;
+    color: white;
+    text-shadow: 1px 1px 3px black;
+
+    .avatar
+    {
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
+    }
+
+    .name
+    {
+        white-space: nowrap;
+        font-weight: 800;
+    }
+
+    .content
+    {
+        font-weight: 500;
+    }
+
+    &.system
+    {
+        color: grey;
+    }
+
+    &.guess-correct
+    {
+        color: limegreen;
+    }
+
+    &.join-message
+    {
+        color: rgb(120, 255, 149);
+    }
+
+    &.leave-message
+    {
+        color: rgb(255, 108, 108);
+    }
+
+    &.highscore
+    {
+        color: rgb(168, 246, 252);
+    }
+}

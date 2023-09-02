@@ -1,7 +1,7 @@
 {
   "Title": "Pizza Clicker",
   "Type": "game",
-  "Org": "local",
+  "Org": "carsonk",
   "Ident": "pizza_clicker",
   "Tags": null,
   "Schema": 1,
@@ -25,6 +25,7 @@
     "RankType": "None",
     "PerMapRanking": false,
     "LeaderboardType": "None",
-    "ProjectTemplate": null
+    "ProjectTemplate": null,
+    "CsProjName": ""
   }
 }

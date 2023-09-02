@@ -9,7 +9,7 @@
 
 @namespace PizzaClicker
 
-<root>
+<root class="chatbox">
 
     <div @ref="ChatPanel" class="chat" PreferScrollToBottom=@(true)>
     </div>
@@ -24,20 +24,57 @@
     public ILobby Lobby { get; set; }
 
     // UI References
-    Panel ChatBox { get; set; }
     Panel ChatPanel { get; set; }
     TextEntry ChatTextEntry { get; set; }
     string ChatText { get; set; }
 
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if(firstTime)
+        {
+            Lobby.OnChatMessage += OnChatMessage;
+        }
+    }
+
+    public override void Tick()
+    {
+        if(Input.Pressed("chat"))
+        {
+            ShowChat();
+        }
+    }
+
+    void OnChatMessage(Friend friend, string message)
+    {
+        CreateChatEntry(friend.Name + ":", message, "", friend.Id);
+    }
+
+    public void CreateChatEntry(string name, string message, string styles = "", long steamid = -1)
+    {
+        var entry = ChatPanel.AddChild<ChatEntry>();
+        ChatPanel.SetChildIndex(entry, 0);
+        entry.SetMessage(name, message, steamid);
+        entry.AddClass(styles);
+
+        if(ChatPanel.ChildrenCount > 200)
+        {
+            ChatPanel.GetChild(ChatPanel.ChildrenCount - 1).Delete();
+        }
+
+        Audio.Play("ui.button.press");
+    }
+
     void ShowChat()
     {
-        ChatBox.AddClass("show");
+        AddClass("show");
 		ChatTextEntry.Focus();
     }
 
     void CloseChat()
     {
-        ChatBox.RemoveClass("show");
+        RemoveClass("show");
 		ChatTextEntry.Blur();
     }
 

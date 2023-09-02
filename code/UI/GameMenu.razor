@@ -11,6 +11,12 @@
 
 <root>
 
+    <div class="background-overlay" />
+
+    <p class="pizza-count">@(LocalPlayer?.Pizzas ?? 0) Pizzas</p>
+
+    <div class="pizza-button" onclick=@ClickPizza />
+
     <Chatbox Lobby=@Lobby />
 
 </root>
@@ -24,6 +30,73 @@
     public ILobby Lobby { get; set; } = Game.Menu.Lobby;
     public List<Player> Players { get; set; } = new List<Player>();
 
-        
+    // Game Variables
+    public Player LocalPlayer => Players.FirstOrDefault(p => p.Member.Id == Game.SteamId);
+
+    // Timers
+    RealTimeSince LastSave = 0f;
+    RealTimeSince LastNetworkSync = 0f;
+
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if (firstTime)
+        {
+            Lobby.OnMemberEnter += OnPlayerJoined;
+            Lobby.OnMemberLeave += OnPlayerLeft;
+
+            InitPlayer(Game.SteamId);
+        }
+    }
+
+    public override void Tick()
+    {
+        Lobby.ReceiveMessages(OnNetworkMessage);
+
+        if(LastSave > 1f)
+        {
+            LocalPlayer?.Save();
+            LastSave = 0f;
+        }
+
+        if(LastNetworkSync > 2f)
+        {
+            NetworkPlayerUpdate(LocalPlayer);
+            LastNetworkSync = 0f;
+        }
+    }
+
+    void InitPlayer(long steamid)
+    {
+        if(steamid == Game.SteamId)
+        {
+            Players.Add(Player.LoadPlayer());
+        }
+        else
+        {
+            var player = new Player(steamid);
+            Players.Add(player);
+        }
+    }
+
+    void ClickPizza()
+    {
+        LocalPlayer.Click();
+
+        string particleText = "+" + LocalPlayer.PizzasPerClick.ToString();
+        var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText);
+        AddChild(particle);
+    }
+
+    void OnPlayerJoined(Friend member)
+    {
+        InitPlayer(member.Id);
+    }
+
+    void OnPlayerLeft(Friend member)
+    {
+        Players.RemoveAll(p => p.Member.Id == member.Id);
+    }
 
 }

@@ -1,0 +1,84 @@
+
+GameMenu
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background-image: url("/ui/backgrounds/cutting_board.jpg");
+    background-size: 1024px;
+
+    animation: scrolling-background 600s linear infinite;
+
+    .background-overlay
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        background-color: rgba(24, 13, 0, 0.555);
+    }
+
+    .pizza-count
+    {
+        position: absolute;
+        top: 100px;
+        left: 0;
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        font-family: Verdana;
+        font-size: 64px;
+        font-weight: black;
+        color: white;
+        text-shadow: 0 0 10px black;
+    }
+
+    .pizza-button
+    {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 400px;
+        height: 400px;
+        margin: -200px 0 0 -200px;
+        transition: all 0.12s ease-in-out;
+        transform: scale(1 1);
+        
+        background-image: url("/ui/pizzas/cheese_pizza.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+
+        &:hover
+        {
+            transform: scale(1.025 1.025);
+        }
+
+        &:active
+        {
+            transform: scale(1.1 0.95);
+            transition: all 0.05s ease-in-out;
+        }
+    }
+}
+
+@keyframes scrolling-background
+{
+    from
+    {
+        background-position: 0 0;
+    }
+    to
+    {
+        background-position: -8192px -1024px;
+    }
+}

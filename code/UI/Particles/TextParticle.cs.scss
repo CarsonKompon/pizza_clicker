@@ -1,0 +1,31 @@
+
+TextParticle
+{
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    transition: all 0.4s linear;
+    transform: translate(-50% -50%);
+    pointer-events: none;
+
+    font-family: Verdana;
+    font-size: 32px;
+    font-weight: black;
+    color: white;
+    text-shadow: 1px 1px 3px black;
+    text-align: center;
+
+    &:intro
+    {
+        opacity: 0;
+    }
+
+    &:outro
+    {
+        transition: all 0.2s ease-out;
+        opacity: 0;
+    }
+
+}

@@ -1,0 +1,41 @@
+@using Sandbox;
+@using Sandbox.UI;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root class="message">
+    @if(!string.IsNullOrEmpty(Avatar))
+    {
+        <img src=@Avatar class="avatar" />
+    }
+    <p class="name">@(Name)</p>
+    <p class="content">@Content</p>
+</root>
+
+@code
+{
+    public string Name { get; set; }
+    public string Content { get; set; }
+    public string Avatar { get; set; }
+
+    RealTimeSince TimeSinceBorn = 0;
+
+    public void SetMessage(string name, string content, long steamid = -1)
+    {
+        Name = name;
+        Content = content;
+        if(steamid != -1) Avatar = $"avatar:{steamid}";
+        StateHasChanged();
+    }
+
+    public override void Tick()
+    {
+        base.Tick();
+
+        if ( TimeSinceBorn > 10 && !HasClass("fade") )
+        {
+            AddClass("fade");
+        }
+    }
+}
