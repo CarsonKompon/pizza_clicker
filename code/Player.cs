@@ -56,7 +56,8 @@ public class Player
 
     public ByteStream GetDataStream()
     {
-        ByteStream data = ByteStream.Create(24);
+        ByteStream data = ByteStream.Create(26);
+        data.Write((byte)NETWORK_MESSAGE.PLAYER_UPDATE);
         data.Write(Pizzas);
         data.Write(PizzasPerSecond);
         data.Write(PizzasPerClick);

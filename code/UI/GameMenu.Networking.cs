@@ -17,7 +17,7 @@ public partial class GameMenu
 
         ByteStream data = msg.Data;
 
-        ushort messageId = data.Read<ushort>();
+        byte messageId = data.Read<byte>();
 
         switch((NETWORK_MESSAGE)messageId)
         {
