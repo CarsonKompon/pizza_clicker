@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using Sandbox;
 using Sandbox.UI;
@@ -8,13 +9,11 @@ public class Player
 {
     public Friend Member;
 
-    // Pizza Stats
+    // Variables
     public ulong Pizzas { get; set; } = 0;
     public ulong PizzasPerSecond { get; set; } = 0;
     public ulong PizzasPerClick { get; set; } = 1;
-
-    // Things To Buy
-    public ulong DeliveryDrivers { get; set; } = 0;
+    public Dictionary<string, ulong> Buildings { get; set; } = new();
 
     public Player(){}
 
@@ -40,6 +39,12 @@ public class Player
         FileSystem.Data.WriteJson(Game.SteamId.ToString(), this);
     }
 
+    public ulong GetBuildingCount(string ident)
+    {
+        if(!Buildings.ContainsKey(ident)) return 0;
+        return Buildings[ident];
+    }
+
     public static Player LoadPlayer()
     {
         var data = FileSystem.Data.ReadJson<Player>(Game.SteamId.ToString());
@@ -51,11 +56,10 @@ public class Player
 
     public ByteStream GetDataStream()
     {
-        ByteStream data = ByteStream.Create(32);
+        ByteStream data = ByteStream.Create(24);
         data.Write(Pizzas);
         data.Write(PizzasPerSecond);
         data.Write(PizzasPerClick);
-        data.Write(DeliveryDrivers);
         return data;
     }
 
@@ -64,7 +68,6 @@ public class Player
         Pizzas = data.Read<ulong>();
         PizzasPerSecond = data.Read<ulong>();
         PizzasPerClick = data.Read<ulong>();
-        DeliveryDrivers = data.Read<ulong>();
     }
 
 }

@@ -1,0 +1,48 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root>
+
+    <p class="count">@("x" + BuildingCount.ToString())</p>
+
+    <div class="content">
+    
+        <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
+        
+        <div class="info">
+
+            <p class="name">@Building.Name</p>
+
+            <div class="sub-info">
+
+                <p class="price">@(CostString) pizzas</p>
+                <p class="pps">@(PPSString) pizzas/sec</p>
+
+            </div>
+
+        </div> 
+
+    </div>
+
+</root>
+
+@code
+{
+    // Code References
+    public Building Building { get; set; }
+    public Player Player { get; set; }
+
+    ulong BuildingCount => Player.GetBuildingCount(Building.Ident);
+
+    // string that returns Cost as string with commas
+    string CostString => Building.Cost.ToString("N0");
+    string PPSString => Building.PizzasPerSecond.ToString("N2");
+}

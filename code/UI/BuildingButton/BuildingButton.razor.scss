@@ -1,0 +1,89 @@
+
+BuildingButton
+{
+    background-color: rgba(black, 0.4);
+    width: 370px;
+    height: 80px;
+    color: white;
+    font-family: Verdana;
+    font-size: 18px;
+    left: 0px;
+    
+    transition: all 0.2s ease-out;
+
+    .count
+    {
+        width: 64px;
+        flex-shrink: 0;
+        background-color: rgba(black, 0.2);
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-weight: black;
+        font-size: 24px;
+    }
+
+    .content
+    {
+        overflow: hidden;
+        padding-left: 8px;
+
+        img
+        {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background-position: 0% -20%;
+            opacity: 0.4;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .info
+        {
+            flex-direction: column;
+            justify-content: space-evenly;
+
+            .name
+            {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
+                font-weight: black;
+                font-size: 28px;
+                text-shadow: 0 0 10px black;
+            }
+
+            .sub-info
+            {
+                width: 100%;
+
+                .price
+                {
+                    width: 60%;
+                }
+
+                .pps
+                {
+                    width: 40%;
+                    font-size: 12px;
+                    align-self: flex-end;
+                }
+            }
+        }
+    }
+
+    &:hover
+    {
+        left: -8px;
+    }
+
+    &:active
+    {
+        left: 8px;
+        transition: all 0.05s ease-in-out;
+    }
+}

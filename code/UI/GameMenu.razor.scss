@@ -69,6 +69,19 @@ GameMenu
             transition: all 0.05s ease-in-out;
         }
     }
+
+    .units
+    {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        height: 100%;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+        margin: 32px;
+        justify-content: center;
+    }
 }
 
 @keyframes scrolling-background

@@ -19,14 +19,22 @@
 
     <div class="pizza-button" onclick=@ClickPizza />
 
-    <Chatbox Lobby=@Lobby />
+    <div @ref="UnitsPanel" class="units">
+        @foreach(var building in AllBuildings)
+        {
+            <BuildingButton Building=@building Player=@LocalPlayer />
+        }
+    </div>
+
+    <Chatbox @ref="Chat" Lobby=@Lobby />
 
 </root>
 
 @code
 {
     // UI References
-    
+    Chatbox Chat { get; set; }
+    Panel UnitsPanel { get; set; }
 
     // Lobby Variables
     public ILobby Lobby { get; set; } = Game.Menu.Lobby;
@@ -34,6 +42,7 @@
 
     // Game Variables
     public Player LocalPlayer => Players.FirstOrDefault(p => p.Member.Id == Game.SteamId);
+    public List<Building> AllBuildings { get; set; } = new List<Building>();
 
     // Timers
     RealTimeSince LastSave = 0f;
@@ -49,6 +58,15 @@
             Lobby.OnMemberLeave += OnPlayerLeft;
 
             InitPlayer(Game.SteamId);
+
+            AllBuildings = new List<Building>();
+			foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Building>())
+			{
+                Building building = TypeLibrary.Create<Building>(typeDesc.TargetType);
+				if(building.Cost <= 0) continue;
+                AllBuildings.Add(building);
+			}
+            AllBuildings = AllBuildings.OrderBy(b => b.Cost).ToList();
         }
     }
 
@@ -71,15 +89,19 @@
 
     void InitPlayer(long steamid)
     {
+        Player player;
         if(steamid == Game.SteamId)
         {
-            Players.Add(Player.LoadPlayer());
+            player = Player.LoadPlayer();
+            Players.Add(player);
         }
         else
         {
-            var player = new Player(steamid);
+            player = new Player(steamid);
             Players.Add(player);
         }
+
+        Chat.CreateChatEntry("", player.Member.Name + " opened their pizzeria with " + player.Pizzas + " pizzas!", "join-message");
     }
 
     void ClickPizza()
@@ -99,6 +121,7 @@
     void OnPlayerLeft(Friend member)
     {
         Players.RemoveAll(p => p.Member.Id == member.Id);
+        Chat.CreateChatEntry(member.Name, " has closed their pizzeria!", "leave-message");
     }
 
 }
