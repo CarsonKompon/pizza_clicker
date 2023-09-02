@@ -23,6 +23,14 @@ public partial class GameMenu
         {
             case NETWORK_MESSAGE.PLAYER_UPDATE:
 
+                foreach(var player in Players)
+                {
+                    if(player.Member.Id == msg.Source.Id)
+                    {
+                        player.ReadDataStream(data);
+                    }
+                }
+
                 break;
 
         }
