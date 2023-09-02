@@ -1,0 +1,50 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root>
+
+    <div @ref="ChatPanel" class="chat" PreferScrollToBottom=@(true)>
+    </div>
+
+    <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@SendChat onblur=@CloseChat Value:bind=@ChatText Placeholder="Enter message..." AllowEmojiReplace=@(true) ></TextEntry>
+
+</root>
+
+@code
+{
+    // Code References
+    public ILobby Lobby { get; set; }
+
+    // UI References
+    Panel ChatBox { get; set; }
+    Panel ChatPanel { get; set; }
+    TextEntry ChatTextEntry { get; set; }
+    string ChatText { get; set; }
+
+    void ShowChat()
+    {
+        ChatBox.AddClass("show");
+		ChatTextEntry.Focus();
+    }
+
+    void CloseChat()
+    {
+        ChatBox.RemoveClass("show");
+		ChatTextEntry.Blur();
+    }
+
+    void SendChat()
+    {
+        Lobby.SendChat(ChatText);
+        ChatTextEntry.Text = "";
+        CloseChat();
+    }
+}

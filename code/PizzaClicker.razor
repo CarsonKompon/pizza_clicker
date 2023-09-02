@@ -1,0 +1,66 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+
+@inherits RootPanel
+@implements Sandbox.Menu.IGameMenuPanel
+
+@namespace PizzaClicker
+
+<root>
+
+    @if(InLobby)
+    {
+        <GameMenu Lobby=@Lobby />
+    }
+
+</root>
+
+@code
+{
+
+    bool InLobby = false;
+    ILobby Lobby { get; set; }
+
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if (firstTime)
+        {
+            JoinGame();
+        }
+    }
+
+    async void JoinGame()
+    {
+        var lobbies = await Game.Menu.QueryLobbiesAsync();
+        lobbies = lobbies.OrderByDescending(x => x.MemberCount).ToArray();
+        for(int i=0; i<lobbies.Length; i++)
+        {
+            var lobby = lobbies[i];
+            if(lobby.MemberCount < lobby.MaxMembers)
+            {
+                Lobby = lobby;
+                await Lobby.JoinAsync();
+                InLobby = true;
+                StateHasChanged();
+                return;
+            }
+        }
+        Lobby = await Game.Menu.CreateLobbyAsync(100);
+        InLobby = true;
+        StateHasChanged();
+    }
+
+    [GameEvent.Menu.LobbyLeave]
+    public void OnLobbyLeave()
+    {
+        InLobby = false;
+        JoinGame();
+    }
+
+}
