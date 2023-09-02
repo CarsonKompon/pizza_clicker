@@ -1,3 +1,4 @@
+using System.Linq;
 using Sandbox;
 using Sandbox.Menu;
 
@@ -23,13 +24,21 @@ public partial class GameMenu
         {
             case NETWORK_MESSAGE.PLAYER_UPDATE:
 
-                foreach(var player in Players)
+                Player player = null;
+                foreach(var p in Players)
                 {
-                    if(player.Member.Id == msg.Source.Id)
+                    if(p.Member.Id == msg.Source.Id)
                     {
-                        player.ReadDataStream(data);
+                        player = p;
+                        break;
                     }
                 }
+                if(player == null)
+                {
+                    player = new Player(msg.Source.Id);
+                    Players.Add(player);
+                }
+                player.ReadDataStream(data);
 
                 break;
 
