@@ -6,44 +6,29 @@ using Sandbox;
 
 public class BigNumber : IComparable
 {
-    private List<byte> digits;
-    private int decimalPlace;
-    private bool isNegative;
+    private List<byte> digits = new();
+    private bool isNegative = false;
 
     public BigNumber() {}
-    public BigNumber(string numStr)
+    public BigNumber(string number)
     {
-        digits = new List<byte>();
-        decimalPlace = 0;
-        isNegative = false;
-        bool afterDecimal = false;
+        if (string.IsNullOrEmpty(number))
+            throw new ArgumentNullException("Number string cannot be null or empty");
+        
+        isNegative = number.StartsWith("-");
 
-        if(numStr.StartsWith("-"))
+        foreach (char c in number)
         {
-            isNegative = true;
-            numStr = numStr.Substring(1);
-        }
-
-        foreach (char c in numStr)
-        {
-            if (c == '.')
+            if (char.IsDigit(c))
             {
-                afterDecimal = true;
-                continue;
+                digits.Add((byte)(c - '0'));
             }
-            if (afterDecimal)
-            {
-                decimalPlace++;
-            }
-            digits.Add((byte)(c - '0'));
         }
     }
 
     public BigNumber(int num) : this(num.ToString()) { }
     public BigNumber(long num) : this(num.ToString()) { }
     public BigNumber(ulong num) : this(num.ToString()) { }
-    public BigNumber(float num) : this(num.ToString()) { }
-    public BigNumber(double num) : this(num.ToString()) { }
 
     public string Value
     {
@@ -52,7 +37,6 @@ public class BigNumber : IComparable
         {
             BigNumber temp = new BigNumber(value);
             digits = temp.digits;
-            decimalPlace = temp.decimalPlace;
             isNegative = temp.isNegative;
         }
     }
@@ -63,45 +47,25 @@ public class BigNumber : IComparable
         {
             a.digits.Insert(0, 0);
         }
+
         while (b.digits.Count < a.digits.Count)
         {
             b.digits.Insert(0, 0);
         }
-
-        while (a.decimalPlace > b.decimalPlace)
-        {
-            b.digits.Add(0);
-            b.decimalPlace++;
-        }
-        while (b.decimalPlace > a.decimalPlace)
-        {
-            a.digits.Add(0);
-            a.decimalPlace++;
-        }
     }
 
-    private void RemoveLeadingTrailingZeros()
+    private void RemoveLeadingZeros()
     {
         while (digits.Count > 1 && digits[0] == 0)
         {
             digits.RemoveAt(0);
-            if (decimalPlace > 0)
-            {
-                decimalPlace--;
-            }
-        }
-
-        while (digits.Count > 1 && digits[digits.Count - 1] == 0 && decimalPlace > 0)
-        {
-            digits.RemoveAt(digits.Count - 1);
-            decimalPlace--;
         }
     }
 
     public static BigNumber Add(BigNumber a, BigNumber b)
     {
         Equalize(a, b);
-
+        
         if (a.isNegative && b.isNegative)
         {
             BigNumber result = AddPositive(a, b);
@@ -132,15 +96,16 @@ public class BigNumber : IComparable
             carry = sum / 10;
             resultDigits.Insert(0, (byte)(sum % 10));
         }
+
         if (carry > 0)
         {
             resultDigits.Insert(0, (byte)carry);
         }
 
-        BigNumber result = new BigNumber("0");
+        BigNumber result = new BigNumber();
         result.digits = resultDigits;
-        result.decimalPlace = a.decimalPlace;
-
+        result.RemoveLeadingZeros();
+        
         return result;
     }
 
@@ -196,7 +161,7 @@ public class BigNumber : IComparable
 
         BigNumber result = new BigNumber("0");
         result.digits = resultDigits;
-        result.decimalPlace = a.decimalPlace;
+        result.RemoveLeadingZeros();
 
         return result;
     }
@@ -233,12 +198,9 @@ public class BigNumber : IComparable
 
             BigNumber temp = new BigNumber("0");
             temp.digits = tempDigits;
-            temp.decimalPlace = 0;
 
             result = Add(result, temp);
         }
-
-        result.decimalPlace = a.decimalPlace + b.decimalPlace;
 
         return result;
     }
@@ -253,35 +215,30 @@ public class BigNumber : IComparable
     private static BigNumber DividePositive(BigNumber a, BigNumber b, int precision)
     {
         BigNumber result = new BigNumber("0");
-        BigNumber temp = new BigNumber("0");
 
-        int i = 0;
-        while (i < a.digits.Count)
+        BigNumber remainder = new BigNumber("0");
+        for (int i = 0; i < a.digits.Count; i++)
         {
-            temp.digits.Add(a.digits[i]);
-            int quotient = 0;
-            while (temp.CompareTo(b) >= 0)
+            remainder.digits.Add(a.digits[i]);
+            remainder.RemoveLeadingZeros();
+
+            int count = 0;
+            while (remainder.CompareTo(b) >= 0)
             {
-                temp = Subtract(temp, b);
-                quotient++;
+                remainder = Subtract(remainder, b);
+                count++;
             }
-            result.digits.Add((byte)quotient);
-            i++;
+
+            result.digits.Add((byte)count);
         }
 
-        for (int j = 0; j < precision; j++)
-        {
-            temp.digits.Add(0);
-            int quotient = 0;
-            while (temp.CompareTo(b) >= 0)
-            {
-                temp = Subtract(temp, b);
-                quotient++;
-            }
-            result.digits.Add((byte)quotient);
-            result.decimalPlace++;
-        }
+        return result;
+    }
 
+    private static BigNumber Negate(BigNumber a)
+    {
+        BigNumber result = new BigNumber(a.ToString());
+        result.isNegative = !a.isNegative;
         return result;
     }
 
@@ -293,14 +250,14 @@ public class BigNumber : IComparable
         int factor = isNegative ? -1 : 1;
 
         Equalize(this, other);
-        for (int i = 0; i < this.digits.Count; i++)
-        {
 
-            if (this.digits[i] > other.digits[i])
+        for (int i = 0; i < digits.Count; i++)
+        {
+            if (digits[i] > other.digits[i])
             {
                 return 1 * factor;
             }
-            else if (this.digits[i] < other.digits[i])
+            else if (digits[i] < other.digits[i])
             {
                 return -1 * factor;
             }
@@ -309,12 +266,6 @@ public class BigNumber : IComparable
         return 0;
     }
 
-    private static BigNumber Negate(BigNumber a)
-    {
-        BigNumber result = new BigNumber(a.ToString());
-        result.isNegative = !a.isNegative;
-        return result;
-    }
 
     public int CompareTo(object obj)
     {
@@ -335,7 +286,6 @@ public class BigNumber : IComparable
     {
         stream.Write(Convert.ToByte(isNegative));
         stream.Write((int)digits.Count);
-        stream.Write((int)decimalPlace);
         foreach (byte digit in digits)
         {
             stream.Write(digit);
@@ -344,7 +294,7 @@ public class BigNumber : IComparable
 
     public int GetByteSize()
     {
-        return 9 + digits.Count;
+        return 5 + digits.Count;
     }
 
     public static BigNumber ReadFromStream(ref ByteStream stream)
@@ -352,7 +302,6 @@ public class BigNumber : IComparable
         BigNumber result = new BigNumber();
         result.isNegative = Convert.ToBoolean(stream.Read<byte>());
         int digitCount = stream.Read<int>();
-        result.decimalPlace = stream.Read<int>();
         result.digits = new List<byte>();
         for (int i = 0; i < digitCount; i++)
         {
@@ -367,7 +316,6 @@ public class BigNumber : IComparable
         int hash = 17;
         hash = hash * 23 + isNegative.GetHashCode();
         hash = hash * 23 + digits.GetHashCode();
-        hash = hash * 23 + decimalPlace.GetHashCode();
         return hash;
     }
 
@@ -376,103 +324,77 @@ public class BigNumber : IComparable
     public static BigNumber operator +(BigNumber a, int b) => Add(a, new BigNumber(b));
     public static BigNumber operator +(BigNumber a, long b) => Add(a, new BigNumber(b));
     public static BigNumber operator +(BigNumber a, ulong b) => Add(a, new BigNumber(b));
-    public static BigNumber operator +(BigNumber a, float b) => Add(a, new BigNumber(b));
-    public static BigNumber operator +(BigNumber a, double b) => Add(a, new BigNumber(b));
 
     // Subtraction Operators
     public static BigNumber operator -(BigNumber a, BigNumber b) => Subtract(a, b);
     public static BigNumber operator -(BigNumber a, int b) => Subtract(a, new BigNumber(b));
     public static BigNumber operator -(BigNumber a, long b) => Subtract(a, new BigNumber(b));
     public static BigNumber operator -(BigNumber a, ulong b) => Subtract(a, new BigNumber(b));
-    public static BigNumber operator -(BigNumber a, float b) => Subtract(a, new BigNumber(b));
-    public static BigNumber operator -(BigNumber a, double b) => Subtract(a, new BigNumber(b));
 
     // Multiplication Operators
     public static BigNumber operator *(BigNumber a, BigNumber b) => Multiply(a, b);
     public static BigNumber operator *(BigNumber a, int b) => Multiply(a, new BigNumber(b));
     public static BigNumber operator *(BigNumber a, long b) => Multiply(a, new BigNumber(b));
     public static BigNumber operator *(BigNumber a, ulong b) => Multiply(a, new BigNumber(b));
-    public static BigNumber operator *(BigNumber a, float b) => Multiply(a, new BigNumber(b));
-    public static BigNumber operator *(BigNumber a, double b) => Multiply(a, new BigNumber(b));
 
     // Division Operators
     public static BigNumber operator /(BigNumber a, BigNumber b) => Divide(a, b, 10);
     public static BigNumber operator /(BigNumber a, int b) => Divide(a, new BigNumber(b), 10);
     public static BigNumber operator /(BigNumber a, long b) => Divide(a, new BigNumber(b), 10);
     public static BigNumber operator /(BigNumber a, ulong b) => Divide(a, new BigNumber(b), 10);
-    public static BigNumber operator /(BigNumber a, float b) => Divide(a, new BigNumber(b), 10);
-    public static BigNumber operator /(BigNumber a, double b) => Divide(a, new BigNumber(b), 10);
 
     // Equal Comparison Operators
     public static bool operator ==(BigNumber a, BigNumber b) => a.CompareTo(b) == 0;
     public static bool operator ==(BigNumber a, int b) => a.CompareTo(new BigNumber(b)) == 0;
     public static bool operator ==(BigNumber a, long b) => a.CompareTo(new BigNumber(b)) == 0;
     public static bool operator ==(BigNumber a, ulong b) => a.CompareTo(new BigNumber(b)) == 0;
-    public static bool operator ==(BigNumber a, float b) => a.CompareTo(new BigNumber(b)) == 0;
-    public static bool operator ==(BigNumber a, double b) => a.CompareTo(new BigNumber(b)) == 0;
-
+   
     // Not Equal Comparison Operators
     public static bool operator !=(BigNumber a, BigNumber b) => a.CompareTo(b) != 0;
     public static bool operator !=(BigNumber a, int b) => a.CompareTo(new BigNumber(b)) != 0;
     public static bool operator !=(BigNumber a, long b) => a.CompareTo(new BigNumber(b)) != 0;
     public static bool operator !=(BigNumber a, ulong b) => a.CompareTo(new BigNumber(b)) != 0;
-    public static bool operator !=(BigNumber a, float b) => a.CompareTo(new BigNumber(b)) != 0;
-    public static bool operator !=(BigNumber a, double b) => a.CompareTo(new BigNumber(b)) != 0;
-
+    
     // Less Than Comparison Operators
     public static bool operator <(BigNumber a, BigNumber b) => a.CompareTo(b) < 0;
     public static bool operator <(BigNumber a, int b) => a.CompareTo(new BigNumber(b)) > 0;
     public static bool operator <(BigNumber a, long b) => a.CompareTo(new BigNumber(b)) > 0;
     public static bool operator <(BigNumber a, ulong b) => a.CompareTo(new BigNumber(b)) > 0;
-    public static bool operator <(BigNumber a, float b) => a.CompareTo(new BigNumber(b)) > 0;
-    public static bool operator <(BigNumber a, double b) => a.CompareTo(new BigNumber(b)) > 0;
-
+    
     // Greater Than Comparison Operators
     public static bool operator >(BigNumber a, BigNumber b) => a.CompareTo(b) > 0;
     public static bool operator >(BigNumber a, int b) => a.CompareTo(new BigNumber(b)) < 0;
     public static bool operator >(BigNumber a, long b) => a.CompareTo(new BigNumber(b)) < 0;
     public static bool operator >(BigNumber a, ulong b) => a.CompareTo(new BigNumber(b)) < 0;
-    public static bool operator >(BigNumber a, float b) => a.CompareTo(new BigNumber(b)) < 0;
-    public static bool operator >(BigNumber a, double b) => a.CompareTo(new BigNumber(b)) < 0;
-
+    
     // Less Than or Equal Comparison Operators
     public static bool operator <=(BigNumber a, BigNumber b) => a.CompareTo(b) <= 0;
     public static bool operator <=(BigNumber a, int b) => a.CompareTo(new BigNumber(b)) <= 0;
     public static bool operator <=(BigNumber a, long b) => a.CompareTo(new BigNumber(b)) <= 0;
     public static bool operator <=(BigNumber a, ulong b) => a.CompareTo(new BigNumber(b)) <= 0;
-    public static bool operator <=(BigNumber a, float b) => a.CompareTo(new BigNumber(b)) <= 0;
-    public static bool operator <=(BigNumber a, double b) => a.CompareTo(new BigNumber(b)) <= 0;
 
     // Greater Than or Equal Comparison Operators
     public static bool operator >=(BigNumber a, BigNumber b) => a.CompareTo(b) >= 0;
     public static bool operator >=(BigNumber a, int b) => a.CompareTo(new BigNumber(b)) >= 0;
     public static bool operator >=(BigNumber a, long b) => a.CompareTo(new BigNumber(b)) >= 0;
     public static bool operator >=(BigNumber a, ulong b) => a.CompareTo(new BigNumber(b)) >= 0;
-    public static bool operator >=(BigNumber a, float b) => a.CompareTo(new BigNumber(b)) >= 0;
-    public static bool operator >=(BigNumber a, double b) => a.CompareTo(new BigNumber(b)) >= 0;
-
+    
     // Casting
     public static implicit operator BigNumber(int num) => new BigNumber(num);
     public static implicit operator BigNumber(long num) => new BigNumber(num);
     public static implicit operator BigNumber(ulong num) => new BigNumber(num);
-    public static implicit operator BigNumber(float num) => new BigNumber(num);
-    public static implicit operator BigNumber(double num) => new BigNumber(num);
 
     // To String
     public override string ToString()
     {
-        RemoveLeadingTrailingZeros();
+        RemoveLeadingZeros();
 
         StringBuilder sb = new StringBuilder();
-        if(isNegative) sb.Append('-');
+        if (isNegative) sb.Append('-');
 
-        for (int i = 0; i < digits.Count; i++)
+        foreach (var digit in digits)
         {
-            if (digits.Count - i == decimalPlace)
-            {
-                sb.Append('.');
-            }
-            sb.Append(digits[i]);
+            sb.Append(digit);
         }
         return sb.ToString();
     }
@@ -480,17 +402,13 @@ public class BigNumber : IComparable
     // To String with commas (such as 1,041 or 1,456,235)
     public string ToStringWithCommas()
     {
-        RemoveLeadingTrailingZeros();
+        RemoveLeadingZeros();
 
         StringBuilder sb = new StringBuilder();
         if(isNegative) sb.Append('-');
         
         for (int i = 0; i < digits.Count; i++)
         {
-            if (digits.Count - i == decimalPlace)
-            {
-                sb.Append('.');
-            }
             if (i > 0 && (digits.Count - i) % 3 == 0)
             {
                 sb.Append(',');
@@ -503,21 +421,18 @@ public class BigNumber : IComparable
     // To String with abbreviated suffix (such as 1.04K or 1.46M)
     public string ToStringAbbreviated(int decimalPlaces = 2)
     {
-        RemoveLeadingTrailingZeros();
+        RemoveLeadingZeros();
 
         // Return normal string if less than 1000
-        if ((digits.Count - decimalPlace) < 4)
+        if (digits.Count < 4)
         {
             return ToString();
         }
         else
-        {
-            // Get the amount of digits (non-decimal)
-            int digitCount = digits.Count - decimalPlace;
-            
+        {            
             // Get the suffix
             string suffix = "";
-            int index = (digitCount - 1) / 3;
+            int index = (digits.Count - 1) / 3;
             switch(index)
             {
                 case 1:
@@ -651,31 +566,18 @@ public class BigNumber : IComparable
     // To String With Words (such as 1.04 thousand or 1.46 million)
     public string ToStringWithWords()
     {
-        RemoveLeadingTrailingZeros();
-
+        RemoveLeadingZeros();
+            
         // Return normal string if less than 1000
-        if (digits.Count - decimalPlace < 4)
+        if (digits.Count < 4)
         {
             return ToString();
         }
         else
         {
-            // Get the amount of digits (non-decimal)
-            int digitCount = digits.Count - decimalPlace;
-            
-            // Get the first three digits with up to 2 decimal places after
-            int firstDigit = digits[0];
-            int secondDigit = digits[1];
-            int thirdDigit = digits[2];
-            int decimalDigit = 0;
-            if (decimalPlace > 0)
-            {
-                decimalDigit = digits[decimalPlace - 1];
-            }
-
             // Get the suffix
             string suffix = "";
-            int index = (digitCount - 1) / 3;
+            int index = (digits.Count - 1) / 3;
             switch(index)
             {
                 case 1:
@@ -831,14 +733,8 @@ public class BigNumber : IComparable
             }
 
             // Get the string
-            if (decimalPlace > 0)
-            {
-                return firstDigit + "." + secondDigit + thirdDigit + " " + suffix;
-            }
-            else
-            {
-                return firstDigit + secondDigit + thirdDigit + " " + suffix;
-            }
+            string prefix = (isNegative ? "-" : "");
+            return prefix + ConstructAbbreviatedString(digits.Count, 3, 0) + " " + suffix;
         }
     }      
 

@@ -17,7 +17,7 @@
 
     <div class="header">
         <p class="pizza-count">@(LocalPlayer?.Pizzas.ToStringWithWords()) Pizzas</p>
-        <p class="pps-count">@(LocalPlayer?.PizzasPerSecond.ToStringAbbreviated()) pizzas/sec</p>
+        <p class="pps-count">@(LocalPlayer?.GetPizzasPerSecond()) pizzas/sec</p>
     </div>
 
     <div class="pizza-button" onclick=@ClickPizza />

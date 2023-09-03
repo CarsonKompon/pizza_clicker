@@ -11,15 +11,17 @@ public class Building
     public virtual string Name => "None";
     public virtual BigNumber Cost => 0;
     public virtual BigNumber PizzasPerSecond => 0;
+    public virtual double PizzasPerSecondFloat => 0f;
 
     public BigNumber GetCost(ulong amount, ulong free = 0)
     {
         return Cost * (ulong)Math.Pow(1.15, amount - free);
     }
 
-    public BigNumber SecondsPerPizza()
+    public double SecondsPerPizza(ulong amount = 1)
     {
-        return new BigNumber(1f) / PizzasPerSecond;
+        if(PizzasPerSecondFloat == 0) return (1f / amount) / double.Parse(PizzasPerSecond.ToString());
+        return (1f / amount) / (double.Parse(PizzasPerSecond.ToString()) + PizzasPerSecondFloat);
     }
 }
 

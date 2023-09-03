@@ -13,10 +13,11 @@ public class Player
     // Variables
     public BigNumber Pizzas { get; set; } = new(0);
     public BigNumber PizzasPerSecond { get; set; } = new(0);
+    public double PizzasPerSecondFloat { get; set; } = 0;
     public BigNumber PizzasPerClick { get; set; } = new(1);
     public Dictionary<string, ulong> Buildings { get; set; } = new();
 
-    private Dictionary<string, BigNumber> buildingTimers = new();
+    private Dictionary<string, double> buildingTimers = new();
 
     public Player(){}
 
@@ -34,7 +35,6 @@ public class Player
     {
         Pizzas += PizzasPerClick;
 
-        Log.Info(Pizzas.ToStringAbbreviated());
     }
 
     public void Save()
@@ -73,27 +73,42 @@ public class Player
         GameMenu.Instance.AddChild(particle);
     }
 
+
+    RealTimeSince TestTimer = 0f;
     public void Update()
     {
-        
-        PizzasPerSecond = 0;
-        // foreach(var building in GameMenu.AllBuildings)
-        // {
-        //     ulong buildingCount = GetBuildingCount(building.Ident);
-        //     PizzasPerSecond += building.PizzasPerSecond * (double)buildingCount;
+        PizzasPerSecond = new BigNumber(0);
+        PizzasPerSecondFloat = 0;
+        foreach(var building in GameMenu.AllBuildings)
+        {
+            ulong buildingCount = GetBuildingCount(building.Ident);
+            if(buildingCount == 0) continue;
+            PizzasPerSecond += building.PizzasPerSecond * buildingCount;
+            PizzasPerSecondFloat += building.PizzasPerSecondFloat * (double)buildingCount;
 
-        //     if(!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
-        //     buildingTimers[building.Ident] += Time.Delta;
-        //     BigFloat seconds = building.SecondsPerPizza();
-        //     while(buildingTimers[building.Ident] >= seconds)
-        //     {
-        //         GivePizzas(buildingCount);
-        //         buildingTimers[building.Ident] -= seconds;
-        //     }
-        // }
+            if(!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
+            buildingTimers[building.Ident] += Time.Delta;
+            double seconds = building.SecondsPerPizza(buildingCount);
+            Log.Info(seconds);
+            while(buildingTimers[building.Ident] >= seconds)
+            {
+                GivePizzas(1);
+                buildingTimers[building.Ident] -= seconds;
+            }
+        }
 
-        Log.Info(Pizzas);
+        // Put integer value of PizzasPerSecondFloat in PizzasPerSecond
+        PizzasPerSecond += (long)Math.Floor(PizzasPerSecondFloat);
+        PizzasPerSecondFloat -= Math.Floor(PizzasPerSecondFloat);
+    }
 
+    public string GetPizzasPerSecond()
+    {
+        if(PizzasPerSecond.ToString().Length < 4)
+        {
+            return (double.Parse(PizzasPerSecond.ToString()) + PizzasPerSecondFloat).ToString("N1");
+        }
+        return PizzasPerSecond.ToStringAbbreviated();
     }
 
     public static Player LoadPlayer()

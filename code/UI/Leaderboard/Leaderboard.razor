@@ -27,7 +27,7 @@
             <div class="leaderboard-entry">
                 <div class="name">@player.Member.Name</div>
                 <div class="pizzas">@player.Pizzas.ToStringAbbreviated()</div>
-                <div class="pizzas-per-second">@player.PizzasPerSecond.ToStringAbbreviated()</div>
+                <div class="pizzas-per-second">@player.GetPizzasPerSecond()</div>
             </div>
         }
     </div>
