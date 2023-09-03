@@ -118,7 +118,7 @@
         LocalPlayer.Click();
 
         string particleText = "+" + LocalPlayer.PizzasPerClick.ToStringAbbreviated();
-        var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText);
+        var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText, "", true);
         AddChild(particle);
     }
 

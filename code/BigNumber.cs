@@ -419,7 +419,7 @@ public class BigNumber : IComparable
     }
 
     // To String with abbreviated suffix (such as 1.04K or 1.46M)
-    public string ToStringAbbreviated(int decimalPlaces = 2)
+    public string ToStringAbbreviated(int decimalPlaces = 2, bool removeTrailingZeros = true)
     {
         RemoveLeadingZeros();
 
@@ -559,12 +559,12 @@ public class BigNumber : IComparable
 
             // Get the string
             string prefix = (isNegative ? "-" : "");
-            return prefix + ConstructAbbreviatedString(digits.Count, 3, decimalPlaces) + suffix;
+            return prefix + ConstructAbbreviatedString(digits.Count, 3, decimalPlaces, removeTrailingZeros) + suffix;
         }
     }
 
     // To String With Words (such as 1.04 thousand or 1.46 million)
-    public string ToStringWithWords()
+    public string ToStringWithWords(bool removeTrailingZeros = true)
     {
         RemoveLeadingZeros();
             
@@ -734,11 +734,11 @@ public class BigNumber : IComparable
 
             // Get the string
             string prefix = (isNegative ? "-" : "");
-            return prefix + ConstructAbbreviatedString(digits.Count, 3, 0) + " " + suffix;
+            return prefix + ConstructAbbreviatedString(digits.Count, 3, 2, removeTrailingZeros) + " " + suffix;
         }
     }      
 
-    private string ConstructAbbreviatedString(int integerPartLength, int offset, int decimalPlaces)
+    private string ConstructAbbreviatedString(int integerPartLength, int offset, int decimalPlaces, bool removeTrailingZeros = true)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -759,14 +759,18 @@ public class BigNumber : IComparable
             }
         }
 
-        // Remove trailing zeros
         string result = sb.ToString();
-        if (result.Contains("."))
+
+        // Remove trailing zeros
+        if(removeTrailingZeros)
         {
-            result = result.TrimEnd('0');
-            if (result.EndsWith("."))
+            if (result.Contains("."))
             {
-                result = result.TrimEnd('.');
+                result = result.TrimEnd('0');
+                if (result.EndsWith("."))
+                {
+                    result = result.TrimEnd('.');
+                }
             }
         }
 

@@ -59,6 +59,8 @@ public class Player
         if(!Buildings.ContainsKey(building.Ident)) Buildings.Add(building.Ident, 0);
         Buildings[building.Ident] += 1;
 
+        Save();
+
         return true;
     }
 
@@ -123,11 +125,12 @@ public class Player
 
     public ByteStream GetDataStream()
     {
-        ByteStream data = ByteStream.Create(1 + Pizzas.GetByteSize() + PizzasPerClick.GetByteSize() + PizzasPerSecond.GetByteSize());
+        ByteStream data = ByteStream.Create(9 + Pizzas.GetByteSize() + PizzasPerClick.GetByteSize() + PizzasPerSecond.GetByteSize());
         data.Write((byte)NETWORK_MESSAGE.PLAYER_UPDATE);
         Pizzas.WriteToStream(ref data);
         PizzasPerClick.WriteToStream(ref data);
         PizzasPerSecond.WriteToStream(ref data);
+        data.Write((double)PizzasPerSecondFloat);
         return data;
     }
 
@@ -136,6 +139,7 @@ public class Player
         Pizzas = BigNumber.ReadFromStream(ref data);
         PizzasPerClick = BigNumber.ReadFromStream(ref data);
         PizzasPerSecond = BigNumber.ReadFromStream(ref data);
+        PizzasPerSecondFloat = data.Read<double>();
     }
 
 }

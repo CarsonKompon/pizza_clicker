@@ -34,6 +34,7 @@ GameMenu
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        pointer-events: none;
 
         .pizza-count
         {
@@ -42,6 +43,7 @@ GameMenu
             font-weight: black;
             color: white;
             text-shadow: 0 0 10px black;
+            text-transform: lowercase;
         }
 
         .pps-count
