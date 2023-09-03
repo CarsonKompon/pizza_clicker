@@ -9,7 +9,7 @@ public class Oven : Building
 {
     public override string Ident => "oven";
     public override string Name => "Oven";
-    public override ulong Cost => 100;
-    public override double PizzasPerSecond => 1f;
+    public override BigNumber Cost => new(100);
+    public override BigFloat PizzasPerSecond => new(1f);
 }
 

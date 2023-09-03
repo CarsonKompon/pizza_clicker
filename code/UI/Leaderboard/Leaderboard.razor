@@ -19,15 +19,15 @@
     <div class="leaderboard-header">
         <div class="name">Name</div>
         <div class="pizzas">Pizzas</div>
-        <div class="pizzas-per-second">Pizza/Sec</div>
+        <div class="pizzas-per-second">Pizzas/Sec</div>
     </div>
     <div class="leaderboard-entries">
         @foreach(var player in Players.OrderByDescending(p => p.Pizzas))
         {
             <div class="leaderboard-entry">
                 <div class="name">@player.Member.Name</div>
-                <div class="pizzas">@player.Pizzas</div>
-                <div class="pizzas-per-second">@player.PizzasPerSecond</div>
+                <div class="pizzas">@player.Pizzas.ToStringAbbreviated()</div>
+                <div class="pizzas-per-second">@player.PizzasPerSecond.ToStringAbbreviated()</div>
             </div>
         }
     </div>

@@ -9,7 +9,7 @@ public class DeliveryDriver : Building
 {
     public override string Ident => "delivery_driver";
     public override string Name => "Delivery Driver";
-    public override ulong Cost => 1100;
-    public override double PizzasPerSecond => 8f;
+    public override BigNumber Cost => new(1100);
+    public override BigFloat PizzasPerSecond => new(8f);
 }
 

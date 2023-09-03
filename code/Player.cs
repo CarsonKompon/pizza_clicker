@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Sandbox;
@@ -10,10 +11,12 @@ public class Player
     public Friend Member;
 
     // Variables
-    public ulong Pizzas { get; set; } = 0;
-    public ulong PizzasPerSecond { get; set; } = 0;
-    public ulong PizzasPerClick { get; set; } = 1;
+    public BigNumber Pizzas { get; set; } = new();
+    public BigFloat PizzasPerSecond { get; set; } = new();
+    public BigNumber PizzasPerClick { get; set; } = new(1);
     public Dictionary<string, ulong> Buildings { get; set; } = new();
+
+    private Dictionary<string, BigFloat> buildingTimers = new();
 
     public Player(){}
 
@@ -30,6 +33,8 @@ public class Player
     public void Click()
     {
         Pizzas += PizzasPerClick;
+
+        Log.Info(Pizzas.ToStringAbbreviated());
     }
 
     public void Save()
@@ -47,57 +52,75 @@ public class Player
 
     public bool BuyBuilding(Building building)
     {
-        ulong cost = building.GetCost(GetBuildingCount(building.Ident));
+        BigNumber cost = building.GetCost(GetBuildingCount(building.Ident));
         if(Pizzas < cost) return false;
 
         Pizzas -= cost;
         if(!Buildings.ContainsKey(building.Ident)) Buildings.Add(building.Ident, 0);
         Buildings[building.Ident] += 1;
 
-        CalculatePizzasPerSecond();
-
         return true;
     }
 
-    public bool HasPizzas(ulong pizzas)
+    public void GivePizzas(ulong pizzas)
     {
-        return Pizzas >= pizzas;
+        Pizzas += pizzas;
+
+        string particleText = "+" + pizzas.ToString("N0");
+        var rand = new Random();
+        var particle = new TextParticle(Screen.Size * new Vector2(rand.Float(), rand.Float(0.5f, 1f)) * GameMenu.Instance.ScaleFromScreen, particleText);
+        particle.AddClass("gained");
+        GameMenu.Instance.AddChild(particle);
     }
 
-    void CalculatePizzasPerSecond()
+    public void Update()
     {
+        
         PizzasPerSecond = 0;
-        foreach(var building in GameMenu.AllBuildings)
-        {
-            PizzasPerSecond += (ulong)(building.PizzasPerSecond * GetBuildingCount(building.Ident));
-        }
+        // foreach(var building in GameMenu.AllBuildings)
+        // {
+        //     ulong buildingCount = GetBuildingCount(building.Ident);
+        //     PizzasPerSecond += building.PizzasPerSecond * (double)buildingCount;
+
+        //     if(!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
+        //     buildingTimers[building.Ident] += Time.Delta;
+        //     BigFloat seconds = building.SecondsPerPizza();
+        //     while(buildingTimers[building.Ident] >= seconds)
+        //     {
+        //         GivePizzas(buildingCount);
+        //         buildingTimers[building.Ident] -= seconds;
+        //     }
+        // }
+
+        Log.Info(Pizzas);
+
     }
 
     public static Player LoadPlayer()
     {
+
         var data = FileSystem.Data.ReadJson<Player>(Game.SteamId.ToString());
         if (data == null) return new Player(Game.SteamId);
         data.Member = new Friend(Game.SteamId);
-        data.CalculatePizzasPerSecond();
 
         return data;
     }
 
     public ByteStream GetDataStream()
     {
-        ByteStream data = ByteStream.Create(26);
+        ByteStream data = ByteStream.Create(1 + Pizzas.GetByteSize() + PizzasPerClick.GetByteSize() + PizzasPerSecond.GetByteSize());
         data.Write((byte)NETWORK_MESSAGE.PLAYER_UPDATE);
-        data.Write(Pizzas);
-        data.Write(PizzasPerSecond);
-        data.Write(PizzasPerClick);
+        Pizzas.WriteToStream(ref data);
+        PizzasPerClick.WriteToStream(ref data);
+        PizzasPerSecond.WriteToStream(ref data);
         return data;
     }
 
     public void ReadDataStream(ByteStream data)
     {
-        Pizzas = data.Read<ulong>();
-        PizzasPerSecond = data.Read<ulong>();
-        PizzasPerClick = data.Read<ulong>();
+        Pizzas = BigNumber.ReadFromStream(data);
+        PizzasPerClick = BigNumber.ReadFromStream(data);
+        PizzasPerSecond = BigFloat.ReadFromStream(data);
     }
 
 }

@@ -47,6 +47,7 @@ public partial class GameMenu
 
     void NetworkPlayerUpdate(Player player)
     {
+        if(player == null) return;
         Lobby.BroadcastMessage(player.GetDataStream());
     }
 

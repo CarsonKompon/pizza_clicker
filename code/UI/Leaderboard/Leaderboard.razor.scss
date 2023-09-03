@@ -21,6 +21,9 @@
             width: 500px;
             height: 300px;
 
+            sound-in: ui.navigate.forward;
+            sound-out: ui.navigate.back;
+
             h1
             {
                 opacity: 1;

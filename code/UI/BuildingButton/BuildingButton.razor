@@ -43,9 +43,9 @@
     ulong BuildingCount => Player.GetBuildingCount(Building.Ident);
 
     // string that returns Cost as string with commas
-    string CostString => Building.GetCost(BuildingCount).ToString("N0");
-    string PPSString => Building.PizzasPerSecond.ToString("N2");
-    string CanAfford => Player.HasPizzas(Building.GetCost(BuildingCount)) ? "" : "cant-afford";
+    string CostString => Building.GetCost(BuildingCount).ToStringAbbreviated();
+    string PPSString => Building.PizzasPerSecond.ToStringAbbreviated();
+    string CanAfford => (Player.Pizzas >= Building.GetCost(BuildingCount)) ? "" : "cant-afford";
 
     void Pressed()
     {

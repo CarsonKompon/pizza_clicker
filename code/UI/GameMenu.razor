@@ -15,7 +15,10 @@
 
     <Leaderboard Players=@Players />
 
-    <p class="pizza-count">@(LocalPlayer?.Pizzas ?? 0) Pizzas</p>
+    <div class="header">
+        <p class="pizza-count">@(LocalPlayer?.Pizzas.ToStringWithWords()) Pizzas</p>
+        <p class="pps-count">@(LocalPlayer?.PizzasPerSecond.ToStringAbbreviated()) pizzas/sec</p>
+    </div>
 
     <div class="pizza-button" onclick=@ClickPizza />
 
@@ -33,6 +36,7 @@
 @code
 {
     // UI References
+    public static GameMenu Instance { get; set; }
     Chatbox Chat { get; set; }
     Panel UnitsPanel { get; set; }
 
@@ -54,6 +58,8 @@
 
         if (firstTime)
         {
+            Instance = this;
+
             Lobby.OnMemberEnter += OnPlayerJoined;
             Lobby.OnMemberLeave += OnPlayerLeft;
 
@@ -73,6 +79,8 @@
     public override void Tick()
     {
         Lobby.ReceiveMessages(OnNetworkMessage);
+
+        LocalPlayer?.Update();
 
         if(LastSave > 1f)
         {
@@ -109,7 +117,7 @@
     {
         LocalPlayer.Click();
 
-        string particleText = "+" + LocalPlayer.PizzasPerClick.ToString();
+        string particleText = "+" + LocalPlayer.PizzasPerClick.ToStringAbbreviated();
         var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText);
         AddChild(particle);
     }
@@ -123,6 +131,11 @@
     {
         Players.RemoveAll(p => p.Member.Id == member.Id);
         Chat.CreateChatEntry(member.Name, " has closed their pizzeria!", "leave-message");
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(LocalPlayer?.Pizzas);
     }
 
 }

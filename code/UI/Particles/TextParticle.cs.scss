@@ -17,6 +17,13 @@ TextParticle
     text-shadow: 1px 1px 3px black;
     text-align: center;
 
+    z-index: 100;
+
+    &.gained
+    {
+        opacity: 0.2;
+    }
+
     &:intro
     {
         opacity: 0;
