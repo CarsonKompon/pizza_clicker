@@ -76,6 +76,11 @@ BuildingButton
         }
     }
 
+    &.cant-afford
+    {
+        opacity: 0.2;
+    }
+
     &:hover
     {
         left: -8px;

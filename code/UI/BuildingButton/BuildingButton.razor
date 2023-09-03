@@ -9,7 +9,7 @@
 
 @namespace PizzaClicker
 
-<root>
+<root onclick=@Pressed class=@CanAfford >
 
     <p class="count">@("x" + BuildingCount.ToString())</p>
 
@@ -43,6 +43,17 @@
     ulong BuildingCount => Player.GetBuildingCount(Building.Ident);
 
     // string that returns Cost as string with commas
-    string CostString => Building.Cost.ToString("N0");
+    string CostString => Building.GetCost(BuildingCount).ToString("N0");
     string PPSString => Building.PizzasPerSecond.ToString("N2");
+    string CanAfford => Player.HasPizzas(Building.GetCost(BuildingCount)) ? "" : "cant-afford";
+
+    void Pressed()
+    {
+        Player.BuyBuilding(Building);
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(BuildingCount, CostString, PPSString, CanAfford);
+    }
 }

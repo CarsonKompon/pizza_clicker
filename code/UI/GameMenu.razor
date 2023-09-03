@@ -42,7 +42,7 @@
 
     // Game Variables
     public Player LocalPlayer => Players.FirstOrDefault(p => p.Member.Id == Game.SteamId);
-    public List<Building> AllBuildings { get; set; } = new List<Building>();
+    public static List<Building> AllBuildings { get; set; } = new List<Building>();
 
     // Timers
     RealTimeSince LastSave = 0f;

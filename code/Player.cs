@@ -45,11 +45,40 @@ public class Player
         return Buildings[ident];
     }
 
+    public bool BuyBuilding(Building building)
+    {
+        ulong cost = building.GetCost(GetBuildingCount(building.Ident));
+        if(Pizzas < cost) return false;
+
+        Pizzas -= cost;
+        if(!Buildings.ContainsKey(building.Ident)) Buildings.Add(building.Ident, 0);
+        Buildings[building.Ident] += 1;
+
+        CalculatePizzasPerSecond();
+
+        return true;
+    }
+
+    public bool HasPizzas(ulong pizzas)
+    {
+        return Pizzas >= pizzas;
+    }
+
+    void CalculatePizzasPerSecond()
+    {
+        PizzasPerSecond = 0;
+        foreach(var building in GameMenu.AllBuildings)
+        {
+            PizzasPerSecond += (ulong)(building.PizzasPerSecond * GetBuildingCount(building.Ident));
+        }
+    }
+
     public static Player LoadPlayer()
     {
         var data = FileSystem.Data.ReadJson<Player>(Game.SteamId.ToString());
         if (data == null) return new Player(Game.SteamId);
         data.Member = new Friend(Game.SteamId);
+        data.CalculatePizzasPerSecond();
 
         return data;
     }
