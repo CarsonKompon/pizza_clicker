@@ -32,7 +32,7 @@ public class TextParticle : Panel
 
         if(!manual)
         {
-            if(ParticleCount > 100) Delete();
+            if(ParticleCount > 50) Delete();
             else ParticleCount++;
         }
     }

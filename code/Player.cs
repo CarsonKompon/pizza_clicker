@@ -19,6 +19,8 @@ public class Player
 
     private Dictionary<string, double> buildingTimers = new();
 
+    double particleTimer = 0f;
+
     public Player(){}
 
     public Player(Friend member)
@@ -67,16 +69,8 @@ public class Player
     public void GivePizzas(ulong pizzas)
     {
         Pizzas += pizzas;
-
-        string particleText = "+" + pizzas.ToString("N0");
-        var rand = new Random();
-        var particle = new TextParticle(Screen.Size * new Vector2(rand.Float(), rand.Float(0.5f, 1f)) * GameMenu.Instance.ScaleFromScreen, particleText);
-        particle.AddClass("gained");
-        GameMenu.Instance.AddChild(particle);
     }
 
-
-    RealTimeSince TestTimer = 0f;
     public void Update()
     {
         PizzasPerSecond = new BigNumber(0);
@@ -91,7 +85,6 @@ public class Player
             if(!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
             buildingTimers[building.Ident] += Time.Delta;
             double seconds = building.SecondsPerPizza(buildingCount);
-            Log.Info(seconds);
             while(buildingTimers[building.Ident] >= seconds)
             {
                 GivePizzas(1);
@@ -102,6 +95,20 @@ public class Player
         // Put integer value of PizzasPerSecondFloat in PizzasPerSecond
         PizzasPerSecond += (long)Math.Floor(PizzasPerSecondFloat);
         PizzasPerSecondFloat -= Math.Floor(PizzasPerSecondFloat);
+
+        particleTimer += Time.Delta;
+        if(particleTimer > 0.1f)
+        {
+            if(PizzasPerSecond > (BigNumber)0)
+            {
+                string particleText = "+" + (PizzasPerSecond / 10).ToStringAbbreviated();
+                var rand = new Random();
+                var particle = new TextParticle(Screen.Size * new Vector2(rand.Float(), rand.Float(0.5f, 1f)) * GameMenu.Instance.ScaleFromScreen, particleText);
+                particle.AddClass("gained");
+                GameMenu.Instance.AddChild(particle);
+                particleTimer = 0f;
+            }
+        }
     }
 
     public string GetPizzasPerSecond()

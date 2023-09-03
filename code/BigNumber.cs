@@ -558,8 +558,7 @@ public class BigNumber : IComparable
             }
 
             // Get the string
-            string prefix = (isNegative ? "-" : "");
-            return prefix + ConstructAbbreviatedString(digits.Count, 3, decimalPlaces, removeTrailingZeros) + suffix;
+            return ConstructAbbreviatedString(decimalPlaces, removeTrailingZeros) + suffix;
         }
     }
 
@@ -733,44 +732,26 @@ public class BigNumber : IComparable
             }
 
             // Get the string
-            string prefix = (isNegative ? "-" : "");
-            return prefix + ConstructAbbreviatedString(digits.Count, 3, 2, removeTrailingZeros) + " " + suffix;
+            string abbreviation = ConstructAbbreviatedString(2, removeTrailingZeros);
+            return abbreviation + " " + suffix;
         }
     }      
 
-    private string ConstructAbbreviatedString(int integerPartLength, int offset, int decimalPlaces, bool removeTrailingZeros = true)
+    private string ConstructAbbreviatedString(int decimalPlaces, bool removeTrailingZeros = true)
     {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < integerPartLength - offset + decimalPlaces; i++)
+        int index = (digits.Count - 1) / 3;
+        if (index < 1) return ToString();
+        
+        string result = (isNegative ? "-" : "");
+        for(int i=0; i<digits.Count; i++)
         {
-            if (i == integerPartLength - offset)
+            if (i == digits.Count - (index * 3))
             {
-                sb.Append('.');
+                result += ".";
             }
-
-            if (i < digits.Count)
+            if(i < digits.Count - (index * 3) + decimalPlaces)
             {
-                sb.Append(digits[i]);
-            }
-            else
-            {
-                sb.Append('0');
-            }
-        }
-
-        string result = sb.ToString();
-
-        // Remove trailing zeros
-        if(removeTrailingZeros)
-        {
-            if (result.Contains("."))
-            {
-                result = result.TrimEnd('0');
-                if (result.EndsWith("."))
-                {
-                    result = result.TrimEnd('.');
-                }
+                result += digits[i];
             }
         }
 

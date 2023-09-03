@@ -9,7 +9,7 @@ public class PizzeriaChain : Building
 {
     public override string Ident => "pizza_chain";
     public override string Name => "Pizza Chain";
-    public override BigNumber Cost => new(12000);
-    public override BigNumber PizzasPerSecond => new(47);
+    public override BigNumber Cost => new("130000");
+    public override BigNumber PizzasPerSecond => new("260");
 }
 

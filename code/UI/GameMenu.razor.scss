@@ -66,6 +66,7 @@ GameMenu
         margin: -200px 0 0 -200px;
         transition: all 0.12s ease-in-out;
         transform: scale(1 1);
+        z-index: 100;
         
         background-image: url("/ui/pizzas/cheese_pizza.png");
         background-size: contain;
