@@ -11,12 +11,12 @@ public class Player
     public Friend Member;
 
     // Variables
-    public BigNumber Pizzas { get; set; } = new();
-    public BigFloat PizzasPerSecond { get; set; } = new();
+    public BigNumber Pizzas { get; set; } = new(0);
+    public BigNumber PizzasPerSecond { get; set; } = new(0);
     public BigNumber PizzasPerClick { get; set; } = new(1);
     public Dictionary<string, ulong> Buildings { get; set; } = new();
 
-    private Dictionary<string, BigFloat> buildingTimers = new();
+    private Dictionary<string, BigNumber> buildingTimers = new();
 
     public Player(){}
 
@@ -118,9 +118,9 @@ public class Player
 
     public void ReadDataStream(ByteStream data)
     {
-        Pizzas = BigNumber.ReadFromStream(data);
-        PizzasPerClick = BigNumber.ReadFromStream(data);
-        PizzasPerSecond = BigFloat.ReadFromStream(data);
+        Pizzas = BigNumber.ReadFromStream(ref data);
+        PizzasPerClick = BigNumber.ReadFromStream(ref data);
+        PizzasPerSecond = BigNumber.ReadFromStream(ref data);
     }
 
 }
