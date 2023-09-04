@@ -9,6 +9,7 @@ public class Achievement
 {
     public virtual string Ident => "none";
     public virtual string Name => "None";
+    public virtual string Description => "";
     public virtual string Icon => "ui/icons/trophy.png";
 
     public virtual bool CheckUnlockCondition(Player player)

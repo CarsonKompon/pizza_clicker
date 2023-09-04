@@ -23,6 +23,14 @@ GameMenu
         background-color: rgba(24, 13, 0, 0.555);
     }
 
+    .menu-buttons
+    {
+        margin-top: 8px;
+        margin-left: 8px;
+        flex-direction: column;
+        gap: 8px;
+    }
+
     > .header
     {
         position: absolute;

@@ -7,8 +7,9 @@ namespace PizzaClicker;
 [Library]
 public class AchievementRollingInTheDough : Achievement
 {
-    public override string Ident => "rolling_in_the_dough";
+    public override string Ident => "building_rolling_pin_count_2";
     public override string Name => "Rolling in the dough";
+    public override string Description => "Purchase 50 Rolling Pins";
     public override string Icon => "/ui/buildings/rolling_pin.png";
 
 	public override bool CheckUnlockCondition( Player player )

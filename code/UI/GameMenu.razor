@@ -13,7 +13,13 @@
 
     <div class="background-overlay" />
 
-    <Leaderboard Players=@Players />
+    <div class="menu-buttons">
+
+        <Leaderboard Players=@Players />
+
+        <AchievementMenu Player=@LocalPlayer />
+        
+    </div>
 
     <div class="header">
         <p class="pizza-count">@GetPizzaCount() Pizzas</p>

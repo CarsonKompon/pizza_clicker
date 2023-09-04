@@ -1,0 +1,134 @@
+
+AchievementMenu
+{
+    width: 32px;
+    height: 32px;
+    padding: 16px;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    pointer-events: none;
+
+    background-color: rgba(black, 0.5);
+    font-family: Verdana;
+    color: white;
+    width: 32px;
+    height: 32px;
+    transition: all 0.2s ease-out;
+    z-index: 200;
+
+    *
+    {
+        text-overflow: clip;
+    }
+
+    .open-close
+    {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 32px;
+        height: 32px;
+        color: white;
+        pointer-events: all;
+
+        i
+        {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            opacity: 1;
+            transition: all 0.2s ease-out;
+
+            &.hide
+            {
+                opacity: 0;
+            }
+        }
+    }
+
+    h1
+    {
+        width: 100%;
+        opacity: 0;
+        font-weight: black;
+        font-size: 24px;
+        text-overflow: clip;
+        white-space: nowrap;
+        flex-shrink: 0;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 4px;
+    }
+
+    .content
+    {
+        flex-direction: column;
+        background-color: rgba(black, 0.5);
+        flex-grow: 1;
+        width: 100%;
+        overflow-y: scroll; 
+        pointer-events: all;
+        padding: 4px;
+        gap: 6px;
+        opacity: 0;
+
+        .achievement
+        {
+            width: 100%;
+            flex-shrink: 0;
+            opacity: 0.3;
+
+            .icon
+            {
+                width: 32px;
+                height: 32px;
+                margin-right: 8px;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .info
+            {
+                flex-direction: column;
+            }
+
+            &.unlocked
+            {
+                opacity: 1;
+
+                .name
+                {
+                    font-weight: black;
+                }
+            }
+        }
+    }
+
+    &.open
+    {
+        width: 500px;
+        height: 300px;
+        background-color: rgba(black, 0.5);
+
+        sound-in: ui.navigate.forward;
+        sound-out: ui.navigate.back;
+
+        h1
+        {
+            opacity: 1;
+        }
+
+        .content
+        {
+            opacity: 1;
+        }
+    }
+
+}
