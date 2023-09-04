@@ -51,6 +51,7 @@
 
     string AchievementProgress()
     {
+        if(Player == null || Player.Achievements == null) return "";
         var unlocked = Player.Achievements.Count(x => x.Value);
         var total = GameMenu.AllAchievements.Count;
         return $"{unlocked}/{total}";
