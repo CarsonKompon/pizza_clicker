@@ -71,6 +71,7 @@
     public static List<Building> AllBuildings { get; set; } = new List<Building>();
     public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
     public static List<Upgrade> AllUpgrades { get; set; } = new List<Upgrade>();
+    public static List<Skill> AllSkills { get; set; } = new List<Skill>();
 
     // Timers
     RealTimeSince LastSave = 0f;
@@ -110,6 +111,14 @@
                 Upgrade upgrade = TypeLibrary.Create<Upgrade>(typeDesc.TargetType);
                 if(upgrade.Cost <= 0) continue;
                 AllUpgrades.Add(upgrade);
+            }
+
+            AllSkills = new List<Skill>();
+            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Skill>())
+            {
+                Skill skill = TypeLibrary.Create<Skill>(typeDesc.TargetType);
+                if(skill.Cost <= 0) continue;
+                AllSkills.Add(skill);
             }
 
             InitPlayer(Game.SteamId);
