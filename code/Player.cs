@@ -99,9 +99,10 @@ public class Player
         particleTimer += Time.Delta;
         if(particleTimer > 0.1f)
         {
-            if(PizzasPerSecond > (BigNumber)0)
+            var val = (PizzasPerSecond / 10);
+            if(val > (BigNumber)0)
             {
-                string particleText = "+" + (PizzasPerSecond / 10).ToStringAbbreviated();
+                string particleText = "+" + val.ToStringAbbreviated();
                 var rand = new Random();
                 var particle = new TextParticle(Screen.Size * new Vector2(rand.Float(), rand.Float(0.5f, 1f)) * GameMenu.Instance.ScaleFromScreen, particleText);
                 particle.AddClass("gained");

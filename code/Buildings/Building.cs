@@ -15,13 +15,18 @@ public class Building
 
     public BigNumber GetCost(ulong amount, ulong free = 0)
     {
-        return Cost * (ulong)Math.Pow(1.15, amount - free);
+        return Cost * Math.Pow(1.15, amount - free);
     }
 
     public double SecondsPerPizza(ulong amount = 1)
     {
         if(PizzasPerSecondFloat == 0) return (1f / amount) / double.Parse(PizzasPerSecond.ToString());
         return (1f / amount) / (double.Parse(PizzasPerSecond.ToString()) + PizzasPerSecondFloat);
+    }
+
+    public BigNumber GetPizzasPerSecond(Player player)
+    {
+        return PizzasPerSecond;
     }
 }
 

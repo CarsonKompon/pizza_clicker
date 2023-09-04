@@ -205,14 +205,14 @@ public class BigNumber : IComparable
         return result;
     }
 
-    public static BigNumber Divide(BigNumber a, BigNumber b, int precision)
+    public static BigNumber Divide(BigNumber a, BigNumber b)
     {
-        BigNumber result = DividePositive(a, b, precision);
+        BigNumber result = DividePositive(a, b);
         result.isNegative = a.isNegative ^ b.isNegative;
         return result;
     }
 
-    private static BigNumber DividePositive(BigNumber a, BigNumber b, int precision)
+    private static BigNumber DividePositive(BigNumber a, BigNumber b)
     {
         BigNumber result = new BigNumber("0");
 
@@ -233,6 +233,31 @@ public class BigNumber : IComparable
         }
 
         return result;
+    }
+
+    public static BigNumber Multiply(BigNumber a, double b)
+    {
+        BigNumber wholePart = Multiply(a, new BigNumber(Math.Floor(b).ToString()));
+        double fractionalPart = b - Math.Floor(b);
+        BigNumber fractionalProduct = Multiply(a, new BigNumber((fractionalPart * Math.Pow(10, 8)).ToString("F0")));
+        fractionalProduct = Divide(fractionalProduct, new BigNumber(Math.Pow(10, 8).ToString("F0")));
+
+        BigNumber result = Add(wholePart, fractionalProduct);
+        return new BigNumber(Math.Round(double.Parse(result.ToString())).ToString());
+    }
+
+    public static BigNumber Divide(BigNumber a, double b)
+    {
+        if (b == 0)
+        {
+            throw new DivideByZeroException("Division by zero is not allowed.");
+        }
+        BigNumber reciprocal = new BigNumber((1 / b).ToString());
+        reciprocal = Multiply(reciprocal, new BigNumber(Math.Pow(10, 8).ToString("F0")));
+        BigNumber result = Multiply(a, reciprocal);
+        result = Divide(result, new BigNumber(Math.Pow(10, 8).ToString("F0")));
+
+        return new BigNumber(Math.Round(double.Parse(result.ToString())).ToString());
     }
 
     private static BigNumber Negate(BigNumber a)
@@ -336,12 +361,14 @@ public class BigNumber : IComparable
     public static BigNumber operator *(BigNumber a, int b) => Multiply(a, new BigNumber(b));
     public static BigNumber operator *(BigNumber a, long b) => Multiply(a, new BigNumber(b));
     public static BigNumber operator *(BigNumber a, ulong b) => Multiply(a, new BigNumber(b));
+    public static BigNumber operator *(BigNumber a, double b) => Multiply(a, b);
 
     // Division Operators
-    public static BigNumber operator /(BigNumber a, BigNumber b) => Divide(a, b, 10);
-    public static BigNumber operator /(BigNumber a, int b) => Divide(a, new BigNumber(b), 10);
-    public static BigNumber operator /(BigNumber a, long b) => Divide(a, new BigNumber(b), 10);
-    public static BigNumber operator /(BigNumber a, ulong b) => Divide(a, new BigNumber(b), 10);
+    public static BigNumber operator /(BigNumber a, BigNumber b) => Divide(a, b);
+    public static BigNumber operator /(BigNumber a, int b) => Divide(a, new BigNumber(b));
+    public static BigNumber operator /(BigNumber a, long b) => Divide(a, new BigNumber(b));
+    public static BigNumber operator /(BigNumber a, ulong b) => Divide(a, new BigNumber(b));
+    public static BigNumber operator /(BigNumber a, double b) => Divide(a, b);
 
     // Equal Comparison Operators
     public static bool operator ==(BigNumber a, BigNumber b) => a.CompareTo(b) == 0;
@@ -383,6 +410,13 @@ public class BigNumber : IComparable
     public static implicit operator BigNumber(int num) => new BigNumber(num);
     public static implicit operator BigNumber(long num) => new BigNumber(num);
     public static implicit operator BigNumber(ulong num) => new BigNumber(num);
+    public static implicit operator BigNumber(string num) => new BigNumber(num);
+    public static implicit operator int(BigNumber num) => int.Parse(num.ToString());
+    public static implicit operator long(BigNumber num) => long.Parse(num.ToString());
+    public static implicit operator ulong(BigNumber num) => ulong.Parse(num.ToString());
+    public static implicit operator string(BigNumber num) => num.ToString();
+    public static implicit operator float(BigNumber num) => float.Parse(num.ToString());
+    public static implicit operator double(BigNumber num) => double.Parse(num.ToString());
 
     // To String
     public override string ToString()
@@ -752,6 +786,19 @@ public class BigNumber : IComparable
             if(i < digits.Count - (index * 3) + decimalPlaces)
             {
                 result += digits[i];
+            }
+        }
+
+        // Remove trailing zeros after decimal
+        if(removeTrailingZeros)
+        {
+            while(result.EndsWith("0"))
+            {
+                result = result.Substring(0, result.Length - 1);
+            }
+            if(result.EndsWith("."))
+            {
+                result = result.Substring(0, result.Length - 1);
             }
         }
 

@@ -11,31 +11,54 @@
 
 <root onclick=@Pressed class=@CanAfford >
 
-    <p class="count">@("x" + BuildingCount.ToString())</p>
+    <div class="main">
+        <p class="count">@("x" + BuildingCount.ToString())</p>
 
-    <div class="content">
-    
-        <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
+        <div class="content">
         
-        <div class="info">
+            <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
+            
+            <div class="info">
 
-            <p class="name">@Building.Name</p>
+                <p class="name">@Building.Name</p>
 
-            <div class="sub-info">
+                <div class="sub-info">
 
-                <p class="price">@(CostString) pizzas</p>
-                <p class="pps">@(PPSString) pizzas/sec</p>
+                    <p class="price">@(CostString) pizzas</p>
+                    <p class="pps">@(PPSString) pizzas/sec</p>
+
+                </div>
 
             </div>
 
-        </div> 
+            <div class="progress-bar">
+                <div @ref="ProgressBar" class="progress-fill" />
+            </div>
 
+        </div>
+    </div>
+
+    <div class="hover-info">
+        <div class="header">
+            <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
+            <div class="info">
+                <p class="name">@Building.Name</p>
+                <p class="count">(Currently own @(BuildingCount.ToString()))</p>
+            </div>
+            <p class="price">@(CostString) pizzas</p>
+        </div>
+        <div class="body">
+            <p>Each @(Building.Name) produces @(PPSString) pizzas per second</p>
+            <p>@(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of total PpS)</p>
+        </div>
     </div>
 
 </root>
 
 @code
 {
+    Panel ProgressBar { get; set; }
+
     // Code References
     public Building Building { get; set; }
     public Player Player { get; set; }
@@ -44,12 +67,41 @@
 
     // string that returns Cost as string with commas
     string CostString => Building.GetCost(BuildingCount).ToStringAbbreviated();
-    string PPSString => Building.PizzasPerSecond.ToStringAbbreviated();
+    string PPSString => GetPPS();
     string CanAfford => (Player.Pizzas >= Building.GetCost(BuildingCount)) ? "" : "cant-afford";
+
+    string GetPPS()
+    {
+        var pps = Building.GetPizzasPerSecond(Player);
+        if(pps < (BigNumber)1000)
+            return (double.Parse(pps.ToString()) + Building.PizzasPerSecondFloat).ToString("F2");
+        return pps.ToStringAbbreviated();
+    }
+
+    string GetTotalPPS()
+    {
+        var totalPPS = Player.PizzasPerSecond;
+        var buildingPPS = Building.GetPizzasPerSecond(Player);
+        return (totalPPS + buildingPPS).ToStringAbbreviated();
+    }
+
+    string GetTotalPPSPercentage()
+    {
+        var totalPPS = Player.PizzasPerSecond;
+        var buildingPPS = Building.GetPizzasPerSecond(Player);
+        var percentage = (buildingPPS * 100) / totalPPS;
+        return percentage.ToString();
+    }
 
     void Pressed()
     {
         Player.BuyBuilding(Building);
+    }
+
+    public override void Tick()
+    {
+        var progress = MathX.Clamp((Player.Pizzas * 100) / Building.GetCost(Player.GetBuildingCount(Building.Ident)), 0, 100);
+        ProgressBar.Style.Width = Length.Percent(progress);
     }
 
     protected override int BuildHash()

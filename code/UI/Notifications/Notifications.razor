@@ -1,0 +1,36 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root>
+
+</root>
+
+@code
+{
+    public static Notifications Instance;
+
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        Instance = this;
+    }
+
+    public static void Popup(string text, string styles = "", string icon = null)
+    {
+        var popup = new Popup();
+        popup.AddClass(styles);
+        popup.Text = text;
+        popup.Icon = icon;
+        Instance.AddChild(popup);
+    }
+
+}

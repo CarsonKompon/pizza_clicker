@@ -1,0 +1,25 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root>
+    @if(!string.IsNullOrEmpty(Icon))
+    {
+        <image src=@Icon class="icon" />
+    }
+    <div class="text">@Text</div>
+</root>
+
+@code
+{
+    public string Icon { get; set; } = null;
+    public string Text { get; set; } = "";
+
+}
