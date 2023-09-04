@@ -8,13 +8,13 @@ enum NETWORK_MESSAGE
 {
     NONE,
     PLAYER_UPDATE,
+    ACHIEVEMENT_UNLOCK
 }
 
 public partial class GameMenu
 {
     void OnNetworkMessage(ILobby.NetworkMessage msg)
     {
-        if(msg.Source.Id == Game.SteamId) return;
 
         ByteStream data = msg.Data;
 
@@ -23,6 +23,7 @@ public partial class GameMenu
         switch((NETWORK_MESSAGE)messageId)
         {
             case NETWORK_MESSAGE.PLAYER_UPDATE:
+                if(msg.Source.Id == Game.SteamId) return;
 
                 Player player = null;
                 foreach(var p in Players)
@@ -42,6 +43,27 @@ public partial class GameMenu
 
                 break;
 
+            case NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK:
+
+                int byteLength = data.Read<int>();
+                byte[] wordBytes = new byte[byteLength];
+                for(int i=0; i<byteLength; i++)
+                {
+                    wordBytes[i] = data.Read<byte>();
+                }
+                var ident = System.Text.Encoding.Unicode.GetString(wordBytes);
+
+                foreach(var achievement in AllAchievements)
+                {
+                    if(achievement.Ident == ident)
+                    {
+                        Chat.CreateChatEntry("", msg.Source.Name + " unlocked the achievement \"" + achievement.Name + "\"", "achievement");
+                        break;
+                    }
+                }
+
+                break;
+
         }
     }
 
@@ -49,6 +71,21 @@ public partial class GameMenu
     {
         if(player == null) return;
         Lobby.BroadcastMessage(player.GetDataStream());
+    }
+
+    public void NetworkAchievementUnlock(Player player, string ident)
+    {
+        if(player == null) return;
+        byte[] wordBytes = System.Text.Encoding.Unicode.GetBytes(ident);
+        ByteStream data = ByteStream.Create(5 + wordBytes.Length);
+        data.Write((byte)NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK);
+        data.Write((int)wordBytes.Length);
+        for(int i=0; i<wordBytes.Length; i++)
+        {
+            data.Write(wordBytes[i]);
+        }
+
+        Lobby.BroadcastMessage(data);
     }
 
 }

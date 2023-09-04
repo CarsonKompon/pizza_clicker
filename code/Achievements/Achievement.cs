@@ -31,6 +31,7 @@ public class Achievement
                 if(achievement.Ident == ident)
                 {
                     Notifications.Popup("Achievement Unlocked!", achievement.Name, "achievement", achievement.Icon);
+                    GameMenu.Instance?.NetworkAchievementUnlock(player, ident);
 
                     achievement.OnAchievementUnlock(player);
 
