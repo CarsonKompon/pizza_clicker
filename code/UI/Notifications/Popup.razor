@@ -14,12 +14,26 @@
     {
         <image src=@Icon class="icon" />
     }
-    <div class="text">@Text</div>
+    <div class="info">
+        <div class="header">@Header</div>
+        <div class="text">@Text</div>
+    </div>
 </root>
 
 @code
 {
     public string Icon { get; set; } = null;
+    public string Header { get; set; } = "";
     public string Text { get; set; } = "";
+
+    RealTimeSince Created = 0;
+
+    public override void Tick()
+    {
+        if (Created > 8f)
+        {
+            Delete();
+        }
+    }
 
 }

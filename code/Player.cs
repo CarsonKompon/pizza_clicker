@@ -15,6 +15,7 @@ public class Player
     public double PizzasPerSecond { get; set; } = 0;
     public double PizzasPerClick { get; set; } = 1;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
+    public Dictionary<string, bool> Achievements { get; set; } = new();
 
     private Dictionary<string, double> buildingTimers = new();
 
@@ -35,12 +36,19 @@ public class Player
     public void Click()
     {
         Pizzas += PizzasPerClick;
-
     }
 
     public void Save()
     {
         if(Member.Id != Game.SteamId) return;
+
+        foreach(var achievement in GameMenu.AllAchievements)
+        {
+            if(!Achievements.ContainsKey(achievement.Ident) && achievement.CheckUnlockCondition(this))
+            {
+                Achievement.Unlock(this, achievement.Ident);
+            }
+        }
 
         FileSystem.Data.WriteJson(Game.SteamId.ToString(), this);
     }
@@ -62,6 +70,20 @@ public class Player
 
         Save();
 
+        return true;
+    }
+
+    public bool HasAchievement(string ident)
+    {
+        if(!Achievements.ContainsKey(ident)) return false;
+        return Achievements[ident];
+    }
+
+    public bool GiveAchievement(string ident)
+    {
+        if(Achievements.ContainsKey(ident) && Achievements[ident]) return false;
+        Achievements[ident] = true;
+        Save();
         return true;
     }
 

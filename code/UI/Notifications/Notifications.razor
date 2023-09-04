@@ -24,13 +24,22 @@
         Instance = this;
     }
 
-    public static void Popup(string text, string styles = "", string icon = null)
+    public static void Popup(string header, string text, string styles = "", string icon = null)
     {
         var popup = new Popup();
         popup.AddClass(styles);
+        popup.Header = header;
         popup.Text = text;
         popup.Icon = icon;
         Instance.AddChild(popup);
+    }
+
+    public override void Tick()
+    {
+        if(Input.Pressed("jump"))
+        {
+            Popup("Achievement Unlocked!", "Just getting started", "achievement", "ui/icons/trophy.png");
+        }
     }
 
 }

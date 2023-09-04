@@ -1,5 +1,50 @@
 
 Popup
 {
+    left: 0px;
+    min-width: 200px;
+    height: 60px;
+    opacity: 1;
+    background-color: rgba(black, 0.5);
+    color: white;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: Verdana;
+    font-size: 18px;
+    align-items: center;
     
+    transition: all 0.5s ease-out;
+
+    .icon
+    {
+        width: 52px;
+        height: 52px;
+        margin-right: 8px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .header 
+    {
+        font-weight: black;
+    }
+
+    .info
+    {
+        flex-direction: column;
+
+    }
+
+    &:intro
+    {
+        opacity: 0;
+        left: 8px;
+        sound-in: ui.favourite;
+    }
+
+    &:outro
+    {
+        opacity: 0;
+    }
 }

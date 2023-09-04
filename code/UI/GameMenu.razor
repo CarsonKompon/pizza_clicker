@@ -49,6 +49,7 @@
     // Game Variables
     public Player LocalPlayer => Players.FirstOrDefault(p => p.Member.Id == Game.SteamId);
     public static List<Building> AllBuildings { get; set; } = new List<Building>();
+    public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
 
     // Timers
     RealTimeSince LastSave = 0f;
@@ -75,6 +76,15 @@
                 AllBuildings.Add(building);
 			}
             AllBuildings = AllBuildings.OrderBy(b => b.Cost).ToList();
+
+            AllAchievements = new List<Achievement>();
+            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Achievement>())
+            {
+                Achievement achievement = TypeLibrary.Create<Achievement>(typeDesc.TargetType);
+                if(achievement.Ident == "none") continue;
+                AllAchievements.Add(achievement);
+            }
+
         }
     }
 
