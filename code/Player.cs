@@ -92,8 +92,8 @@ public class Player
         particleTimer += Time.Delta;
         if(particleTimer > 0.1f)
         {
-            var val = (PizzasPerSecond / 10d);
-            if(val > 1)
+            var val = Math.Floor(PizzasPerSecond / 10d);
+            if(val > 0)
             {
                 string particleText = "+" + NumberHelper.ToStringAbbreviated(val);
                 var rand = new Random();

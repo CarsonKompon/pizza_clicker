@@ -51,7 +51,7 @@
             <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.PizzasPerSecond)) pizzas per second</p>
             @if(BuildingCount > 0)
             {
-                <p>@(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of total PpS)</p>
+                <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of your total PpS)</p>
             }
         </div>
     </div>
