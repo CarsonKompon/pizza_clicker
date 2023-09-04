@@ -25,7 +25,7 @@
                 <div class="sub-info">
 
                     <p class="price">@(CostString) pizzas</p>
-                    <p class="pps">@(PPSString) pizzas/sec</p>
+                    <p class="pps">@(NumberHelper.ToStringAbbreviated(Building.PizzasPerSecond)) pizzas/sec</p>
 
                 </div>
 
@@ -48,8 +48,11 @@
             <p class="price">@(CostString) pizzas</p>
         </div>
         <div class="body">
-            <p>Each @(Building.Name) produces @(PPSString) pizzas per second</p>
-            <p>@(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of total PpS)</p>
+            <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.PizzasPerSecond)) pizzas per second</p>
+            @if(BuildingCount > 0)
+            {
+                <p>@(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of total PpS)</p>
+            }
         </div>
     </div>
 
@@ -66,23 +69,29 @@
     ulong BuildingCount => Player.GetBuildingCount(Building.Ident);
 
     // string that returns Cost as string with commas
-    string CostString => Building.GetCost(BuildingCount).ToStringAbbreviated();
+    string CostString => NumberHelper.ToStringAbbreviated(Building.GetCost(Player));
     string PPSString => GetPPS();
-    string CanAfford => (Player.Pizzas >= Building.GetCost(BuildingCount)) ? "" : "cant-afford";
+    string CanAfford => (Player.Pizzas >= Building.GetCost(Player)) ? "" : "cant-afford";
 
     string GetPPS()
     {
         var pps = Building.GetPizzasPerSecond(Player);
-        if(pps < (BigNumber)1000)
-            return (double.Parse(pps.ToString()) + Building.PizzasPerSecondFloat).ToString("F2");
-        return pps.ToStringAbbreviated();
+        if(pps < 1000)
+        {
+            var result = pps.ToString("F1");
+            if(result.EndsWith(".0"))
+            {
+                result = result.Substring(0, result.Length - 2);
+            }
+            return result;
+        }
+        return NumberHelper.ToStringAbbreviated(pps);
     }
 
     string GetTotalPPS()
     {
-        var totalPPS = Player.PizzasPerSecond;
         var buildingPPS = Building.GetPizzasPerSecond(Player);
-        return (totalPPS + buildingPPS).ToStringAbbreviated();
+        return NumberHelper.ToStringAbbreviated(buildingPPS);
     }
 
     string GetTotalPPSPercentage()
@@ -90,7 +99,7 @@
         var totalPPS = Player.PizzasPerSecond;
         var buildingPPS = Building.GetPizzasPerSecond(Player);
         var percentage = (buildingPPS * 100) / totalPPS;
-        return percentage.ToString();
+        return percentage.ToString("F1");
     }
 
     void Pressed()
@@ -100,7 +109,7 @@
 
     public override void Tick()
     {
-        var progress = MathX.Clamp((Player.Pizzas * 100) / Building.GetCost(Player.GetBuildingCount(Building.Ident)), 0, 100);
+        var progress = MathX.Clamp((float)((Player.Pizzas * 100) / Building.GetCost(Player)), 0, 100);
         ProgressBar.Style.Width = Length.Percent(progress);
     }
 

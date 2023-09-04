@@ -9,7 +9,7 @@ public class AnimatronicArcade : Building
 {
     public override string Ident => "animatronic_arcade";
     public override string Name => "Animatronic Arcade";
-    public override BigNumber Cost => new("20000000");
-    public override BigNumber PizzasPerSecond => new("7800");
+    public override double Cost => 20000000;
+    public override double PizzasPerSecond => 7800;
 }
 

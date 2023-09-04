@@ -16,7 +16,7 @@
     <Leaderboard Players=@Players />
 
     <div class="header">
-        <p class="pizza-count">@(LocalPlayer?.Pizzas.ToStringWithWords(false)) Pizzas</p>
+        <p class="pizza-count">@GetPizzaCount() Pizzas</p>
         <p class="pps-count">@(LocalPlayer?.GetPizzasPerSecond()) pizzas/sec</p>
     </div>
 
@@ -28,6 +28,8 @@
             <BuildingButton Building=@building Player=@LocalPlayer />
         }
     </div>
+
+    <Notifications />
 
     <Chatbox @ref="Chat" Lobby=@Lobby />
 
@@ -76,6 +78,13 @@
         }
     }
 
+    string GetPizzaCount()
+    {
+        double pizzas = LocalPlayer?.Pizzas ?? 0;
+        if(pizzas < 1000000) return NumberHelper.ToStringWithCommas(pizzas);
+        return NumberHelper.ToStringWithWords(pizzas, false);
+    }
+
     public override void Tick()
     {
         Lobby.ReceiveMessages(OnNetworkMessage);
@@ -110,14 +119,14 @@
             Players.Add(player);
         }
 
-        Chat.CreateChatEntry("", player.Member.Name + " opened their pizzeria with " + player.Pizzas + " pizzas!", "join-message");
+        Chat.CreateChatEntry("", player.Member.Name + " opened their pizzeria with " + player.Pizzas.ToString() + " pizzas!", "join-message");
     }
 
     void ClickPizza()
     {
         LocalPlayer.Click();
 
-        string particleText = "+" + LocalPlayer.PizzasPerClick.ToStringAbbreviated();
+        string particleText = "+" + NumberHelper.ToStringAbbreviated(LocalPlayer.PizzasPerClick);
         var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText, "", true);
         AddChild(particle);
     }

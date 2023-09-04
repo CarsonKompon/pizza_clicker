@@ -11,10 +11,9 @@ public class Player
     public Friend Member;
 
     // Variables
-    public BigNumber Pizzas { get; set; } = new(0);
-    public BigNumber PizzasPerSecond { get; set; } = new(0);
-    public double PizzasPerSecondFloat { get; set; } = 0;
-    public BigNumber PizzasPerClick { get; set; } = new(1);
+    public double Pizzas { get; set; } = 0;
+    public double PizzasPerSecond { get; set; } = 0;
+    public double PizzasPerClick { get; set; } = 1;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
 
     private Dictionary<string, double> buildingTimers = new();
@@ -54,7 +53,7 @@ public class Player
 
     public bool BuyBuilding(Building building)
     {
-        BigNumber cost = building.GetCost(GetBuildingCount(building.Ident));
+        double cost = building.GetCost(this);
         if(Pizzas < cost) return false;
 
         Pizzas -= cost;
@@ -73,18 +72,16 @@ public class Player
 
     public void Update()
     {
-        PizzasPerSecond = new BigNumber(0);
-        PizzasPerSecondFloat = 0;
+        PizzasPerSecond = 0;
         foreach(var building in GameMenu.AllBuildings)
         {
             ulong buildingCount = GetBuildingCount(building.Ident);
             if(buildingCount == 0) continue;
             PizzasPerSecond += building.PizzasPerSecond * buildingCount;
-            PizzasPerSecondFloat += building.PizzasPerSecondFloat * (double)buildingCount;
 
             if(!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
             buildingTimers[building.Ident] += Time.Delta;
-            double seconds = building.SecondsPerPizza(buildingCount);
+            double seconds = building.SecondsPerPizza(this);
             while(buildingTimers[building.Ident] >= seconds)
             {
                 GivePizzas(1);
@@ -92,17 +89,13 @@ public class Player
             }
         }
 
-        // Put integer value of PizzasPerSecondFloat in PizzasPerSecond
-        PizzasPerSecond += (long)Math.Floor(PizzasPerSecondFloat);
-        PizzasPerSecondFloat -= Math.Floor(PizzasPerSecondFloat);
-
         particleTimer += Time.Delta;
         if(particleTimer > 0.1f)
         {
-            var val = (PizzasPerSecond / 10);
-            if(val > (BigNumber)0)
+            var val = (PizzasPerSecond / 10d);
+            if(val > 1)
             {
-                string particleText = "+" + val.ToStringAbbreviated();
+                string particleText = "+" + NumberHelper.ToStringAbbreviated(val);
                 var rand = new Random();
                 var particle = new TextParticle(Screen.Size * new Vector2(rand.Float(), rand.Float(0.5f, 1f)) * GameMenu.Instance.ScaleFromScreen, particleText);
                 particle.AddClass("gained");
@@ -116,9 +109,9 @@ public class Player
     {
         if(PizzasPerSecond.ToString().Length < 4)
         {
-            return (double.Parse(PizzasPerSecond.ToString()) + PizzasPerSecondFloat).ToString("N1");
+            return PizzasPerSecond.ToString("N1");
         }
-        return PizzasPerSecond.ToStringAbbreviated();
+        return NumberHelper.ToStringAbbreviated(PizzasPerSecond);
     }
 
     public static Player LoadPlayer()
@@ -133,21 +126,17 @@ public class Player
 
     public ByteStream GetDataStream()
     {
-        ByteStream data = ByteStream.Create(9 + Pizzas.GetByteSize() + PizzasPerClick.GetByteSize() + PizzasPerSecond.GetByteSize());
+        ByteStream data = ByteStream.Create(17);
         data.Write((byte)NETWORK_MESSAGE.PLAYER_UPDATE);
-        Pizzas.WriteToStream(ref data);
-        PizzasPerClick.WriteToStream(ref data);
-        PizzasPerSecond.WriteToStream(ref data);
-        data.Write((double)PizzasPerSecondFloat);
+        data.Write((double)Pizzas);
+        data.Write((double)PizzasPerSecond);
         return data;
     }
 
     public void ReadDataStream(ByteStream data)
     {
-        Pizzas = BigNumber.ReadFromStream(ref data);
-        PizzasPerClick = BigNumber.ReadFromStream(ref data);
-        PizzasPerSecond = BigNumber.ReadFromStream(ref data);
-        PizzasPerSecondFloat = data.Read<double>();
+        Pizzas = data.Read<double>();
+        PizzasPerSecond = data.Read<double>();
     }
 
 }

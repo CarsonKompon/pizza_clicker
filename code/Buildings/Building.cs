@@ -9,24 +9,23 @@ public class Building
 {
     public virtual string Ident => "none";
     public virtual string Name => "None";
-    public virtual BigNumber Cost => 0;
-    public virtual BigNumber PizzasPerSecond => 0;
-    public virtual double PizzasPerSecondFloat => 0f;
+    public virtual double Cost => 0;
+    public virtual double PizzasPerSecond => 0;
 
-    public BigNumber GetCost(ulong amount, ulong free = 0)
+    public double GetCost(Player player, ulong free = 0)
     {
-        return Cost * Math.Pow(1.15, amount - free);
+        var amount = player.GetBuildingCount(Ident);
+        return Math.Floor(Cost * Math.Pow(1.15, amount - free));
     }
 
-    public double SecondsPerPizza(ulong amount = 1)
+    public double SecondsPerPizza(Player player)
     {
-        if(PizzasPerSecondFloat == 0) return (1f / amount) / double.Parse(PizzasPerSecond.ToString());
-        return (1f / amount) / (double.Parse(PizzasPerSecond.ToString()) + PizzasPerSecondFloat);
+        return 1f / GetPizzasPerSecond(player);
     }
 
-    public BigNumber GetPizzasPerSecond(Player player)
+    public double GetPizzasPerSecond(Player player)
     {
-        return PizzasPerSecond;
+        return PizzasPerSecond * player.GetBuildingCount(Ident);
     }
 }
 
