@@ -28,11 +28,26 @@
 
     <div class="pizza-button" onclick=@ClickPizza />
 
-    <div @ref="UnitsPanel" class="units">
-        @foreach(var building in AllBuildings)
+    <div class="shop">
+        @if(LocalPlayer != null)
         {
-            <BuildingButton Building=@building Player=@LocalPlayer />
+            <div class="upgrades @((LocalPlayer.AvailableUpgrades().Count > 0) ? "" : "hidden")">
+                <h1>Upgrades</h1>
+                <div class="upgrade-content">
+                    @foreach(var upgrade in LocalPlayer.AvailableUpgrades())
+                    {
+                        <UpgradeButton Upgrade=@upgrade Player=@LocalPlayer />
+                    }
+                </div>
+            </div>
         }
+        <div class="buildings">
+            <h1>Buildings</h1>
+            @foreach(var building in AllBuildings)
+            {
+                <BuildingButton Building=@building Player=@LocalPlayer />
+            }
+        </div>
     </div>
 
     <Notifications />
@@ -46,7 +61,6 @@
     // UI References
     public static GameMenu Instance { get; set; }
     public static Chatbox Chat { get; set; }
-    Panel UnitsPanel { get; set; }
 
     // Lobby Variables
     public ILobby Lobby { get; set; } = Game.Menu.Lobby;
@@ -56,6 +70,7 @@
     public Player LocalPlayer => Players.FirstOrDefault(p => p.Member.Id == Game.SteamId);
     public static List<Building> AllBuildings { get; set; } = new List<Building>();
     public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
+    public static List<Upgrade> AllUpgrades { get; set; } = new List<Upgrade>();
 
     // Timers
     RealTimeSince LastSave = 0f;
@@ -71,8 +86,6 @@
 
             Lobby.OnMemberEnter += OnPlayerJoined;
             Lobby.OnMemberLeave += OnPlayerLeft;
-
-            InitPlayer(Game.SteamId);
 
             AllBuildings = new List<Building>();
 			foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Building>())
@@ -91,6 +104,15 @@
                 AllAchievements.Add(achievement);
             }
 
+            AllUpgrades = new List<Upgrade>();
+            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Upgrade>())
+            {
+                Upgrade upgrade = TypeLibrary.Create<Upgrade>(typeDesc.TargetType);
+                if(upgrade.Cost <= 0) continue;
+                AllUpgrades.Add(upgrade);
+            }
+
+            InitPlayer(Game.SteamId);
         }
     }
 

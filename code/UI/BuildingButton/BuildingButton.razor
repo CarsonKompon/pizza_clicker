@@ -25,7 +25,7 @@
                 <div class="sub-info">
 
                     <p class="price">@(CostString) pizzas</p>
-                    <p class="pps">@(NumberHelper.ToStringAbbreviated(Building.PizzasPerSecond)) pizzas/sec</p>
+                    <p class="pps">@(NumberHelper.ToStringAbbreviated(Building.GetIndividualPizzasPerSecond(Player))) pizzas/sec</p>
 
                 </div>
 
@@ -48,7 +48,7 @@
             <p class="price">@(CostString) pizzas</p>
         </div>
         <div class="body">
-            <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.PizzasPerSecond)) pizzas per second</p>
+            <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.GetIndividualPizzasPerSecond(Player))) pizzas per second</p>
             @if(BuildingCount > 0)
             {
                 <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of your total PpS)</p>
@@ -66,7 +66,7 @@
     public Building Building { get; set; }
     public Player Player { get; set; }
 
-    ulong BuildingCount => Player.GetBuildingCount(Building.Ident);
+    double BuildingCount => Player.GetBuildingCount(Building.Ident);
 
     // string that returns Cost as string with commas
     string CostString => NumberHelper.ToStringAbbreviated(Building.GetCost(Player));

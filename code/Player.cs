@@ -14,10 +14,14 @@ public class Player
     public double Pizzas { get; set; } = 0;
     public double PizzasPerSecond { get; set; } = 0;
     public double PizzasPerClick { get; set; } = 1;
+    public double TotalPizzasBaked { get; set; } = 0;
+    public double TotalClicks { get; set; } = 0;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
     public Dictionary<string, bool> Achievements { get; set; } = new();
+    public Dictionary<string, bool> Upgrades { get; set; } = new();
 
     private Dictionary<string, double> buildingTimers = new();
+    public Dictionary<string, double> Multipliers = new();
 
     double particleTimer = 0f;
 
@@ -35,7 +39,8 @@ public class Player
 
     public void Click()
     {
-        Pizzas += PizzasPerClick;
+        GivePizzas(PizzasPerClick);
+        TotalClicks++;
     }
 
     public void Save()
@@ -53,10 +58,26 @@ public class Player
         FileSystem.Data.WriteJson(Game.SteamId.ToString(), this);
     }
 
-    public ulong GetBuildingCount(string ident)
+    public double GetBuildingCount(string ident)
     {
         if(!Buildings.ContainsKey(ident)) return 0;
         return Buildings[ident];
+    }
+
+    public double GetTotalBuildingCount()
+    {
+        double count = 0;
+        foreach(var building in Buildings)
+        {
+            count += building.Value;
+        }
+        return count;
+    }
+
+    public double GetBuildingMultiplier(string ident)
+    {
+        if(!Multipliers.ContainsKey(ident)) return 1;
+        return Multipliers[ident];
     }
 
     public bool BuyBuilding(Building building)
@@ -87,9 +108,76 @@ public class Player
         return true;
     }
 
-    public void GivePizzas(ulong pizzas)
+    public bool HasUpgrade(string ident)
+    {
+        if(!Upgrades.ContainsKey(ident)) return false;
+        return Upgrades[ident];
+    }
+
+    public bool GiveUpgrade(string ident)
+    {
+        if(Upgrades.ContainsKey(ident) && Upgrades[ident]) return false;
+
+        foreach(var upgrade in GameMenu.AllUpgrades)
+        {
+            if(upgrade.Ident == ident && Pizzas >= upgrade.Cost)
+            {
+                Upgrades[ident] = true;
+                upgrade.OnPurchase(this);
+                Save();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public List<Upgrade> AvailableUpgrades()
+    {
+        List<Upgrade> upgrades = new();
+        foreach(var upgrade in GameMenu.AllUpgrades)
+        {
+            if(!HasUpgrade(upgrade.Ident) && upgrade.CheckUnlockCondition(this))
+            {
+                upgrades.Add(upgrade);
+            }
+        }
+        return upgrades;
+    }
+
+    public List<Upgrade> PurchasedUpgrades()
+    {
+        List<Upgrade> upgrades = new();
+        foreach(var upgrade in GameMenu.AllUpgrades)
+        {
+            if(HasUpgrade(upgrade.Ident))
+            {
+                upgrades.Add(upgrade);
+            }
+        }
+        return upgrades;
+    }
+
+    public double GetTotalUpgradeCount()
+    {
+        double count = 0;
+        foreach(var upgrade in Upgrades)
+        {
+            if(upgrade.Value) count++;
+        }
+        return count;
+    }
+
+    public void GivePizzas(double pizzas)
     {
         Pizzas += pizzas;
+        TotalPizzasBaked += pizzas;
+    }
+
+    public void AddMultiplier(string ident, double multiplier)
+    {
+        if(!Multipliers.ContainsKey(ident)) Multipliers.Add(ident, 1);
+        Multipliers[ident] *= multiplier;
     }
 
     public void Update()
@@ -97,9 +185,9 @@ public class Player
         PizzasPerSecond = 0;
         foreach(var building in GameMenu.AllBuildings)
         {
-            ulong buildingCount = GetBuildingCount(building.Ident);
+            double buildingCount = GetBuildingCount(building.Ident);
             if(buildingCount == 0) continue;
-            PizzasPerSecond += building.PizzasPerSecond * buildingCount;
+            PizzasPerSecond += building.PizzasPerSecond * buildingCount * GetBuildingMultiplier(building.Ident);
 
             if(!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
             buildingTimers[building.Ident] += Time.Delta;
@@ -142,6 +230,15 @@ public class Player
         var data = FileSystem.Data.ReadJson<Player>(Game.SteamId.ToString());
         if (data == null) return new Player(Game.SteamId);
         data.Member = new Friend(Game.SteamId);
+
+        data.PizzasPerClick = 1;
+        foreach(var upgrade in GameMenu.AllUpgrades)
+        {
+            if(data.HasUpgrade(upgrade.Ident))
+            {
+                upgrade.OnPurchase(data);
+            }
+        }
 
         return data;
     }

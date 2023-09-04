@@ -23,9 +23,14 @@ public class Building
         return 1f / GetPizzasPerSecond(player);
     }
 
+    public double GetIndividualPizzasPerSecond(Player player)
+    {
+        return PizzasPerSecond * player.GetBuildingMultiplier(Ident);
+    }
+
     public double GetPizzasPerSecond(Player player)
     {
-        return PizzasPerSecond * player.GetBuildingCount(Ident);
+        return PizzasPerSecond * player.GetBuildingCount(Ident) * player.GetBuildingMultiplier(Ident);
     }
 }
 
