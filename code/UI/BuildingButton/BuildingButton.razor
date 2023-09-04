@@ -9,7 +9,7 @@
 
 @namespace PizzaClicker
 
-<root onclick=@Pressed class=@CanAfford >
+<root onclick=@Pressed class="@(CanAfford) @(IsUnlocked) @(IsVisible)" >
 
     <div class="main">
         <p class="count">@("x" + BuildingCount.ToString())</p>
@@ -72,6 +72,8 @@
     string CostString => NumberHelper.ToStringAbbreviated(Building.GetCost(Player));
     string PPSString => GetPPS();
     string CanAfford => (Player.Pizzas >= Building.GetCost(Player)) ? "" : "cant-afford";
+    string IsUnlocked => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
+    string IsVisible => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
 
     string GetPPS()
     {
@@ -115,6 +117,6 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(BuildingCount, CostString, PPSString, CanAfford);
+        return HashCode.Combine(BuildingCount, CostString, PPSString, CanAfford, IsUnlocked, IsVisible);
     }
 }

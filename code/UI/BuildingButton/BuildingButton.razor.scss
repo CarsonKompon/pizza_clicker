@@ -234,6 +234,25 @@ BuildingButton
         }
     }
 
+    &.locked
+    {
+        .content
+        {
+            img
+            {
+                opacity: 1;
+                filter: brightness(0) invert(1);
+            }
+        }
+    }
+
+    &.hidden
+    {
+        opacity: 0;
+        pointer-events: none;
+        height: 0px;
+    }
+
     &:hover
     {
         left: -8px;

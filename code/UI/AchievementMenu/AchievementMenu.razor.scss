@@ -63,7 +63,18 @@ AchievementMenu
         justify-content: center;
         align-items: center;
         text-align: center;
-        margin-bottom: 4px;
+        margin-top: -4px;
+        margin-bottom: 8px;
+    }
+
+    .achievement-count
+    {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        font-size: 16px;
+        opacity: 0;
+        text-overflow: clip;
     }
 
     .content
@@ -122,6 +133,11 @@ AchievementMenu
         sound-out: ui.navigate.back;
 
         h1
+        {
+            opacity: 1;
+        }
+
+        .achievement-count
         {
             opacity: 1;
         }

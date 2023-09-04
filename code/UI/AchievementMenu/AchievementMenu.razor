@@ -28,6 +28,7 @@
                 </div>
             }
         </div>
+        <p class="achievement-count">@AchievementProgress()</p>
 </root>
 
 @code
@@ -48,9 +49,16 @@
         }
     }
 
+    string AchievementProgress()
+    {
+        var unlocked = Player.Achievements.Count(x => x.Value);
+        var total = GameMenu.AllAchievements.Count;
+        return $"{unlocked}/{total}";
+    }
+
     protected override int BuildHash()
     {
-        return HashCode.Combine(IsOpen);
+        return HashCode.Combine(IsOpen, AchievementProgress());
     }
 
 }

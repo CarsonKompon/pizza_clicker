@@ -101,8 +101,9 @@ GameMenu
         position: absolute;
         right: 0px;
         top: 0px;
-        height: 100%;
+        bottom: 0px;
         flex-direction: column;
+        flex-direction: flex-end;
         justify-content: center;
         align-items: center;
         margin: 32px;
