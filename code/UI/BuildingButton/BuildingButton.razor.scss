@@ -18,7 +18,8 @@ BuildingButton
 
     .count
     {
-        width: 64px;
+        padding: 0px 4px;
+        min-width: 64px;
         flex-shrink: 0;
         background-color: rgba(black, 0.2);
         justify-content: center;

@@ -34,7 +34,7 @@
             <div class="upgrades @((LocalPlayer.AvailableUpgrades().Count > 0) ? "" : "hidden")">
                 <h1>Upgrades</h1>
                 <div class="upgrade-content">
-                    @foreach(var upgrade in LocalPlayer.AvailableUpgrades())
+                    @foreach(var upgrade in LocalPlayer.AvailableUpgrades().OrderBy(u => u.Cost))
                     {
                         <UpgradeButton Upgrade=@upgrade Player=@LocalPlayer />
                     }
@@ -171,9 +171,9 @@
 
     void ClickPizza()
     {
-        LocalPlayer.Click();
+        double val = LocalPlayer.Click();
 
-        string particleText = "+" + NumberHelper.ToStringAbbreviated(LocalPlayer.PizzasPerClick);
+        string particleText = "+" + NumberHelper.ToStringAbbreviated(val);
         var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText, "", true);
         AddChild(particle);
     }

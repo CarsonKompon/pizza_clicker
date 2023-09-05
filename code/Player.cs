@@ -22,6 +22,7 @@ public class Player
 
     private Dictionary<string, double> buildingTimers = new();
     public Dictionary<string, double> Multipliers = new();
+    public double MittenMultiplier = 1;
 
     double particleTimer = 0f;
 
@@ -37,10 +38,18 @@ public class Player
         Member = new Friend(steamid);
     }
 
-    public void Click()
+    public double Click()
     {
-        GivePizzas(PizzasPerClick);
+        double value = PizzasPerClick;
+        if(HasUpgrade("upgrade_pizza_clicker_6"))
+        {
+            double ovenMittsValue = GetTotalBuildingCount() * MittenMultiplier;
+            value += ovenMittsValue;
+            Log.Info(ovenMittsValue);
+        }
+        GivePizzas(value);
         TotalClicks++;
+        return value;
     }
 
     public void Save()
@@ -232,6 +241,7 @@ public class Player
         data.Member = new Friend(Game.SteamId);
 
         data.PizzasPerClick = 1;
+        data.MittenMultiplier = 1;
         foreach(var upgrade in GameMenu.AllUpgrades)
         {
             if(data.HasUpgrade(upgrade.Ident))

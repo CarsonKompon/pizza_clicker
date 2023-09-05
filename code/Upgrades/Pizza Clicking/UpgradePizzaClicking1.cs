@@ -11,7 +11,7 @@ public class UpgradePizzaClicker1 : Upgrade
     public override string Name => "Pizza Fingers I";
     public override string Description => "Clicks bake pizzas twice as efficiently";
     public override double Cost => 100;
-    public override string Icon => "ui/pizzas/cheese_pizza.png";
+    public override string Icon => "ui/upgrades/fingers_1.png";
 
     public override bool CheckUnlockCondition(Player player)
     {
