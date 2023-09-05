@@ -8,6 +8,7 @@ BuildingButton
     font-family: Verdana;
     font-size: 18px;
     left: 0px;
+    flex-shrink: 0;
     
     transition: all 0.2s ease-out;
 
@@ -16,7 +17,7 @@ BuildingButton
         pointer-events: none;
     }
 
-    .count
+    > .main .count
     {
         padding: 0px 4px;
         min-width: 64px;
@@ -117,8 +118,8 @@ BuildingButton
         width: 0%;
         flex-direction: column;
         background-color: rgba(black, 0.5);
-        transform: translateX(-8px);
         opacity: 0;
+        transform: translateX(-8px);
 
         *
         {
@@ -271,5 +272,14 @@ BuildingButton
     {
         left: 8px;
         transition: all 0.05s ease-in-out;
+    }
+
+    &:last-child
+    {
+        .hover-info
+        {
+            top: -100px;
+            transform: translateX(-8px) translateY(-4%);
+        }
     }
 }

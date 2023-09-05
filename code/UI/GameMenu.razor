@@ -43,10 +43,12 @@
         }
         <div class="buildings">
             <h1>Buildings</h1>
-            @foreach(var building in AllBuildings)
-            {
-                <BuildingButton Building=@building Player=@LocalPlayer />
-            }
+            <div class="building-list">
+                @foreach(var building in AllBuildings)
+                {
+                    <BuildingButton Building=@building Player=@LocalPlayer />
+                }
+            </div>
         </div>
     </div>
 
