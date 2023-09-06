@@ -71,7 +71,7 @@
     // string that returns Cost as string with commas
     string CostString => NumberHelper.ToStringAbbreviated(Building.GetCost(Player));
     string PPSString => GetPPS();
-    string CanAfford => (Player.Pizzas >= Building.GetCost(Player)) ? "" : "cant-afford";
+    string CanAfford => (Player.Pizzas >= Building.GetCost(Player) && Player.GetBuildingCount(Building.Ident) < 4000) ? "" : "cant-afford";
     string IsUnlocked => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
     string IsVisible => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
 
@@ -106,7 +106,10 @@
 
     void Pressed()
     {
-        Player.BuyBuilding(Building);
+        if(Player.GetBuildingCount(Building.Ident) < 4000)
+        {
+            Player.BuyBuilding(Building);
+        }
     }
 
     public override void Tick()

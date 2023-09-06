@@ -238,13 +238,10 @@ BuildingButton
 
     &.locked
     {
-        .content
+        img
         {
-            img
-            {
-                opacity: 1;
-                filter: brightness(0) invert(1);
-            }
+            opacity: 1;
+            filter: brightness(0) invert(1);
         }
     }
 
@@ -274,12 +271,12 @@ BuildingButton
         transition: all 0.05s ease-in-out;
     }
 
-    &:last-child
-    {
-        .hover-info
-        {
-            top: -100px;
-            transform: translateX(-8px) translateY(-4%);
-        }
-    }
+    // &:last-child
+    // {
+    //     .hover-info
+    //     {
+    //         top: -100px;
+    //         transform: translateX(-8px) translateY(-4%);
+    //     }
+    // }
 }

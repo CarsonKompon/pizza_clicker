@@ -45,7 +45,6 @@ public class Player
         {
             double ovenMittsValue = GetTotalBuildingCount() * MittenMultiplier;
             value += ovenMittsValue;
-            Log.Info(ovenMittsValue);
         }
         GivePizzas(value);
         TotalClicks++;
@@ -131,6 +130,7 @@ public class Player
         {
             if(upgrade.Ident == ident && Pizzas >= upgrade.Cost)
             {
+                Pizzas -= upgrade.Cost;
                 Upgrades[ident] = true;
                 upgrade.OnPurchase(this);
                 Save();
