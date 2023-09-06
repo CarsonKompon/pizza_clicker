@@ -15,6 +15,7 @@ public class Player
     public double PizzasPerSecond { get; set; } = 0;
     public double PizzasPerClick { get; set; } = 1;
     public double TotalPizzasBaked { get; set; } = 0;
+    public double HandMadePizzas { get; set; } = 0;
     public double TotalClicks { get; set; } = 0;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
     public Dictionary<string, bool> Achievements { get; set; } = new();
@@ -23,6 +24,7 @@ public class Player
     private Dictionary<string, double> buildingTimers = new();
     public Dictionary<string, double> Multipliers = new();
     public double MittenMultiplier = 1;
+    public double PpSPercent = 0;
 
     double particleTimer = 0f;
 
@@ -46,6 +48,11 @@ public class Player
             double ovenMittsValue = GetTotalBuildingCount() * MittenMultiplier;
             value += ovenMittsValue;
         }
+        if(PpSPercent > 0)
+        {
+            value += PizzasPerSecond * (PpSPercent / 100);
+        }
+        HandMadePizzas += value;
         GivePizzas(value);
         TotalClicks++;
         return value;
@@ -242,6 +249,7 @@ public class Player
 
         data.PizzasPerClick = 1;
         data.MittenMultiplier = 1;
+        data.PpSPercent = 0;
         foreach(var upgrade in GameMenu.AllUpgrades)
         {
             if(data.HasUpgrade(upgrade.Ident))

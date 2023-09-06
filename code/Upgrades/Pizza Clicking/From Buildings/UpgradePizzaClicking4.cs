@@ -5,17 +5,17 @@ using System;
 namespace PizzaClicker;
 
 [Library]
-public class UpgradePizzaClicker1 : Upgrade
+public class UpgradePizzaClicker4 : Upgrade
 {
-    public override string Ident => "upgrade_pizza_clicker_1";
-    public override string Name => "Pizza Fingers I";
+    public override string Ident => "upgrade_pizza_clicker_4";
+    public override string Name => "Pizza Fingers IV";
     public override string Description => "Clicks bake pizzas twice as efficiently";
-    public override double Cost => 100;
-    public override string Icon => "ui/upgrades/fingers_1.png";
+    public override double Cost => 10_000;
+    public override string Icon => "ui/upgrades/fingers_4.png";
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.TotalClicks >= 100;
+        return player.GetTotalBuildingCount() >= 25;
     }
 
     public override void OnPurchase(Player player)

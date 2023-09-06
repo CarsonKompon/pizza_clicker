@@ -15,7 +15,7 @@ public class UpgradePizzaClicker7 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.TotalClicks >= 7_500;
+        return player.GetTotalBuildingCount() >= 100;
     }
 
     public override void OnPurchase(Player player)
