@@ -1,0 +1,52 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root onclick=@Pressed >
+</root>
+
+@code
+{
+    RealTimeSince TimeSinceSpawn { get; set; }
+    bool Clicked = false;
+
+    protected override void OnAfterTreeRender(bool firstTime)
+    {
+        base.OnAfterTreeRender(firstTime);
+
+        if (firstTime)
+        {
+            var rand = new Random();
+            Style.Left = Length.Fraction(rand.Float());
+            Style.Top = Length.Fraction(rand.Float());
+        }
+    }
+
+    public override void Tick()
+    {
+        if(TimeSinceSpawn > 8)
+        {
+            SetClass("fade", true);
+
+            if(TimeSinceSpawn > 12)
+            {
+                Delete(true);
+            }
+        }
+    }
+
+    void Pressed()
+    {
+        if(Clicked) return;
+        Delete();
+        GameMenu.Instance.LocalPlayer?.GoldenClick();
+        Clicked = true;
+    }
+}

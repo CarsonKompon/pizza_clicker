@@ -25,17 +25,24 @@ public class Player
     public Dictionary<string, double> Multipliers = new();
     public double MittenMultiplier = 1;
     public double PpSPercent = 0;
+    public float GoldMinTime = 300;
+    public float GoldMaxTime = 900;
 
     double particleTimer = 0f;
 
-    public Player(){}
+    public RealTimeUntil GoldTimer;
 
-    public Player(Friend member)
+    public Player()
+    {
+        GoldTimer = 2;//new Random().Float(GoldMinTime, GoldMaxTime);
+    }
+
+    public Player(Friend member) : this()
     {
         Member = member;
     }
 
-    public Player(long steamid)
+    public Player(long steamid) : this()
     {
         Member = new Friend(steamid);
     }
@@ -56,6 +63,11 @@ public class Player
         GivePizzas(value);
         TotalClicks++;
         return value;
+    }
+
+    public void GoldenClick()
+    {
+
     }
 
     public void Save()
@@ -198,6 +210,16 @@ public class Player
 
     public void Update()
     {
+        // Spawn the gold pizza
+        if(GoldTimer)
+        {
+            Log.Info("GOLD TIME!");
+            var goldPizza = new GoldPizza();
+            GameMenu.Instance.AddChild(goldPizza);
+            GoldTimer = new Random().Float(GoldMinTime, GoldMaxTime);
+        }
+
+        // Add pizzas/sec
         PizzasPerSecond = 0;
         foreach(var building in GameMenu.AllBuildings)
         {
@@ -215,6 +237,7 @@ public class Player
             }
         }
 
+        // Spawn particles
         particleTimer += Time.Delta;
         if(particleTimer > 0.1f)
         {
