@@ -179,13 +179,12 @@ GameMenu
             h1
             {
                 justify-content: center;
-
             }
 
             .building-list
             {
                 flex-direction: column;
-                overflow: scroll;
+                overflow-y: scroll;
                 align-items: flex-end;
                 gap: 4px;
                 

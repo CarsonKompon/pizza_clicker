@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="hover-info">
+    @* <div class="hover-info">
         <div class="header">
             <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
             <div class="info">
@@ -54,7 +54,7 @@
                 <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of your total PpS)</p>
             }
         </div>
-    </div>
+    </div> *@
 
 </root>
 
@@ -74,6 +74,8 @@
     string CanAfford => (Player.Pizzas >= Building.GetCost(Player) && Player.GetBuildingCount(Building.Ident) < 4000) ? "" : "cant-afford";
     string IsUnlocked => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
     string IsVisible => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
+
+    BuildingHover HoverPanel;
 
     string GetPPS()
     {
@@ -109,6 +111,29 @@
         if(Player.GetBuildingCount(Building.Ident) < 4000)
         {
             Player.BuyBuilding(Building);
+        }
+    }
+
+    protected override void OnMouseOver(MousePanelEvent e)
+    {
+        if(HoverPanel == null)
+        {
+            HoverPanel = new BuildingHover()
+            {
+                Building = Building,
+                Player = Player,
+                ParentButton = this
+            };
+            GameMenu.Instance.AddChild(HoverPanel);
+        }
+    }
+
+    protected override void OnMouseOut(MousePanelEvent e)
+    {
+        if(HoverPanel != null)
+        {
+            HoverPanel.Delete(true);
+            HoverPanel = null;
         }
     }
 

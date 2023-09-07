@@ -57,7 +57,7 @@ public class Player
         }
         if(PpSPercent > 0)
         {
-            value += PizzasPerSecond * (PpSPercent / 100);
+            value += Math.Floor((double)PizzasPerSecond * (PpSPercent / 100));
         }
         HandMadePizzas += value;
         GivePizzas(value);
@@ -213,9 +213,9 @@ public class Player
         // Spawn the gold pizza
         if(GoldTimer)
         {
-            Log.Info("GOLD TIME!");
-            var goldPizza = new GoldPizza();
-            GameMenu.Instance.AddChild(goldPizza);
+            Log.Info("GOLD TIME");
+            var goldenPizza = new GoldPizza();
+            GameMenu.Instance.AddChild(goldenPizza);
             GoldTimer = new Random().Float(GoldMinTime, GoldMaxTime);
         }
 

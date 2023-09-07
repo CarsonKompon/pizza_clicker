@@ -11,7 +11,7 @@
 
 <root class="chatbox">
 
-    <div @ref="ChatPanel" class="chat" PreferScrollToBottom=@(true)>
+    <div @ref="ChatPanel" class="chat">
     </div>
 
     <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@SendChat onblur=@CloseChat Value:bind=@ChatText Placeholder="Enter message..." AllowEmojiReplace=@(true) ></TextEntry>

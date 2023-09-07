@@ -23,6 +23,7 @@ Chatbox
         flex-direction: column-reverse;
         overflow-y: scroll;
         gap: 4px;
+        pointer-events: none;
 
         chatentry
         {
@@ -68,6 +69,7 @@ Chatbox
 
         .chat
         {
+            pointer-events: all;
             chatentry
             {
                 &.fade
