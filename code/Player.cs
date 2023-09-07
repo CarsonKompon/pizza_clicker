@@ -215,8 +215,10 @@ public class Player
         {
             Log.Info("GOLD TIME");
             var goldenPizza = new GoldPizza();
+            Log.Info(goldenPizza);
             GameMenu.Instance.AddChild(goldenPizza);
             GoldTimer = new Random().Float(GoldMinTime, GoldMaxTime);
+            Log.Info(goldenPizza);
         }
 
         // Add pizzas/sec

@@ -22,6 +22,8 @@ public partial class GameMenu
 
         switch((NETWORK_MESSAGE)messageId)
         {
+
+            // Player Update Network Message
             case NETWORK_MESSAGE.PLAYER_UPDATE:
                 if(msg.Source.Id == Game.SteamId) return;
 
@@ -43,6 +45,7 @@ public partial class GameMenu
 
                 break;
 
+            // Achievement Unlock Network Message
             case NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK:
 
                 int byteLength = data.Read<int>();
