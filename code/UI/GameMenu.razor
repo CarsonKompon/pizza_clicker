@@ -21,10 +21,7 @@
 
     </div>
 
-    <div class="header">
-        <p class="pizza-count">@GetPizzaCount() Pizzas</p>
-        <p class="pps-count">@(LocalPlayer?.GetPizzasPerSecond()) pizzas/sec</p>
-    </div>
+    <PizzaCount Player=@LocalPlayer />
 
     <div class="pizza-button" onclick=@ClickPizza />
 
@@ -63,6 +60,7 @@
     // UI References
     public static GameMenu Instance { get; set; }
     public static Chatbox Chat { get; set; }
+    GoldPizza GoldenPizza { get; set; }
 
     // Lobby Variables
     public ILobby Lobby { get; set; } = Game.Menu.Lobby;
@@ -127,13 +125,6 @@
         }
     }
 
-    string GetPizzaCount()
-    {
-        double pizzas = LocalPlayer?.Pizzas ?? 0;
-        if(pizzas < 1000000) return NumberHelper.ToStringWithCommas(pizzas);
-        return NumberHelper.ToStringWithWords(pizzas, false);
-    }
-
     public override void Tick()
     {
         Lobby.ReceiveMessages(OnNetworkMessage);
@@ -151,6 +142,7 @@
             NetworkPlayerUpdate(LocalPlayer);
             LastNetworkSync = 0f;
         }
+
     }
 
     void InitPlayer(long steamid)
@@ -180,6 +172,14 @@
         AddChild(particle);
     }
 
+    public void SpawnGoldPizza()
+    {
+        Random rand = new Random();
+        if(GoldenPizza != null) GoldenPizza.Delete();
+        GoldenPizza = new GoldPizza(new Vector2(rand.Next(10, 80), rand.Next(10, 80)));
+        AddChild(GoldenPizza);
+    }
+
     void OnPlayerJoined(Friend member)
     {
         InitPlayer(member.Id);
@@ -189,11 +189,6 @@
     {
         Players.RemoveAll(p => p.Member.Id == member.Id);
         Chat.CreateChatEntry(member.Name, " has closed their pizzeria!", "leave-message");
-    }
-
-    protected override int BuildHash()
-    {
-        return HashCode.Combine(LocalPlayer?.Pizzas);
     }
 
 }

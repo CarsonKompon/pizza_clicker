@@ -19,7 +19,7 @@
         <div class="content">
             @foreach(var achievement in GameMenu.AllAchievements.OrderBy(x => x.Ident))
             {
-                <div class="achievement @(Player.HasAchievement(achievement.Ident) ? "unlocked" : "") ">
+                <div class="achievement @((Player?.HasAchievement(achievement.Ident) ?? false) ? "unlocked" : "") ">
                     <img src="@achievement.Icon" class="icon" />
                     <div class="info">
                         <p class="name" >@achievement.Name</p>

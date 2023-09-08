@@ -12,6 +12,7 @@ public class Player
 
     // Variables
     public double Pizzas { get; set; } = 0;
+    double fractionalPizzas = 0.0;
     public double PizzasPerSecond { get; set; } = 0;
     public double PizzasPerClick { get; set; } = 1;
     public double TotalPizzasBaked { get; set; } = 0;
@@ -31,6 +32,7 @@ public class Player
     double particleTimer = 0f;
 
     public RealTimeUntil GoldTimer;
+    public RealTimeUntil FrenzyTime;
 
     public Player()
     {
@@ -65,9 +67,29 @@ public class Player
         return value;
     }
 
-    public void GoldenClick()
+    public void GoldenClick(Vector2 pos)
     {
+        Random rand = new Random();
+        string particleText = "Golden Pizza!";
+        float chance = rand.Float();
 
+        if(chance < 0.35f)
+        {
+            double bankedPercent = Math.Floor(Pizzas * 0.15) + 13;
+            double ppsPercent = Math.Floor(PizzasPerSecond * 900) + 13;
+            double realVal = Math.Min(bankedPercent, ppsPercent);
+            particleText = $"Lucky Pizza!\n+{NumberHelper.ToStringAbbreviated(realVal)} Pizzas";
+            Pizzas += realVal;
+        }
+        else if(chance < 0.65f)
+        {
+            particleText = "Pizza Frenzy!\nx7 PpS for 77s";
+            FrenzyTime = 77;
+        }
+
+
+        var particle = new TextParticle(pos, particleText, "gold", true, 2);
+        GameMenu.Instance.AddChild(particle);
     }
 
     public void Save()
@@ -214,30 +236,55 @@ public class Player
         if(GoldTimer)
         {
             Log.Info("GOLD TIME");
-            var goldenPizza = new GoldPizza();
-            Log.Info(goldenPizza);
-            GameMenu.Instance.AddChild(goldenPizza);
+            GameMenu.Instance.SpawnGoldPizza();
             GoldTimer = new Random().Float(GoldMinTime, GoldMaxTime);
-            Log.Info(goldenPizza);
         }
 
-        // Add pizzas/sec
+        // Calculate PpS
         PizzasPerSecond = 0;
-        foreach(var building in GameMenu.AllBuildings)
+        double totalDeltaPizzas = 0;  // Total pizzas to be given during this frame
+
+        foreach (var building in GameMenu.AllBuildings)
         {
             double buildingCount = GetBuildingCount(building.Ident);
-            if(buildingCount == 0) continue;
-            PizzasPerSecond += building.PizzasPerSecond * buildingCount * GetBuildingMultiplier(building.Ident);
+            if (buildingCount == 0) continue;
 
-            if(!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
+            double buildingPps = building.GetPizzasPerSecond(this);
+            PizzasPerSecond += buildingPps;
+
+            if (!buildingTimers.ContainsKey(building.Ident)) buildingTimers[building.Ident] = 0;
+            
+            // Use delta time to update the timers
             buildingTimers[building.Ident] += Time.Delta;
-            double seconds = building.SecondsPerPizza(this);
-            while(buildingTimers[building.Ident] >= seconds)
-            {
-                GivePizzas(1);
-                buildingTimers[building.Ident] -= seconds;
-            }
+            
+            // Calculate how many pizzas this building should produce during this frame
+            double deltaPizzas = buildingPps * Time.Delta;
+            
+            // Add to total
+            totalDeltaPizzas += deltaPizzas;
+            
+            // Optional: You can handle fractional pizzas by accumulating the remainder for the next frame
+            // double fractionalPizzas = deltaPizzas % 1;
+            // buildingTimers[building.Ident] = fractionalPizzas;
         }
+
+        // Accumulate fractional pizzas from the previous frame
+        if (!buildingTimers.ContainsKey("total"))
+        {
+            buildingTimers["total"] = 0;
+        }
+        buildingTimers["total"] += totalDeltaPizzas;
+
+        // Give whole pizzas, keep fractional part
+        double wholePizzas = Math.Floor(buildingTimers["total"]);
+        if (wholePizzas >= 1)
+        {
+            GivePizzas(wholePizzas);
+            buildingTimers["total"] -= wholePizzas;  // keep the fractional part
+        }
+
+
+
 
         // Spawn particles
         particleTimer += Time.Delta;

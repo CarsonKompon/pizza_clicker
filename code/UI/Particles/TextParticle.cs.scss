@@ -14,7 +14,7 @@ TextParticle
     font-size: 32px;
     font-weight: black;
     color: white;
-    text-shadow: 1px 1px 3px black;
+    text-shadow: 1px 1px 0px black;
     text-align: center;
 
     z-index: 250;
@@ -22,6 +22,11 @@ TextParticle
     &.gained
     {
         opacity: 0.2;
+    }
+
+    &.gold
+    {
+        color: gold;
     }
 
     &:intro

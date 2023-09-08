@@ -30,7 +30,9 @@ public class Building
 
     public double GetPizzasPerSecond(Player player)
     {
-        return PizzasPerSecond * player.GetBuildingCount(Ident) * player.GetBuildingMultiplier(Ident);
+        double val = PizzasPerSecond * player.GetBuildingCount(Ident) * player.GetBuildingMultiplier(Ident);
+        if(player.FrenzyTime > 0) val *= 7;
+        return val;
     }
 }
 
