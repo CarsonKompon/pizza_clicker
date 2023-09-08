@@ -60,7 +60,6 @@
     // UI References
     public static GameMenu Instance { get; set; }
     public static Chatbox Chat { get; set; }
-    GoldPizza GoldenPizza { get; set; }
 
     // Lobby Variables
     public ILobby Lobby { get; set; } = Game.Menu.Lobby;
@@ -175,9 +174,8 @@
     public void SpawnGoldPizza()
     {
         Random rand = new Random();
-        if(GoldenPizza != null) GoldenPizza.Delete();
-        GoldenPizza = new GoldPizza(new Vector2(rand.Next(10, 80), rand.Next(10, 80)));
-        AddChild(GoldenPizza);
+        var goldenPizza = new GoldPizza(new Vector2(rand.Next(10, 80), rand.Next(10, 80)), LocalPlayer.GoldDuration);
+        AddChild(goldenPizza);
     }
 
     void OnPlayerJoined(Friend member)

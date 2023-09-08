@@ -18,6 +18,7 @@ public class Player
     public double TotalPizzasBaked { get; set; } = 0;
     public double HandMadePizzas { get; set; } = 0;
     public double TotalClicks { get; set; } = 0;
+    public double TotalGoldClicks { get; set; } = 0;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
     public Dictionary<string, bool> Achievements { get; set; } = new();
     public Dictionary<string, bool> Upgrades { get; set; } = new();
@@ -30,6 +31,8 @@ public class Player
     public double PpSPercent = 0;
     public float GoldMinTime = 300;
     public float GoldMaxTime = 900;
+    public float GoldDuration = 8f;
+    public double GoldMultiplier = 1d;
 
     double particleTimer = 0f;
 
@@ -39,7 +42,7 @@ public class Player
 
     public Player()
     {
-        GoldTimer = 2;//new Random().Float(GoldMinTime, GoldMaxTime);
+        GoldTimer = new Random().Float(GoldMinTime, GoldMaxTime);
     }
 
     public Player(Friend member) : this()
@@ -93,17 +96,17 @@ public class Player
         // Pizza Frenzy
         else if(chance < 0.65f)
         {
-            particleText = "Pizza Frenzy!\nx7 PpS for 77s";
-            FrenzyTime = 77;
-            Notifications.Popup("Pizza Frenzy!", "x7 pizzas/sec for 77s", "gold frenzy", "/ui/pizzas/gold_pizza.png", 77f);
+            FrenzyTime = 77 * (float)GoldMultiplier;
+            particleText = $"Pizza Frenzy!\nx7 PpS for {FrenzyTime}s";
+            Notifications.Popup("Pizza Frenzy!", $"x7 pizzas/sec for {FrenzyTime}s", "gold frenzy", "/ui/pizzas/gold_pizza.png", FrenzyTime);
         }
 
         // Click Frenzy
         else if(chance < 0.07f)
         {
-            particleText = "Click Frenzy!\nx7 PpC for 77s";
-            ClickFrenzy = 13;
-            Notifications.Popup("Click Frenzy!", "x777 pizzas/click for 13s", "gold click", "/ui/pizzas/gold_pizza.png", 13f);
+            ClickFrenzy = 13 * (float)GoldMultiplier;
+            particleText = $"Click Frenzy!\nx7 pizzas/click for {ClickFrenzy}s";
+            Notifications.Popup("Click Frenzy!", $"x777 pizzas/click for {ClickFrenzy}s", "gold click", "/ui/pizzas/gold_pizza.png", ClickFrenzy);
         }
 
         // Building Bonus
@@ -113,11 +116,12 @@ public class Player
             var building = buildings[rand.Int(buildings.Count)];
             double multiplier = (10 * GetBuildingCount(building.Ident) + 100d)/100d;
             TemporaryMultipliers[building.Ident] = multiplier;
-            TemporaryTimers[building.Ident] = 30;
-            particleText = $"Building Bonus!\n{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} PpS for 30s";
-            Notifications.Popup("Building Bonus!", $"{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} pizzas/sec for 30s", "gold building", "/ui/buildings/" + building.Ident + ".png", 30f);
+            TemporaryTimers[building.Ident] = 30 * GoldMultiplier;
+            particleText = $"Building Bonus!\n{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} PpS for {TemporaryTimers[building.Ident]}s";
+            Notifications.Popup("Building Bonus!", $"{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} pizzas/sec for {TemporaryTimers[building.Ident]}s", "gold building", "/ui/buildings/" + building.Ident + ".png", (float)TemporaryTimers[building.Ident]);
         }
 
+        TotalGoldClicks++;
 
         var particle = new TextParticle(pos, particleText, "gold", true, 2);
         GameMenu.Instance.AddChild(particle);
@@ -381,6 +385,8 @@ public class Player
         data.PizzasPerClick = 1;
         data.MittenMultiplier = 1;
         data.PpSPercent = 0;
+        data.GoldDuration = 8;
+        data.GoldMultiplier = 1d;
         foreach(var upgrade in GameMenu.AllUpgrades)
         {
             if(data.HasUpgrade(upgrade.Ident))

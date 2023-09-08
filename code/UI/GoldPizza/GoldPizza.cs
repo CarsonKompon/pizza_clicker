@@ -11,17 +11,19 @@ namespace PizzaClicker;
 public class GoldPizza : Panel
 {
     RealTimeSince Created = 0;
+    float Duration = 8f;
 
-    public GoldPizza(Vector2 pos)
+    public GoldPizza(Vector2 pos, float duration = 8f)
     {
         Style.Top = Length.Percent(pos.y);
         Style.Left = Length.Percent(pos.x);
+        Duration = duration;
     }
 
     public override void Tick()
     {
 
-        if (Created > 8f)
+        if (Created > Duration)
         {
             Delete();
         }
