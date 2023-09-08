@@ -30,6 +30,15 @@ BuildingButton
         font-size: 24px;
     }
 
+    &.gold
+    {
+        .content .info .pps
+        {
+            color: gold;
+            text-shadow: 0 0 4px rgb(180, 153, 0);
+        }
+    }
+
     .content
     {
         overflow: hidden;

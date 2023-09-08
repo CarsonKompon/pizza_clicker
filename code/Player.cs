@@ -24,6 +24,8 @@ public class Player
 
     private Dictionary<string, double> buildingTimers = new();
     public Dictionary<string, double> Multipliers = new();
+    public Dictionary<string, double> TemporaryMultipliers = new();
+    public Dictionary<string, double> TemporaryTimers = new();
     public double MittenMultiplier = 1;
     public double PpSPercent = 0;
     public float GoldMinTime = 300;
@@ -73,6 +75,7 @@ public class Player
         string particleText = "Golden Pizza!";
         float chance = rand.Float();
 
+        // Lucky Pizza
         if(chance < 0.35f)
         {
             double bankedPercent = Math.Floor(Pizzas * 0.15) + 13;
@@ -81,10 +84,25 @@ public class Player
             particleText = $"Lucky Pizza!\n+{NumberHelper.ToStringAbbreviated(realVal)} Pizzas";
             Pizzas += realVal;
         }
+
+        // Pizza Frenzy
         else if(chance < 0.65f)
         {
             particleText = "Pizza Frenzy!\nx7 PpS for 77s";
             FrenzyTime = 77;
+            Notifications.Popup("Pizza Frenzy!", "x7 PpS for 77s", "gold frenzy", "/ui/pizzas/gold_pizza.png", 77f);
+        }
+
+        // Building Bonus
+        else
+        {
+            var buildings = GetOwnedBuildings();
+            var building = buildings[rand.Int(buildings.Count)];
+            double multiplier = (10 * GetBuildingCount(building.Ident) + 100d)/100d;
+            TemporaryMultipliers[building.Ident] = multiplier;
+            TemporaryTimers[building.Ident] = 30;
+            particleText = $"Building Bonus!\n{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} PpS for 30s";
+            Notifications.Popup("Building Bonus!", $"{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} PpS for 30s", "gold building", "/ui/buildings/" + building.Ident + ".png", 30f);
         }
 
 
@@ -127,6 +145,12 @@ public class Player
     {
         if(!Multipliers.ContainsKey(ident)) return 1;
         return Multipliers[ident];
+    }
+
+    public double GetTemporaryMultiplier(string ident)
+    {
+        if(!TemporaryMultipliers.ContainsKey(ident)) return 1;
+        return TemporaryMultipliers[ident];
     }
 
     public bool BuyBuilding(Building building)
@@ -283,7 +307,16 @@ public class Player
             buildingTimers["total"] -= wholePizzas;  // keep the fractional part
         }
 
-
+        // Advance temporary timers
+        foreach (var timer in TemporaryTimers)
+        {
+            TemporaryTimers[timer.Key] -= Time.Delta;
+            if (TemporaryTimers[timer.Key] <= 0)
+            {
+                TemporaryTimers.Remove(timer.Key);
+                TemporaryMultipliers.Remove(timer.Key);
+            }
+        }
 
 
         // Spawn particles
@@ -310,6 +343,19 @@ public class Player
             return PizzasPerSecond.ToString("N1");
         }
         return NumberHelper.ToStringAbbreviated(PizzasPerSecond);
+    }
+
+    public List<Building> GetOwnedBuildings()
+    {
+        List<Building> buildings = new();
+        foreach(var building in GameMenu.AllBuildings)
+        {
+            if(GetBuildingCount(building.Ident) > 0)
+            {
+                buildings.Add(building);
+            }
+        }
+        return buildings;
     }
 
     public static Player LoadPlayer()

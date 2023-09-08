@@ -24,13 +24,14 @@
         Instance = this;
     }
 
-    public static void Popup(string header, string text, string styles = "", string icon = null)
+    public static void Popup(string header, string text, string styles = "", string icon = null, float duration = 8f)
     {
         var popup = new Popup();
         popup.AddClass(styles);
         popup.Header = header;
         popup.Text = text;
         popup.Icon = icon;
+        popup.Duration = duration;;
         Instance.AddChild(popup);
     }
 

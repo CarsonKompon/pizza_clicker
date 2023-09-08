@@ -25,12 +25,13 @@
     public string Icon { get; set; } = null;
     public string Header { get; set; } = "";
     public string Text { get; set; } = "";
+    public float Duration { get; set; } = 8f;
 
     RealTimeSince Created = 0;
 
     public override void Tick()
     {
-        if (Created > 8f)
+        if (Created > Duration)
         {
             Delete();
         }

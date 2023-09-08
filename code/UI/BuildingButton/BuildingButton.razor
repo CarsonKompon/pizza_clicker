@@ -9,7 +9,7 @@
 
 @namespace PizzaClicker
 
-<root onclick=@Pressed class="@(CanAfford) @(IsUnlocked) @(IsVisible)" >
+<root onclick=@Pressed class="@GetClassNames()" >
 
     <div class="main">
         <p class="count">@("x" + BuildingCount.ToString())</p>
@@ -74,6 +74,16 @@
     string CanAfford => (Player.Pizzas >= Building.GetCost(Player) && Player.GetBuildingCount(Building.Ident) < 4000) ? "" : "cant-afford";
     string IsUnlocked => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
     string IsVisible => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
+
+    string GetClassNames()
+    {
+        string val = $"{CanAfford} {IsUnlocked} {IsVisible}";
+        if(Player.GetTemporaryMultiplier(Building.Ident) > 1)
+        {
+            val += " gold";
+        }
+        return val;
+    }
 
     BuildingHover HoverPanel;
 
