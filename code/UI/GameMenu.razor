@@ -168,7 +168,7 @@
         double val = LocalPlayer.Click();
 
         string particleText = "+" + NumberHelper.ToStringAbbreviated(val);
-        var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText, "", true);
+        var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText, (LocalPlayer.ClickFrenzy > 0 ? "gold" : ""), true);
         AddChild(particle);
     }
 

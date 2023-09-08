@@ -35,6 +35,7 @@ public class Player
 
     public RealTimeUntil GoldTimer;
     public RealTimeUntil FrenzyTime;
+    public RealTimeUntil ClickFrenzy;
 
     public Player()
     {
@@ -63,6 +64,10 @@ public class Player
         {
             value += Math.Floor((double)PizzasPerSecond * (PpSPercent / 100));
         }
+        if(ClickFrenzy > 0)
+        {
+            value *= 777d;
+        }
         HandMadePizzas += value;
         GivePizzas(value);
         TotalClicks++;
@@ -90,7 +95,15 @@ public class Player
         {
             particleText = "Pizza Frenzy!\nx7 PpS for 77s";
             FrenzyTime = 77;
-            Notifications.Popup("Pizza Frenzy!", "x7 PpS for 77s", "gold frenzy", "/ui/pizzas/gold_pizza.png", 77f);
+            Notifications.Popup("Pizza Frenzy!", "x7 pizzas/sec for 77s", "gold frenzy", "/ui/pizzas/gold_pizza.png", 77f);
+        }
+
+        // Click Frenzy
+        else if(chance < 0.07f)
+        {
+            particleText = "Click Frenzy!\nx7 PpC for 77s";
+            ClickFrenzy = 13;
+            Notifications.Popup("Click Frenzy!", "x777 pizzas/click for 13s", "gold click", "/ui/pizzas/gold_pizza.png", 13f);
         }
 
         // Building Bonus
@@ -102,7 +115,7 @@ public class Player
             TemporaryMultipliers[building.Ident] = multiplier;
             TemporaryTimers[building.Ident] = 30;
             particleText = $"Building Bonus!\n{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} PpS for 30s";
-            Notifications.Popup("Building Bonus!", $"{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} PpS for 30s", "gold building", "/ui/buildings/" + building.Ident + ".png", 30f);
+            Notifications.Popup("Building Bonus!", $"{NumberHelper.ToStringAbbreviated(multiplier)}x {building.Name} pizzas/sec for 30s", "gold building", "/ui/buildings/" + building.Ident + ".png", 30f);
         }
 
 
