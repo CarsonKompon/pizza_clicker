@@ -12,7 +12,6 @@ public class Player
 
     // Variables
     public double Pizzas { get; set; } = 0;
-    double fractionalPizzas = 0.0;
     public double PizzasPerSecond { get; set; } = 0;
     public double PizzasPerClick { get; set; } = 1;
     public double TotalPizzasBaked { get; set; } = 0;
@@ -28,6 +27,8 @@ public class Player
     public Dictionary<string, double> TemporaryMultipliers = new();
     public Dictionary<string, double> TemporaryTimers = new();
     public double MittenMultiplier = 1;
+    public double TotalMultiplier = 1;
+    public double AchievementMultiplier = 0;
     public double PpSPercent = 0;
     public float GoldMinTime = 300;
     public float GoldMaxTime = 900;
@@ -96,9 +97,10 @@ public class Player
         // Pizza Frenzy
         else if(chance < 0.65f)
         {
-            FrenzyTime = 77 * (float)GoldMultiplier;
-            particleText = $"Pizza Frenzy!\nx7 PpS for {FrenzyTime}s";
-            Notifications.Popup("Pizza Frenzy!", $"x7 pizzas/sec for {FrenzyTime}s", "gold frenzy", "/ui/pizzas/gold_pizza.png", FrenzyTime);
+            var value = Math.Round(77 * GoldMultiplier);
+            FrenzyTime = (float)value;
+            particleText = $"Pizza Frenzy!\nx7 PpS for {value}s";
+            Notifications.Popup("Pizza Frenzy!", $"x7 pizzas/sec for {value}s", "gold frenzy", "/ui/pizzas/gold_pizza.png", FrenzyTime);
         }
 
         // Click Frenzy
@@ -196,6 +198,11 @@ public class Player
         Achievements[ident] = true;
         Save();
         return true;
+    }
+
+    public int GetAchievementCount()
+    {
+        return Achievements.Count;
     }
 
     public bool HasUpgrade(string ident)
@@ -384,6 +391,7 @@ public class Player
 
         data.PizzasPerClick = 1;
         data.MittenMultiplier = 1;
+        data.TotalMultiplier = 1;
         data.PpSPercent = 0;
         data.GoldDuration = 8;
         data.GoldMultiplier = 1d;
