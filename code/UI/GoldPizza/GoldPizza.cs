@@ -10,8 +10,9 @@ namespace PizzaClicker;
 [StyleSheet]
 public class GoldPizza : Panel
 {
-    RealTimeSince Created = 0;
     float Duration = 8f;
+    float Opacity = 0f;
+    bool fadeOut = false;
 
     public GoldPizza(Vector2 pos, float duration = 8f)
     {
@@ -22,11 +23,33 @@ public class GoldPizza : Panel
 
     public override void Tick()
     {
-
-        if (Created > Duration)
+        if(!fadeOut)
         {
-            Delete();
+            Opacity += Time.Delta / 2;
+            if (Opacity >= 1f)
+            {
+                Opacity = 1f;
+                fadeOut = true;
+            }
         }
+        else
+        {
+            if(Duration > 0f)
+            {
+                Duration -= Time.Delta;
+            }
+            else
+            {
+                Opacity -= Time.Delta / 5;
+                if (Opacity <= 0f)
+                {
+                    Opacity = 0f;
+                    Delete(true);
+                }
+            }
+        }
+
+        Style.Opacity = Opacity;
     }
 
 	protected override void OnMouseUp( MousePanelEvent e )
