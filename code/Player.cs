@@ -94,6 +94,8 @@ public class Player
             value *= 777d;
         }
 
+        Sound.FromScreen("mouse.click");
+
         HandMadePizzas += value;
         GivePizzas(value);
         TotalClicks++;
