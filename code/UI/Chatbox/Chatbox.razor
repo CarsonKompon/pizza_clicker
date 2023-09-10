@@ -40,9 +40,13 @@
 
     public override void Tick()
     {
-        if(Input.Pressed("chat"))
+        if((Input.Pressed("chat") || ChatTextEntry.HasActive) && !HasClass("show"))
         {
             ShowChat();
+        }
+        else if(!ChatTextEntry.HasFocus && HasClass("show"))
+        {
+            CloseChat();
         }
     }
 

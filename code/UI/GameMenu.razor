@@ -206,7 +206,7 @@
     void OnPlayerLeft(Friend member)
     {
         Players.RemoveAll(p => p.Member.Id == member.Id);
-        Chat.CreateChatEntry(member.Name, " has closed their pizzeria!", "leave-message");
+        Chat.CreateChatEntry("", member.Name + " has closed their pizzeria!", "leave-message");
     }
 
     protected override int BuildHash()
