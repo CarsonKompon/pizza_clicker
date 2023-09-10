@@ -14,7 +14,7 @@ public class AchievementQuantumColliderCount8 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("quantum_pizza_collider") >= 350;
+        return player.GetBuildingCount("quantum_pizza_collider") >= 350;
 	}
 
 }

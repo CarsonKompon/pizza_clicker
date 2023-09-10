@@ -14,7 +14,7 @@ public class AchievementPizzaFederationCount2 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("pizza_federation") >= 50;
+        return player.GetBuildingCount("pizza_federation") >= 50;
 	}
 
 }

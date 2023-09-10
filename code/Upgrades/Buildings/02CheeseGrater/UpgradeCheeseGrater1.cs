@@ -15,7 +15,7 @@ public class UpgradeCheeseGrater1 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingResearch("cheese_grater") >= 1;
+        return player.GetBuildingCount("cheese_grater") >= 1;
     }
 
     public override void OnPurchase(Player player)

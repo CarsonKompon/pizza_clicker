@@ -14,7 +14,7 @@ public class AchievementOvenCount6 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("oven") >= 250;
+        return player.GetBuildingCount("oven") >= 250;
 	}
 
 }

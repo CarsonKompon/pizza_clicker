@@ -14,7 +14,7 @@ public class AchievementThemeParkCount4 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("pizza_theme_park") >= 150;
+        return player.GetBuildingCount("pizza_theme_park") >= 150;
 	}
 
 }

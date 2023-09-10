@@ -15,7 +15,7 @@ public class UpgradeFederation5 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingResearch("pizza_federation") >= 100;
+        return player.GetBuildingCount("pizza_federation") >= 100;
     }
 
     public override void OnPurchase(Player player)

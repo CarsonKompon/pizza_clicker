@@ -15,25 +15,11 @@
         <img src=@Upgrade.Icon class="icon" />
     </div>
 
-    <div class="hover-info">
-        <div class="header">
-            <img src=@Upgrade.Icon class="icon" />
-            <div class="info">
-                <p class="name">@Upgrade.Name</p>
-                <p class="count">Upgrade</p>
-            </div>
-            <p class="price">@(CostString) pizzas</p>
-        </div>
-        <div class="body">
-            <p>@Upgrade.Description</p>
-        </div>
-    </div>
-
 </root>
 
 @code
 {
-    Panel ProgressBar { get; set; }
+    UpgradeHover HoverPanel { get; set; }
 
     // Code References
     public Upgrade Upgrade { get; set; }
@@ -46,6 +32,29 @@
     void Pressed()
     {
         Player.GiveUpgrade(Upgrade.Ident);
+    }
+
+    protected override void OnMouseOver(MousePanelEvent e)
+    {
+        if(HoverPanel == null)
+        {
+            HoverPanel = new UpgradeHover()
+            {
+                Upgrade = Upgrade,
+                Player = Player,
+                ParentButton = this
+            };
+            GameMenu.Instance.AddChild(HoverPanel);
+        }
+    }
+
+    protected override void OnMouseOut(MousePanelEvent e)
+    {
+        if(HoverPanel != null)
+        {
+            HoverPanel.Delete(true);
+            HoverPanel = null;
+        }
     }
 
     protected override int BuildHash()

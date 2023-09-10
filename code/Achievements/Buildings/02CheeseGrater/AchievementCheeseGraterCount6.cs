@@ -14,7 +14,7 @@ public class AchievementCheeseGraterCount6 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("cheese_grater") >= 250;
+        return player.GetBuildingCount("cheese_grater") >= 250;
 	}
 
 }

@@ -15,7 +15,7 @@ public class UpgradePizzaGPT5 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingResearch("pizza_gpt") >= 100;
+        return player.GetBuildingCount("pizza_gpt") >= 100;
     }
 
     public override void OnPurchase(Player player)

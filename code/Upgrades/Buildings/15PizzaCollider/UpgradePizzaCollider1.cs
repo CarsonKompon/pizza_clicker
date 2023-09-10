@@ -15,7 +15,7 @@ public class UpgradePizzaCollider1 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingResearch("quantum_pizza_collider") >= 1;
+        return player.GetBuildingCount("quantum_pizza_collider") >= 1;
     }
 
     public override void OnPurchase(Player player)

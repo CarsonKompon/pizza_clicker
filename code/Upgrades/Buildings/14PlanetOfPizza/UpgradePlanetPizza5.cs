@@ -15,7 +15,7 @@ public class UpgradePlanetPizza5 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingResearch("planet_of_pizza") >= 100;
+        return player.GetBuildingCount("planet_of_pizza") >= 100;
     }
 
     public override void OnPurchase(Player player)

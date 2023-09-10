@@ -15,7 +15,7 @@ public class UpgradeRollingPin6 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingResearch("rolling_pin") >= 100;
+        return player.GetBuildingCount("rolling_pin") >= 100;
     }
 
     public override void OnPurchase(Player player)

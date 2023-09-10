@@ -23,6 +23,7 @@ public class Player
     public double TotalLegacyBaked { get; set; } = 0;
     public double TotalPizzasBakedAllTime { get; set; } = 0;
     public double HeavenlyCrust { get; set; } = 0;
+    public double AscensionCount { get; set; } = 0;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
     public Dictionary<string, bool> Achievements { get; set; } = new();
     public Dictionary<string, bool> Upgrades { get; set; } = new();
@@ -187,6 +188,7 @@ public class Player
         GoldTimer = new Random().Float(GoldMinTime, GoldMaxTime);
         FrenzyTime = 0;
         ClickFrenzy = 0;
+        AscensionCount++;
 
         foreach(var blessing in GameMenu.AllBlessings)
         {

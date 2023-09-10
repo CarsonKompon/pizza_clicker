@@ -117,10 +117,11 @@ GameMenu
                 width: 380px;
                 //overflow: visible;
                 padding: 4px;
-                //overflow-x: scroll;
+                overflow-y: scroll;
                 align-items: center;
                 flex-wrap: wrap;
                 gap: 4px;
+                max-height: 240px;
             }
 
             &.hidden

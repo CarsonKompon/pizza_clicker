@@ -14,7 +14,7 @@ public class AchievementInterdimensionalCount6 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("interdimensional_pizzeria") >= 250;
+        return player.GetBuildingCount("interdimensional_pizzeria") >= 250;
 	}
 
 }

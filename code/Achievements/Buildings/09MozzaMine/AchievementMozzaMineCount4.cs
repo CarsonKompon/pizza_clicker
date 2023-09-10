@@ -14,7 +14,7 @@ public class AchievementMozzaMineCount4 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("mozzarella_mine") >= 150;
+        return player.GetBuildingCount("mozzarella_mine") >= 150;
 	}
 
 }

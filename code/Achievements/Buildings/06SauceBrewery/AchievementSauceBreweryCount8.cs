@@ -14,7 +14,7 @@ public class AchievementSauceBreweryCount8 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingResearch("sauce_brewery") >= 350;
+        return player.GetBuildingCount("sauce_brewery") >= 350;
 	}
 
 }

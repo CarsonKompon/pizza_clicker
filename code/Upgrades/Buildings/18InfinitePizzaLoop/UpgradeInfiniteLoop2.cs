@@ -15,7 +15,7 @@ public class UpgradeInfiniteLoop2 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingResearch("infinite_pizza_loop") >= 5;
+        return player.GetBuildingCount("infinite_pizza_loop") >= 5;
     }
 
     public override void OnPurchase(Player player)
