@@ -106,10 +106,11 @@
         {
             flex-grow: 1;
             flex-direction: column;
-            overflow-y: scroll;
             background-color: rgba(black, 0.4);
             opacity: 0;
             transition: all 0.2s ease-out;
+            overflow-y: scroll;
+            pointer-events: all;
 
             .leaderboard-entry
             {

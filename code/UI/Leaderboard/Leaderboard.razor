@@ -22,7 +22,7 @@
         <div class="pizzas-per-second">Pizzas/Sec</div>
     </div>
     <div class="leaderboard-entries">
-        @foreach(var player in Players.OrderByDescending(p => p.Pizzas))
+        @foreach(var player in Players.OrderByDescending(p => p.PizzasPerSecond))
         {
             <div class="leaderboard-entry">
                 <div class="name">@player.Member.Name</div>
