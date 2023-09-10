@@ -19,8 +19,9 @@ public class Player
     public double TotalClicks { get; set; } = 0;
     public double TotalGoldClicks { get; set; } = 0;
     public double LegacyDough { get; set; } = 0;
+    public double LastLevel { get; set; } = 0;
     public double TotalLegacyBaked { get; set; } = 0;
-    public double AscensionLevel { get; set; } = 0;
+    public double TotalPizzasBakedAllTime { get; set; } = 0;
     public double HeavenlyCrust { get; set; } = 0;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
     public Dictionary<string, bool> Achievements { get; set; } = new();
@@ -135,6 +136,49 @@ public class Player
         GameMenu.Instance.AddChild(particle);
     }
 
+    public void StartAscension()
+    {
+        Save();
+        HeavenlyCrust += LegacyDough;
+        GameMenu.Instance.Ascending = true;
+    }
+
+    public void Ascend()
+    {
+        Pizzas = 0;
+        PizzasPerClick = 1;
+        PizzasPerSecond = 0;
+        TotalPizzasBakedAllTime += TotalPizzasBaked;
+        TotalPizzasBaked = 0;
+        HandMadePizzas = 0;
+        TotalClicks = 0;
+        TotalGoldClicks = 0;
+        LegacyDough += HeavenlyCrust;
+        TotalLegacyBaked += HeavenlyCrust;
+        LastLevel = LegacyDough;
+        HeavenlyCrust = 0;
+        Buildings.Clear();
+        Upgrades.Clear();
+        Multipliers.Clear();
+        TemporaryMultipliers.Clear();
+        TemporaryTimers.Clear();
+        MittenMultiplier = 1;
+        TotalMultiplier = 1;
+        AchievementMultiplier = 0;
+        ResearchSpeed = 1;
+        PpSPercent = 0;
+        GoldMinTime = 300;
+        GoldMaxTime = 900;
+        GoldDuration = 8f;
+        GoldMultiplier = 1d;
+        GoldTimer = new Random().Float(GoldMinTime, GoldMaxTime);
+        FrenzyTime = 0;
+        ClickFrenzy = 0;
+
+        Save();
+        GameMenu.Instance.Ascending = false;
+    }
+
     public void Save()
     {
         if(Member.Id != Game.SteamId) return;
@@ -221,6 +265,21 @@ public class Player
     {
         if(Blessings.ContainsKey(ident) && Blessings[ident]) return false;
         Blessings[ident] = true;
+        Save();
+        return true;
+    }
+
+    public bool BuyBlessing(Blessing blessing)
+    {
+        foreach(var req in blessing.Requires)
+        {
+            if(!string.IsNullOrEmpty(req) && !HasBlessing(req)) return false;
+        }
+        if(HeavenlyCrust < blessing.Cost) return false;
+
+        HeavenlyCrust -= blessing.Cost;
+        GiveBlessing(blessing.Ident);
+        blessing.OnActivate(this);
         Save();
         return true;
     }

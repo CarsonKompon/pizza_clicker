@@ -9,7 +9,7 @@ AscensionMenu
     height: 100%;
     background-image: url("/ui/backgrounds/space.jpg");
     opacity: 1;
-    transition: opacity 1s ease-out, transform 5s ease-out;
+    transition: opacity 1s ease-out, all 5s ease-out;
     transform: scale(1);
     z-index: 0;
     animation: scrolling-background 10s linear infinite;
@@ -20,14 +20,50 @@ AscensionMenu
     color: white;
     padding: 64px;
 
-    h1
+    .header
     {
-        font-family: Verdana;
-        font-size: 48px;
-        font-weight: black;
-        margin-bottom: 16px;
-        text-shadow: 2px 2px 0px black;
+        flex-direction: column;
+        align-items: center;
 
+        h1
+        {
+            font-family: Verdana;
+            font-size: 48px;
+            font-weight: black;
+            margin-bottom: 16px;
+            text-shadow: 2px 2px 0px black;
+        }
+
+        .info
+        {
+            width: 400px;
+            height: 120px;
+            background-color: rgba(black, 0.5);
+            padding: 2px;
+            flex-direction: column;
+            font-weight: black;
+            justify-content: center;
+            align-content: center;
+            text-align: center;
+
+            .panel
+            {
+                flex-direction: column;
+            }
+
+            .head
+            {
+                font-size: 20px;
+            }
+
+            p
+            {
+                justify-content: center;
+                align-content: center;
+                text-align: center;
+                font-size: 16px;
+            }
+        }
     }
 
     .content
@@ -48,53 +84,67 @@ AscensionMenu
 
             .spacer
             {
-                width: 64px;
-                height: 64px;
+                width: 68px;
+                height: 68px;
             }
         }
 
     }
 
-    > .info
+    .ascend-button
     {
-        position: absolute;
-        bottom: 32px;
-        right: 32px;
-        width: 400px;
-        height: 200px;
-        background-color: rgba(black, 0.5);
-        padding: 16px;
-        flex-direction: column;
-        gap: 8px;
+        width: 300px;
+        height: 64px;
+        background-color: gold;
+        color: black;
+        font-size: 24px;
         font-weight: black;
+        font-family: Verdana;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease-out;
         justify-content: center;
-        align-content: center;
-        text-align: center;
+        align-items: center;
+        transform: scale(1);
 
-        .panel
+        .bar
         {
-            gap: 4px;
-            flex-direction: column;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: all 0.2s ease-out;
+            transform: scale(1);
+            z-index: 0;
+
+            .bar-fill
+            {
+                background-image: url("/ui/backgrounds/space.jpg");
+                animation: scrolling-background 25s linear infinite;
+            }
         }
 
-        .head
+        &:hover
         {
-            font-size: 28px;
+            transform: scale(1.08);
         }
 
-        p
+        &:active
         {
-            justify-content: center;
-            align-content: center;
-            text-align: center;
-            font-size: 22px;
+            transform: scale(1.05);
+
+            .bar
+            {
+                opacity: 0.7;
+            }
         }
     }
 
     &:intro
     {
         opacity: 0;
-        transform: scale(1.25);
     }
 }
 

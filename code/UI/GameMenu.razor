@@ -204,4 +204,9 @@
         Chat.CreateChatEntry(member.Name, " has closed their pizzeria!", "leave-message");
     }
 
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Ascending);
+    }
+
 }

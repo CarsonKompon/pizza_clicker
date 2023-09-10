@@ -5,8 +5,8 @@ BlessingButton
     font-family: Verdana;
     font-size: 18px;
     left: 0px;
-    width: 64px;
-    height: 64px;
+    width: 68px;
+    height: 68px;
     flex-shrink: 0;
     cursor: pointer;
     
@@ -45,6 +45,31 @@ BlessingButton
             background-color: rgba(rgb(0, 0, 0), 0.2);
             opacity: 0.2;
         }
+    }
+
+    &.owned
+    {
+        .button
+        {
+            background-color: rgba(rgb(134, 134, 134), 0.2);
+            opacity: 1;
+
+            img
+            {
+                opacity: 1;
+            }
+        }
+
+        &:hover
+        {
+            .button
+            {
+                background-color: rgba(rgb(134, 134, 134), 0.5);
+                opacity: 1;
+            }
+        }
+
+        border: 2px solid rgba(255, 217, 0, 0.11);
     }
 
     &:not(.cant-afford)

@@ -21,7 +21,14 @@
     <div class="body">
         <p>@Blessing.Description</p>
     </div>
-    @if(HasRequirements())
+    
+    @if(GameMenu.Instance.LocalPlayer.HasBlessing(Blessing.Ident))
+    {
+        <div class="requires">
+            <p>(Owned)</p>
+        </div>
+    }
+    else if(HasRequirements())
     {
         <div class="requires">
             <p>Requires:</p>

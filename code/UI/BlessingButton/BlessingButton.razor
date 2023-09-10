@@ -24,19 +24,28 @@
 
     string CanAfford()
     {
+        if(GameMenu.Instance.LocalPlayer.HasBlessing(Blessing.Ident))
+        {
+            return "owned";
+        }
+
         foreach(var ident in Blessing.Requires)
         {
-            if(!string.IsNullOrEmpty(ident) && !GameMenu.Instance.LocalPlayer.HasBlessing(ident))
+            if(!string.IsNullOrEmpty(ident))
             {
-                return "cant-afford";
+                if(!GameMenu.Instance.LocalPlayer.HasBlessing(ident))
+                {
+                    return "cant-afford";   
+                }
             }
         }
+        if(!GameMenu.Instance.LocalPlayer.HasBlessing(Blessing.Ident) && GameMenu.Instance.LocalPlayer.HeavenlyCrust < Blessing.Cost) return "cant-afford";
         return "";
     }
 
     void Pressed()
     {
-
+        GameMenu.Instance.LocalPlayer.BuyBlessing(Blessing);
     }
 
     protected override void OnMouseOver(MousePanelEvent e)
