@@ -1,6 +1,7 @@
 using Sandbox;
 using Sandbox.UI;
 using System;
+using System.Linq;
 
 namespace PizzaClicker;
 
@@ -46,6 +47,10 @@ public class Building
         if(player.HasBlessing("pizzas_per_friend_01"))
         {
             val *= 1d + (GameMenu.Instance.Lobby.MemberCount / 100d);
+        }
+        if(GoldenSwitch.Enabled)
+        {
+            val *= 1.5d + (player.Upgrades.Where(x => x.Key.Contains("gold_pizza")).Count() * 0.1d);
         }
         if(player.FrenzyTime > 0) val *= 7;
         return val;

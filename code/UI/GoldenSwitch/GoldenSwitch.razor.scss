@@ -1,0 +1,26 @@
+
+GoldenSwitch
+{
+    position: absolute;
+    top: 50%;
+    left: 30%;
+
+    transform: translate(-50%, -50%);
+
+    width: 128px;
+    height: 128px;
+
+    background: url("/ui/icons/gold_switch_off.png");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    &.on
+    {
+        background: url("/ui/icons/gold_switch_on.png");
+
+        sound-in: mouse.click;
+        sound-out: mouse.click;
+    }
+}
+

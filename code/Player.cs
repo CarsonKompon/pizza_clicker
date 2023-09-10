@@ -407,7 +407,7 @@ public class Player
     public void Update()
     {
         // Spawn the gold pizza
-        if(GoldTimer)
+        if(GoldTimer && !GoldenSwitch.Enabled)
         {
             Log.Info("GOLD TIME");
             GameMenu.Instance.SpawnGoldPizza();

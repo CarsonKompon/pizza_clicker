@@ -32,6 +32,11 @@
         
         <AscensionHeader Player=@LocalPlayer />
 
+        @if(LocalPlayer?.HasBlessing("golden_switch_1") ?? false)
+        {
+            <GoldenSwitch />
+        }
+
         <div class="pizza-button" onclick=@ClickPizza />
 
         <div class="shop">
