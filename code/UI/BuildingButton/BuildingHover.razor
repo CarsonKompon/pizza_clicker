@@ -20,10 +20,10 @@
         <p class="price">@(CostString) pizzas</p>
     </div>
     <div class="body">
-        <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.GetIndividualPizzasPerSecond(Player))) pizzas per second</p>
+        <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.GetIndividualPizzasPerSecond(Player))) pizzas/sec</p>
         @if(BuildingCount > 0)
         {
-            <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of your total PpS)</p>
+            <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas/sec (@(GetTotalPPSPercentage())% of your total PpS)</p>
         }
     </div>
 

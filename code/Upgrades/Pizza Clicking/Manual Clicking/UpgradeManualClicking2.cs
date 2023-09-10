@@ -9,7 +9,7 @@ public class UpgradeManualClicking2 : Upgrade
 {
     public override string Ident => "upgrade_manual_clicking_02";
     public override string Name => "Pizza Cursor II";
-    public override string Description => "Clicking gains +1% of your PpS";
+    public override string Description => "Clicking gains +1% of your pizzas/sec";
     public override double Cost => 5_000_000;
     public override string Icon => "ui/upgrades/cursor_bronze.png";
 
