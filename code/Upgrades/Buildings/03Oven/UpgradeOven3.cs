@@ -15,7 +15,7 @@ public class UpgradeOven3 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("oven") >= 25;
+        return player.GetBuildingResearch("oven") >= 25;
     }
 
     public override void OnPurchase(Player player)

@@ -14,7 +14,7 @@ public class AchievementPlanetOfPizzaCount1 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("planet_of_pizza") >= 1;
+        return player.GetBuildingResearch("planet_of_pizza") >= 1;
 	}
 
 }

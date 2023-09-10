@@ -23,5 +23,20 @@ public class Upgrade
 
     }
 
+    public double GetCost(Player player)
+    {
+        double cost = Cost;
+        if(player.HasBlessing("upgrade_discount_01"))
+        {
+            cost *= 0.99d;
+            if(player.HasBlessing("upgrade_discount_02"))
+            {
+                cost *= 1d - (Math.Floor(player.GetBuildingCount("rolling_pin") / 100d) * 0.01d);
+            }
+        }
+
+        return cost;
+    }
+
 }
 

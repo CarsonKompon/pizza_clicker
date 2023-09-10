@@ -14,7 +14,7 @@ public class AchievementPizzaChainCount6 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("pizza_chain") >= 250;
+        return player.GetBuildingResearch("pizza_chain") >= 250;
 	}
 
 }

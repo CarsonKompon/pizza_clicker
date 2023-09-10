@@ -14,7 +14,7 @@ public class AchievementInfiniteLoopCount9 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("infinite_pizza_loop") >= 400;
+        return player.GetBuildingResearch("infinite_pizza_loop") >= 400;
 	}
 
 }

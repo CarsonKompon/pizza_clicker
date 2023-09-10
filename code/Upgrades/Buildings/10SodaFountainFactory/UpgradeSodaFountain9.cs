@@ -15,7 +15,7 @@ public class UpgradeSodaFountain9 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("soda_fountain_factory") >= 300;
+        return player.GetBuildingResearch("soda_fountain_factory") >= 300;
     }
 
     public override void OnPurchase(Player player)

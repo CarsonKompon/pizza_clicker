@@ -15,7 +15,7 @@ public class BlessingGoldPizzas2 : Blessing
     public override string Icon => "/ui/pizzas/gold_pizza.png";
     public override string[] Requires => new string[] { "gold_pizzas_1" };
 
-    public virtual void OnActivate(Player player)
+    public override void OnActivate(Player player)
     {
         player.GoldMinTime *= 0.95f;
         player.GoldMaxTime *= 0.95f;

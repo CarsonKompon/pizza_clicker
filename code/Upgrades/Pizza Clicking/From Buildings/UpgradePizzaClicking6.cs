@@ -15,7 +15,7 @@ public class UpgradePizzaClicker6 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetTotalBuildingCount() >= 50;
+        return player.GetTotalBuildingResearch() >= 50;
     }
 
 }

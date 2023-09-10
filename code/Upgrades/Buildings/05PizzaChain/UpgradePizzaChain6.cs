@@ -15,7 +15,7 @@ public class UpgradePizzaChain6 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("pizza_chain") >= 150;
+        return player.GetBuildingResearch("pizza_chain") >= 150;
     }
 
     public override void OnPurchase(Player player)

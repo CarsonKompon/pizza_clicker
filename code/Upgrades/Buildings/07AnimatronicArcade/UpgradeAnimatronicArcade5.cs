@@ -15,7 +15,7 @@ public class UpgradeAnimatronicArcade5 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("animatronic_arcade") >= 100;
+        return player.GetBuildingResearch("animatronic_arcade") >= 100;
     }
 
     public override void OnPurchase(Player player)

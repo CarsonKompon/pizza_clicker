@@ -40,8 +40,8 @@
     public Player Player { get; set; }
 
     // string that returns Cost as string with commas
-    string CostString => NumberHelper.ToStringAbbreviated(Upgrade.Cost);
-    string CanAfford => (Player.Pizzas >= Upgrade.Cost) ? "" : "cant-afford";
+    string CostString => NumberHelper.ToStringAbbreviated(Upgrade.GetCost(Player));
+    string CanAfford => (Player.Pizzas >= Upgrade.GetCost(Player)) ? "" : "cant-afford";
 
     void Pressed()
     {

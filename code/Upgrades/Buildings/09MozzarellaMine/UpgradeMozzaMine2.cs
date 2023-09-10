@@ -15,7 +15,7 @@ public class UpgradeMozzaMine2 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("mozzarella_mine") >= 5;
+        return player.GetBuildingResearch("mozzarella_mine") >= 5;
     }
 
     public override void OnPurchase(Player player)

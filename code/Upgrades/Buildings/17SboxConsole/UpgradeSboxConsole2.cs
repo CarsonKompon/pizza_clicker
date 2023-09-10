@@ -15,7 +15,7 @@ public class UpgradeSboxConsole2 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("sbox_console") >= 5;
+        return player.GetBuildingResearch("sbox_console") >= 5;
     }
 
     public override void OnPurchase(Player player)

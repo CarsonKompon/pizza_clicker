@@ -15,7 +15,7 @@ public class UpgradeSauceBrewery3 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("sauce_brewery") >= 25;
+        return player.GetBuildingResearch("sauce_brewery") >= 25;
     }
 
     public override void OnPurchase(Player player)

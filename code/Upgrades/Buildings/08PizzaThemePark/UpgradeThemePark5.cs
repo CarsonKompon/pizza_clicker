@@ -15,7 +15,7 @@ public class UpgradeThemePark5 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("pizza_theme_park") >= 100;
+        return player.GetBuildingResearch("pizza_theme_park") >= 100;
     }
 
     public override void OnPurchase(Player player)

@@ -14,7 +14,7 @@ public class AchievementSboxConsoleCount6 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("sbox_console") >= 250;
+        return player.GetBuildingResearch("sbox_console") >= 250;
 	}
 
 }

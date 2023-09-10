@@ -19,6 +19,11 @@ public class Blessing
 
     }
 
+    public virtual void OnAfterAscension(Player player)
+    {
+
+    }
+
     public static Blessing GetBlessing(string ident)
     {
         foreach(var blessing in GameMenu.AllBlessings)

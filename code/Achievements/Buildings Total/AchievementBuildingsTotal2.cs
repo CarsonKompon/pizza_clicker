@@ -14,7 +14,7 @@ public class AchievementBuildingsTotal2 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetTotalBuildingCount() >= 500;
+        return player.GetTotalBuildingResearch() >= 500;
 	}
 
 }

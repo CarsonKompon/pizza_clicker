@@ -14,7 +14,7 @@ public class AchievementUniversityCount2 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("pizza_university") >= 50;
+        return player.GetBuildingResearch("pizza_university") >= 50;
 	}
 
 }

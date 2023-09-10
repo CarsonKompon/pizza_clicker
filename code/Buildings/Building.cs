@@ -15,7 +15,12 @@ public class Building
     public double GetCost(Player player, ulong free = 0)
     {
         var amount = player.GetBuildingCount(Ident);
-        return Math.Floor(Cost * Math.Pow(1.15, amount - free));
+        double cost = Math.Floor(Cost * Math.Pow(1.15, amount - free));
+        if(player.HasBlessing("building_discount_01"))
+        {
+            cost *= 0.99d;
+        }
+        return cost;
     }
 
     public double GetIndividualPizzasPerSecond(Player player)

@@ -14,7 +14,7 @@ public class AchievementDeliveryDriverCount1 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("delivery_driver") >= 1;
+        return player.GetBuildingResearch("delivery_driver") >= 1;
 	}
 
 }

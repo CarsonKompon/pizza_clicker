@@ -15,7 +15,7 @@ public class UpgradeDeliveryDriver9 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("delivery_driver") >= 300;
+        return player.GetBuildingResearch("delivery_driver") >= 300;
     }
 
     public override void OnPurchase(Player player)

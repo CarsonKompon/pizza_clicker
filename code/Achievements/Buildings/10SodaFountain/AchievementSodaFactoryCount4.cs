@@ -14,7 +14,7 @@ public class AchievementSodaFactoryCount4 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("soda_fountain_factory") >= 150;
+        return player.GetBuildingResearch("soda_fountain_factory") >= 150;
 	}
 
 }

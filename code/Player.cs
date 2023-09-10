@@ -75,10 +75,23 @@ public class Player
         {
             value += Math.Floor((double)PizzasPerSecond * (PpSPercent / 100));
         }
+        if(HasBlessing("starting_gloves_1"))
+        {
+            value *= 1.1d;
+            if(HasBlessing("starting_gloves_2"))
+            {
+                double percent = 1d + (GetBuildingCount("oven") / 200d);
+                double max = HasBlessing("starting_gloves_3") ? 2d : 1.5d;
+                if(percent > max) percent = max;
+                value *= percent;
+            }
+        }
+
         if(ClickFrenzy > 0)
         {
             value *= 777d;
         }
+
         HandMadePizzas += value;
         GivePizzas(value);
         TotalClicks++;
@@ -175,6 +188,14 @@ public class Player
         FrenzyTime = 0;
         ClickFrenzy = 0;
 
+        foreach(var blessing in GameMenu.AllBlessings)
+        {
+            if(HasBlessing(blessing.Ident))
+            {
+                blessing.OnAfterAscension(this);
+            }
+        }
+
         Save();
         GameMenu.Instance.Ascending = false;
     }
@@ -228,11 +249,16 @@ public class Player
         if(Pizzas < cost) return false;
 
         Pizzas -= cost;
-        if(!Buildings.ContainsKey(building.Ident)) Buildings.Add(building.Ident, 0);
-        Buildings[building.Ident] += 1;
+        GiveBuilding(building.Ident);
 
+        return true;
+    }
+
+    public bool GiveBuilding(string ident, ulong amount = 1)
+    {
+        if(!Buildings.ContainsKey(ident)) Buildings.Add(ident, 0);
+        Buildings[ident] += amount;
         Save();
-
         return true;
     }
 
@@ -253,6 +279,21 @@ public class Player
     public int GetAchievementCount()
     {
         return Achievements.Count;
+    }
+
+    public double GetAchievementResearch()
+    {
+        return Achievements.Count * ResearchSpeed;
+    }
+    
+    public double GetBuildingResearch(string ident)
+    {
+        return GetBuildingCount(ident) * ResearchSpeed;
+    }
+
+    public double GetTotalBuildingResearch()
+    {
+        return GetTotalBuildingCount() * ResearchSpeed;
     }
 
     public bool HasBlessing(string ident)
@@ -296,9 +337,10 @@ public class Player
 
         foreach(var upgrade in GameMenu.AllUpgrades)
         {
-            if(upgrade.Ident == ident && Pizzas >= upgrade.Cost)
+            var cost = upgrade.GetCost(this);
+            if(upgrade.Ident == ident && Pizzas >= cost)
             {
-                Pizzas -= upgrade.Cost;
+                Pizzas -= cost;
                 Upgrades[ident] = true;
                 upgrade.OnPurchase(this);
                 Save();

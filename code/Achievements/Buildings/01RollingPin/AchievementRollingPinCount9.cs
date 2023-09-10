@@ -14,7 +14,7 @@ public class AchievementRollingPinCount9 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("rolling_pin") >= 400;
+        return player.GetBuildingResearch("rolling_pin") >= 400;
 	}
 
 }

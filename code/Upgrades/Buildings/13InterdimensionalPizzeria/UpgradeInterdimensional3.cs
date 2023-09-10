@@ -15,7 +15,7 @@ public class UpgradeInterdimensional3 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetBuildingCount("interdimensional_pizzeria") >= 25;
+        return player.GetBuildingResearch("interdimensional_pizzeria") >= 25;
     }
 
     public override void OnPurchase(Player player)

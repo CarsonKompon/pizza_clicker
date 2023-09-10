@@ -14,7 +14,7 @@ public class AchievementPizzaGPTCount8 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("pizza_gpt") >= 350;
+        return player.GetBuildingResearch("pizza_gpt") >= 350;
 	}
 
 }

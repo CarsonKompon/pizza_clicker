@@ -14,5 +14,10 @@ public class BlessingStartingRollingPins : Blessing
     public override string[] Requires => new string[] { "ascension" };
     public override string Icon => "ui/buildings/rolling_pin.png";
 
+    public override void OnAfterAscension(Player player)
+    {
+        player.GiveBuilding("rolling_pin", 10);
+    }
+
 }
 

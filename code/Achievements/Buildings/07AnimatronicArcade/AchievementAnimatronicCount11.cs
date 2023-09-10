@@ -14,7 +14,7 @@ public class AchievementAnimatronicCount11 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetBuildingCount("animatronic_arcade") >= 500;
+        return player.GetBuildingResearch("animatronic_arcade") >= 500;
 	}
 
 }

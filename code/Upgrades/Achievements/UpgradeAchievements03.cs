@@ -15,7 +15,7 @@ public class UpgradeAchievements3 : Upgrade
 
     public override bool CheckUnlockCondition(Player player)
     {
-        return player.GetAchievementCount() >= 50;
+        return player.GetAchievementResearch() >= 50;
     }
 
     public override void OnPurchase(Player player)
