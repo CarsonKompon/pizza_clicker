@@ -34,6 +34,10 @@ public class Building
         {
             val *= 1d + (player.GetAchievementCount() * player.AchievementMultiplier);
         }
+        if(player.HasBlessing("pizzas_per_friend_01"))
+        {
+            val *= 1d + (GameMenu.Instance.Lobby.MemberCount * 0.05);
+        }
         if(player.FrenzyTime > 0) val *= 7;
         return val;
     }

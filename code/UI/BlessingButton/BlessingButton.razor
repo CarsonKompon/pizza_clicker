@@ -1,0 +1,68 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root onclick=@Pressed class=@CanAfford() >
+
+    <div class="button">
+        <img src=@Blessing.Icon class="icon" />
+    </div>
+</root>
+
+@code
+{
+    BlessingHover HoverPanel { get; set; }
+
+    public Blessing Blessing { get; set; }
+
+    string CanAfford()
+    {
+        foreach(var ident in Blessing.Requires)
+        {
+            if(!string.IsNullOrEmpty(ident) && !GameMenu.Instance.LocalPlayer.HasBlessing(ident))
+            {
+                return "cant-afford";
+            }
+        }
+        return "";
+    }
+
+    void Pressed()
+    {
+
+    }
+
+    protected override void OnMouseOver(MousePanelEvent e)
+    {
+        if(HoverPanel == null)
+        {
+            HoverPanel = new BlessingHover()
+            {
+                Blessing = Blessing,
+                Player = GameMenu.Instance.LocalPlayer
+            };
+            GameMenu.Instance.AddChild(HoverPanel);
+        }
+    }
+
+    protected override void OnMouseOut(MousePanelEvent e)
+    {
+        if(HoverPanel != null)
+        {
+            HoverPanel.Delete(true);
+            HoverPanel = null;
+        }
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(0);
+    }
+}

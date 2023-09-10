@@ -5,7 +5,7 @@ using System;
 namespace PizzaClicker;
 
 [Library]
-public class SkillStartingCrew : Skill
+public class BlessingStartingCrew : Blessing
 {
     public override string Ident => "starting_crew";
     public override string Name => "Starting Crew";
@@ -13,10 +13,6 @@ public class SkillStartingCrew : Skill
     public override double Cost => 5_000;
     public override string[] Requires => new string[] { "starting_rolling_pins" };
 
-    public override bool CheckUnlockCondition(Player player)
-    {
-        return false;
-    }
 
 }
 

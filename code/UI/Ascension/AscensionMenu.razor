@@ -1,0 +1,54 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using Sandbox.UI.Construct;
+@using Sandbox.Menu;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+<root>
+    <h1>Ascension</h1>
+    <div class="content">
+        <div class="tier">
+            <BlessingButton Blessing=@Blessing.GetBlessing("ascension") />
+        </div>
+        <div class="tier">
+            <BlessingButton Blessing=@Blessing.GetBlessing("research_1") />
+            <BlessingButton Blessing=@Blessing.GetBlessing("pizzas_per_friend_01") />
+            <BlessingButton Blessing=@Blessing.GetBlessing("starting_rolling_pins") />
+            <BlessingButton Blessing=@Blessing.GetBlessing("gold_pizzas_1") />
+        </div>
+        <div class="tier">
+            <div class="spacer" />
+            <BlessingButton Blessing=@Blessing.GetBlessing("pizzas_per_second_01") />
+            <BlessingButton Blessing=@Blessing.GetBlessing("building_discount_01") />
+            <BlessingButton Blessing=@Blessing.GetBlessing("gold_pizzas_2") />
+        </div>
+    </div>
+
+    <div class="info">
+        <div class="panel">
+            <p class="head">Ascension Level:</p>
+            <p>@NumberHelper.ToStringAbbreviated(GameMenu.Instance.LocalPlayer.AscensionLevel)</p>
+        </div>
+        <div class="panel">
+            <p class="head">Heavenly Crust:</p>
+            <p>@NumberHelper.ToStringAbbreviated(GameMenu.Instance.LocalPlayer.HeavenlyCrust)</p>
+        </div>
+    </div>
+</root>
+
+
+@code
+{
+    public Player Player { get; set; }
+
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Player?.TotalPizzasBaked);
+    }
+}

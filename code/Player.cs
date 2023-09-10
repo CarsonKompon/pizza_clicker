@@ -18,9 +18,14 @@ public class Player
     public double HandMadePizzas { get; set; } = 0;
     public double TotalClicks { get; set; } = 0;
     public double TotalGoldClicks { get; set; } = 0;
+    public double LegacyDough { get; set; } = 0;
+    public double TotalLegacyBaked { get; set; } = 0;
+    public double AscensionLevel { get; set; } = 0;
+    public double HeavenlyCrust { get; set; } = 0;
     public Dictionary<string, ulong> Buildings { get; set; } = new();
     public Dictionary<string, bool> Achievements { get; set; } = new();
     public Dictionary<string, bool> Upgrades { get; set; } = new();
+    public Dictionary<string, bool> Blessings { get; set; } = new();
 
     private Dictionary<string, double> buildingTimers = new();
     public Dictionary<string, double> Multipliers = new();
@@ -29,6 +34,7 @@ public class Player
     public double MittenMultiplier = 1;
     public double TotalMultiplier = 1;
     public double AchievementMultiplier = 0;
+    public double ResearchSpeed = 1;
     public double PpSPercent = 0;
     public float GoldMinTime = 300;
     public float GoldMaxTime = 900;
@@ -203,6 +209,20 @@ public class Player
     public int GetAchievementCount()
     {
         return Achievements.Count;
+    }
+
+    public bool HasBlessing(string ident)
+    {
+        if(!Blessings.ContainsKey(ident)) return false;
+        return Blessings[ident];
+    }
+
+    public bool GiveBlessing(string ident)
+    {
+        if(Blessings.ContainsKey(ident) && Blessings[ident]) return false;
+        Blessings[ident] = true;
+        Save();
+        return true;
     }
 
     public bool HasUpgrade(string ident)
@@ -395,11 +415,19 @@ public class Player
         data.PpSPercent = 0;
         data.GoldDuration = 8;
         data.GoldMultiplier = 1d;
+        data.ResearchSpeed = 1;
         foreach(var upgrade in GameMenu.AllUpgrades)
         {
             if(data.HasUpgrade(upgrade.Ident))
             {
                 upgrade.OnPurchase(data);
+            }
+        }
+        foreach(var blessing in GameMenu.AllBlessings)
+        {
+            if(data.HasBlessing(blessing.Ident))
+            {
+                blessing.OnActivate(data);
             }
         }
 

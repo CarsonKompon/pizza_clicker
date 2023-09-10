@@ -1,0 +1,170 @@
+AscensionHeader
+{
+    position: absolute;
+    bottom: 200px;
+    left: 0;
+    width: 100%;
+    gap: 8px;
+    opacity: 1;
+    transition: opacity 4s ease-out;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    font-family: Verdana;
+    color: white;
+    z-index: 1;
+
+    .header
+    {
+        font-size: 32px;
+        font-weight: black;
+        text-shadow: 0 0 10px black;
+    }
+
+    .ascend-button
+    {
+        background-color: gold;
+        padding: 4px 12px;
+        border-radius: 12px;
+        box-shadow: 0px 0px 4px gold;
+        pointer-events: all;
+        cursor: pointer;
+
+        > .bar
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            
+            .bar-fill
+            {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 50%;
+                height: 100%;
+                background-color: rgb(255, 249, 216);
+                transition: width 0.2s ease-out;
+            }
+        }
+
+        .info
+        {
+            flex-direction: column;
+            align-items: center;
+            font-size: 24px;
+            font-weight: black;
+            color: black;
+
+            .sub
+            {
+                font-size: 16px;
+                font-weight: normal;
+            }
+        }
+
+        .hover-panel
+        {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            width: 0%;
+            opacity: 0;
+            height: 0px;
+            background-color: rgba(black, 0.5);
+            padding: 4px;
+            flex-direction: column;
+            transition: left 1s ease-in-out, width 1s ease-in-out, height 0.2s ease-out, opacity 0.2s ease-out, color 0.2s ease-out;
+            overflow: hidden;
+            pointer-events: none;
+            padding: 8px;
+            gap: 8px;
+
+            
+            .stuff
+            {
+                flex-direction: column;
+                flex-grow: 1;
+                font-size: 18px;
+                background-color: rgba(black, 0.5);
+                padding: 4px;
+                padding-bottom: 8px;
+                text-align: center;
+                justify-content: center;
+                align-content: center;
+                gap: 2px;
+
+                p
+                {
+                    text-align: center;
+                    justify-content: center;
+                    align-content: center;
+                }
+            }
+
+            > .bar
+            {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 8px;
+                overflow: hidden;
+                
+                .bar-fill
+                {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 50%;
+                    height: 100%;
+                    background-color: rgb(255, 249, 216);
+                    transition: width 0.2s ease-out;
+                }
+            }
+        }
+
+        &:hover
+        {
+            background-color: rgb(255, 230, 88);
+            box-shadow: 0px 0px 4px white;
+
+            .info
+            {
+                color: black;
+            }
+
+            .hover-panel
+            {
+                width: 180%;
+                height: 100px;
+                left: -40%;
+                opacity: 1;
+                color: white;
+                transition: left 0.1s ease-out, width 0.1s ease-out, height 0.4s ease-in-out, opacity 0.1s ease-out;
+            }
+        }
+
+        &:active
+        {
+            .hover-panel
+            {
+                height: 0px;
+                left: -40%;
+                opacity: 0;
+            }
+        }
+    }
+
+    &.hidden
+    {
+        opacity: 0;
+    }
+
+}

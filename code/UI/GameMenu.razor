@@ -13,41 +13,52 @@
 
     <div class="background-overlay" />
 
-    <div class="menu-buttons">
+    @if(Ascending)
+    {
+        <AscensionMenu Player=@LocalPlayer />
+    }
+    else
+    {
 
-        <Leaderboard Players=@Players />
+        <div class="menu-buttons">
 
-        <AchievementMenu Player=@LocalPlayer />
+            <Leaderboard Players=@Players />
 
-    </div>
+            <AchievementMenu Player=@LocalPlayer />
 
-    <PizzaCount Player=@LocalPlayer />
+        </div>
 
-    <div class="pizza-button" onclick=@ClickPizza />
+        <PizzaCount Player=@LocalPlayer />
+        
+        <AscensionHeader Player=@LocalPlayer />
 
-    <div class="shop">
-        @if(LocalPlayer != null)
-        {
-            <div class="upgrades @((LocalPlayer.AvailableUpgrades().Count > 0) ? "" : "hidden")">
-                <h1>Upgrades</h1>
-                <div class="upgrade-content">
-                    @foreach(var upgrade in LocalPlayer.AvailableUpgrades().OrderBy(u => u.Cost))
+        <div class="pizza-button" onclick=@ClickPizza />
+
+        <div class="shop">
+            @if(LocalPlayer != null)
+            {
+                <div class="upgrades @((LocalPlayer.AvailableUpgrades().Count > 0) ? "" : "hidden")">
+                    <h1>Upgrades</h1>
+                    <div class="upgrade-content">
+                        @foreach(var upgrade in LocalPlayer.AvailableUpgrades().OrderBy(u => u.Cost))
+                        {
+                            <UpgradeButton Upgrade=@upgrade Player=@LocalPlayer />
+                        }
+                    </div>
+                </div>
+            }
+            <div class="buildings">
+                <h1>Buildings</h1>
+                <div class="building-list">
+                    @foreach(var building in AllBuildings)
                     {
-                        <UpgradeButton Upgrade=@upgrade Player=@LocalPlayer />
+                        <BuildingButton Building=@building Player=@LocalPlayer />
                     }
                 </div>
             </div>
-        }
-        <div class="buildings">
-            <h1>Buildings</h1>
-            <div class="building-list">
-                @foreach(var building in AllBuildings)
-                {
-                    <BuildingButton Building=@building Player=@LocalPlayer />
-                }
-            </div>
         </div>
-    </div>
+
+    }
 
     <Notifications />
 
@@ -70,11 +81,12 @@
     public static List<Building> AllBuildings { get; set; } = new List<Building>();
     public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
     public static List<Upgrade> AllUpgrades { get; set; } = new List<Upgrade>();
-    public static List<Skill> AllSkills { get; set; } = new List<Skill>();
+    public static List<Blessing> AllBlessings { get; set; } = new List<Blessing>();
 
     // Timers
     RealTimeSince LastSave = 0f;
     RealTimeSince LastNetworkSync = 0f;
+    public bool Ascending = false;
 
     protected override void OnAfterTreeRender(bool firstTime)
     {
@@ -112,12 +124,12 @@
                 AllUpgrades.Add(upgrade);
             }
 
-            AllSkills = new List<Skill>();
-            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Skill>())
+            AllBlessings = new List<Blessing>();
+            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Blessing>())
             {
-                Skill skill = TypeLibrary.Create<Skill>(typeDesc.TargetType);
-                if(skill.Cost <= 0) continue;
-                AllSkills.Add(skill);
+                Blessing blessing = TypeLibrary.Create<Blessing>(typeDesc.TargetType);
+                if(blessing.Cost <= 0) continue;
+                AllBlessings.Add(blessing);
             }
 
             InitPlayer(Game.SteamId);
@@ -128,12 +140,15 @@
     {
         Lobby.ReceiveMessages(OnNetworkMessage);
 
-        LocalPlayer?.Update();
-
-        if(LastSave > 1f)
+        if(!Ascending)
         {
-            LocalPlayer?.Save();
-            LastSave = 0f;
+            LocalPlayer?.Update();
+
+            if(LastSave > 1f)
+            {
+                LocalPlayer?.Save();
+                LastSave = 0f;
+            }
         }
 
         if(LastNetworkSync > 2f)

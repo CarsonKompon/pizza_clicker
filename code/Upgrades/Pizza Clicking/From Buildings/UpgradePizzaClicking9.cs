@@ -7,6 +7,7 @@ namespace PizzaClicker;
 [Library]
 public class UpgradePizzaClicker9 : Upgrade
 {
+    
     public override string Ident => "upgrade_pizza_clicker_9";
     public override string Name => "Gold Oven Mitts";
     public override string Description => "Multiplies the gain from Oven Mitts by 20";
