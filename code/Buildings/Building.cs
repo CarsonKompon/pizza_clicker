@@ -15,12 +15,12 @@ public class Building
     public double GetCost(Player player, ulong free = 0)
     {
         var amount = player.GetBuildingCount(Ident);
-        double cost = Math.Floor(Cost * Math.Pow(1.15, amount - free));
+        double cost = Cost * Math.Pow(1.15, amount - free);
         if(player.HasBlessing("building_discount_01"))
         {
             cost *= 0.99d;
         }
-        return cost;
+        return Math.Floor(cost);
     }
 
     public double GetIndividualPizzasPerSecond(Player player)
@@ -34,8 +34,11 @@ public class Building
                     * player.GetBuildingCount(Ident)
                     * player.GetBuildingMultiplier(Ident)
                     * player.GetTemporaryMultiplier(Ident)
-                    * player.TotalMultiplier
-                    * (1d + (player.LegacyDough / 100d));
+                    * player.TotalMultiplier;
+        if(player.HeavenlyPercent > 0)
+        {
+            val *= 1d + ((player.LegacyDough * player.HeavenlyPercent) / 100d);
+        }
         if(player.AchievementMultiplier > 0)
         {
             val *= 1d + (player.GetAchievementCount() * player.AchievementMultiplier);

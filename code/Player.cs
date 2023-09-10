@@ -42,6 +42,7 @@ public class Player
     public float GoldMaxTime = 900;
     public float GoldDuration = 8f;
     public double GoldMultiplier = 1d;
+    public double HeavenlyPercent = 0d;
 
     double particleTimer = 0f;
 

@@ -35,7 +35,7 @@ public class Upgrade
             }
         }
 
-        return cost;
+        return Math.Floor(cost);
     }
 
 }
