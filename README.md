@@ -1,3 +1,3 @@
 # Pizza Clicker
 
-I never thought I would have to say this but... There is NO license present in the repo, therefore you do **NOT** have the right to use the code displayed.  I open sourced this project so people can learn from it, not so people can steal it :)
+I have decided to add a LICENSE file to the repo. Nothing has changed, I still retain all rights as before, but it was added to prevent confusion from people who don't understand copyright law :)
