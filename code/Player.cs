@@ -108,8 +108,16 @@ public class Player
         string particleText = "Golden Pizza!";
         float chance = rand.Float();
 
+        // Click Frenzy
+        if(chance < 0.07f)
+        {
+            ClickFrenzy = 13 * (float)GoldMultiplier;
+            particleText = $"Click Frenzy!\nx7 pizzas/click for {ClickFrenzy}s";
+            Notifications.Popup("Click Frenzy!", $"x777 pizzas/click for {ClickFrenzy}s", "gold click", "/ui/pizzas/gold_pizza.png", ClickFrenzy);
+        }
+
         // Lucky Pizza
-        if(chance < 0.35f)
+        else if(chance < 0.35f)
         {
             double bankedPercent = Math.Floor(Pizzas * 0.15) + 13;
             double ppsPercent = Math.Floor(PizzasPerSecond * 900) + 13;
@@ -125,14 +133,6 @@ public class Player
             FrenzyTime = (float)value;
             particleText = $"Pizza Frenzy!\nx7 PpS for {value}s";
             Notifications.Popup("Pizza Frenzy!", $"x7 pizzas/sec for {value}s", "gold frenzy", "/ui/pizzas/gold_pizza.png", FrenzyTime);
-        }
-
-        // Click Frenzy
-        else if(chance < 0.07f)
-        {
-            ClickFrenzy = 13 * (float)GoldMultiplier;
-            particleText = $"Click Frenzy!\nx7 pizzas/click for {ClickFrenzy}s";
-            Notifications.Popup("Click Frenzy!", $"x777 pizzas/click for {ClickFrenzy}s", "gold click", "/ui/pizzas/gold_pizza.png", ClickFrenzy);
         }
 
         // Building Bonus
