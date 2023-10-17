@@ -2,7 +2,7 @@ using Sandbox;
 using Sandbox.UI;
 using System;
 
-namespace PizzaClicker;
+namespace PizzaClicker.Achievements;
 
 [Library]
 public class AchievementUpgradesTotal1 : Achievement

@@ -2,11 +2,10 @@ using Sandbox;
 using Sandbox.UI;
 using System;
 
-namespace PizzaClicker;
+namespace PizzaClicker.Achievements;
 
 [Library]
-public class AchievementPizzasBaked3
- : Achievement
+public class AchievementPizzasBaked3 : Achievement
 {
     public override string Ident => "pizzas_baked_03";
     public override string Name => "Bake it till you make it";

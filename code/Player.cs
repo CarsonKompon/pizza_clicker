@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Sandbox;
 using Sandbox.UI;
+using PizzaClicker.Achievements;
 
 namespace PizzaClicker;
 
