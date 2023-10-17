@@ -1,8 +1,6 @@
 using Sandbox;
-using Sandbox.UI;
-using System;
 
-namespace PizzaClicker;
+namespace PizzaClicker.Upgrades;
 
 [Library]
 public class UpgradeTopping30Salami : Upgrade
@@ -22,6 +20,4 @@ public class UpgradeTopping30Salami : Upgrade
     {
         player.TotalMultiplier += 0.05d;
     }
-
 }
-
