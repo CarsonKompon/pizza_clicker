@@ -4,6 +4,7 @@ using System.IO;
 using Sandbox;
 using Sandbox.UI;
 using PizzaClicker.Achievements;
+using PizzaClicker.Blessings;
 
 namespace PizzaClicker;
 
