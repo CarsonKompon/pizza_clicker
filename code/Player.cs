@@ -5,6 +5,7 @@ using Sandbox;
 using Sandbox.UI;
 using PizzaClicker.Achievements;
 using PizzaClicker.Blessings;
+using PizzaClicker.Buildings;
 
 namespace PizzaClicker;
 
