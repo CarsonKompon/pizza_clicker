@@ -143,7 +143,7 @@ public class Player
         else
         {
             var buildings = GetOwnedBuildings();
-            var building = buildings[rand.Int(buildings.Count)];
+            var building = buildings[rand.Next(buildings.Count)];
             double multiplier = (10 * GetBuildingCount(building.Ident) + 100d)/100d;
             TemporaryMultipliers[building.Ident] = multiplier;
             TemporaryTimers[building.Ident] = 30 * GoldMultiplier;
