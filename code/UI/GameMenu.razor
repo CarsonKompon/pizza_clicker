@@ -15,53 +15,45 @@
 @namespace PizzaClicker
 
 <root>
-
     <div class="background-overlay" />
 
-    @if(Ascending)
-    {
+    @if (Ascending) {
         <AscensionMenu Player=@LocalPlayer />
-    }
-    else
-    {
-
+    } else {
         <div class="menu-buttons">
-
             <Leaderboard Players=@Players />
 
             <AchievementMenu Player=@LocalPlayer />
-
         </div>
 
         <PizzaCount Player=@LocalPlayer />
-        
+
         <AscensionHeader Player=@LocalPlayer />
 
-        @if(LocalPlayer?.HasBlessing("golden_switch_1") ?? false)
-        {
+        @if (LocalPlayer?.HasBlessing("golden_switch_1") ?? false) {
             <GoldenSwitch />
         }
 
         <div class="pizza-button" onclick=@ClickPizza />
 
         <div class="shop">
-            @if(LocalPlayer != null)
-            {
+            @if (LocalPlayer != null) {
                 <div class="upgrades @((LocalPlayer.AvailableUpgrades().Count > 0) ? "" : "hidden")">
                     <h1>Upgrades</h1>
+
                     <div class="upgrade-content">
-                        @foreach(var upgrade in LocalPlayer.AvailableUpgrades().OrderBy(u => u.Cost))
-                        {
+                        @foreach (var upgrade in LocalPlayer.AvailableUpgrades().OrderBy(u => u.Cost)) {
                             <UpgradeButton Upgrade=@upgrade Player=@LocalPlayer />
                         }
                     </div>
                 </div>
             }
+
             <div class="buildings">
                 <h1>Buildings</h1>
+
                 <div class="building-list">
-                    @foreach(var building in AllBuildings)
-                    {
+                    @foreach (var building in AllBuildings) {
                         <BuildingButton Building=@building Player=@LocalPlayer />
                     }
                 </div>
@@ -73,7 +65,6 @@
     <Notifications />
 
     <Chatbox @ref="Chat" Lobby=@Lobby />
-
 </root>
 
 @code
@@ -92,55 +83,43 @@
     public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
     public static List<Upgrade> AllUpgrades { get; set; } = new List<Upgrade>();
     public static List<Blessing> AllBlessings { get; set; } = new List<Blessing>();
+    public bool Ascending = false;
 
     // Timers
-    RealTimeSince LastSave = 0f;
-    RealTimeSince LastNetworkSync = 0f;
-    public bool Ascending = false;
+    private RealTimeSince _lastSave = 0f;
+    private RealTimeSince _lastNetworkSync = 0f;
 
     protected override void OnAfterTreeRender(bool firstTime)
     {
         base.OnAfterTreeRender(firstTime);
 
-        if (firstTime)
-        {
+        if (firstTime) {
             Instance = this;
 
             Lobby.OnMemberEnter += OnPlayerJoined;
             Lobby.OnMemberLeave += OnPlayerLeft;
 
-            AllBuildings = new List<Building>();
-			foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Building>())
-			{
-                Building building = TypeLibrary.Create<Building>(typeDesc.TargetType);
-				if(building.Cost <= 0) continue;
-                AllBuildings.Add(building);
-			}
-            AllBuildings = AllBuildings.OrderBy(b => b.Cost).ToList();
+            AllBuildings = TypeLibrary.GetTypes<Building>()
+                .Select(t => TypeLibrary.Create<Building>(t.TargetType))
+                .Where(b => b.Cost > 0)
+                .OrderBy(b => b.Cost)
+                .ToList();
 
-            AllAchievements = new List<Achievement>();
-            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Achievement>())
-            {
-                Achievement achievement = TypeLibrary.Create<Achievement>(typeDesc.TargetType);
-                if(achievement.Ident == "none") continue;
-                AllAchievements.Add(achievement);
-            }
+            AllAchievements = TypeLibrary.GetTypes<Achievement>()
+                .Select(t => TypeLibrary.Create<Achievement>(t.TargetType))
+                .Where(a => a.Ident != "none")
+                .ToList();
 
-            AllUpgrades = new List<Upgrade>();
-            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Upgrade>())
-            {
-                Upgrade upgrade = TypeLibrary.Create<Upgrade>(typeDesc.TargetType);
-                if(upgrade.Cost <= 0) continue;
-                AllUpgrades.Add(upgrade);
-            }
+            AllUpgrades = TypeLibrary.GetTypes<Upgrade>()
+                .Select(t => TypeLibrary.Create<Upgrade>(t.TargetType))
+                .Where(u => u.Cost > 0)
+                .OrderBy(u => u.Cost)
+                .ToList();
 
-            AllBlessings = new List<Blessing>();
-            foreach(TypeDescription typeDesc in TypeLibrary.GetTypes<Blessing>())
-            {
-                Blessing blessing = TypeLibrary.Create<Blessing>(typeDesc.TargetType);
-                if(blessing.Cost <= 0) continue;
-                AllBlessings.Add(blessing);
-            }
+            AllBlessings = TypeLibrary.GetTypes<Blessing>()
+                .Select(t => TypeLibrary.Create<Blessing>(t.TargetType))
+                .Where(b => b.Cost > 0)
+                .ToList();
 
             InitPlayer(Game.SteamId);
         }
@@ -150,73 +129,70 @@
     {
         Lobby.ReceiveMessages(OnNetworkMessage);
 
-        if(!Ascending)
-        {
+        if (!Ascending) {
             LocalPlayer?.Update();
 
-            if(LastSave > 1f)
-            {
+            if (_lastSave > 1f) {
                 LocalPlayer?.Save();
-                LastSave = 0f;
+                _lastSave = 0f;
             }
         }
 
-        if(LastNetworkSync > 2f)
-        {
+        if (_lastNetworkSync > 2f) {
             NetworkPlayerUpdate(LocalPlayer);
-            LastNetworkSync = 0f;
+            _lastNetworkSync = 0f;
         }
 
     }
 
-    void InitPlayer(long steamid)
+    private void InitPlayer(long steamid)
     {
         Player player;
-        if(steamid == Game.SteamId)
-        {
+
+        if (steamid == Game.SteamId) {
             player = Player.LoadPlayer();
             Players.Add(player);
+
             NetworkPlayerUpdate(player);
-        }
-        else
-        {
+        } else {
             player = new Player(steamid);
             Players.Add(player);
         }
 
-        Chat.CreateChatEntry("", player.Member.Name + " opened their pizzeria!", "join-message");
+        Chat.CreateChatEntry("", $"{player.Member.Name} opened their pizzeria!", "join-message");
     }
 
-    void ClickPizza()
+    private void ClickPizza()
     {
-        double val = LocalPlayer.Click();
+        var val = LocalPlayer.Click();
+        var particleText = "+" + NumberHelper.ToStringAbbreviated(val);
+        TextParticle particle = new(Mouse.Position * ScaleFromScreen, particleText, (LocalPlayer.ClickFrenzy > 0 ? "gold" : ""), true);
 
-        string particleText = "+" + NumberHelper.ToStringAbbreviated(val);
-        var particle = new TextParticle(Mouse.Position * ScaleFromScreen, particleText, (LocalPlayer.ClickFrenzy > 0 ? "gold" : ""), true);
         AddChild(particle);
     }
 
     public void SpawnGoldPizza()
     {
-        Random rand = new Random();
-        var goldenPizza = new GoldPizza(new Vector2(rand.Next(10, 80), rand.Next(10, 80)), LocalPlayer.GoldDuration);
+        Random rand = new();
+        GoldPizza goldenPizza = new(new(rand.Next(10, 80), rand.Next(10, 80)), LocalPlayer.GoldDuration);
+
         AddChild(goldenPizza);
     }
 
-    void OnPlayerJoined(Friend member)
+    private void OnPlayerJoined(Friend member)
     {
         InitPlayer(member.Id);
     }
 
-    void OnPlayerLeft(Friend member)
+    private void OnPlayerLeft(Friend member)
     {
         Players.RemoveAll(p => p.Member.Id == member.Id);
-        Chat.CreateChatEntry("", member.Name + " has closed their pizzeria!", "leave-message");
+
+        Chat.CreateChatEntry("", $"{member.Name} has closed their pizzeria!", "leave-message");
     }
 
     protected override int BuildHash()
     {
         return HashCode.Combine(Ascending);
     }
-
 }
