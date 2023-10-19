@@ -11,56 +11,54 @@
 @namespace PizzaClicker
 
 <root>
-
-    @if(InLobby)
-    {
+    @if (InLobby) {
         <GameMenu Lobby=@Lobby />
     }
-
 </root>
 
 @code
 {
+    private ILobby Lobby { get; set; } = null;
 
-    bool InLobby = false;
-    ILobby Lobby { get; set; }
+    private bool InLobby => Lobby != null;
 
     protected override void OnAfterTreeRender(bool firstTime)
     {
         base.OnAfterTreeRender(firstTime);
 
-        if (firstTime)
-        {
+        if (firstTime) {
             JoinGame();
         }
     }
 
-    async void JoinGame()
+    private async void JoinGame()
     {
-        var lobbies = await Game.Menu.QueryLobbiesAsync();
-        lobbies = lobbies.OrderByDescending(x => x.MemberCount).ToArray();
-        for(int i=0; i<lobbies.Length; i++)
-        {
-            var lobby = lobbies[i];
-            if(lobby.MemberCount < lobby.MaxMembers)
-            {
+        var lobbies = (await Game.Menu.QueryLobbiesAsync())
+            .Where(l => l.MemberCount < l.MaxMembers)
+            .OrderByDescending(l => l.MemberCount)
+            .ToList();
+
+        foreach (var lobby in lobbies) {
+            if (await lobby.JoinAsync()) {
                 Lobby = lobby;
-                await Lobby.JoinAsync();
-                InLobby = true;
-                StateHasChanged();
+
                 return;
             }
         }
+
         Lobby = await Game.Menu.CreateLobbyAsync(100);
-        InLobby = true;
-        StateHasChanged();
     }
 
     [GameEvent.Menu.LobbyLeave]
     public void OnLobbyLeave()
     {
-        InLobby = false;
+        Lobby = null;
+
         JoinGame();
     }
 
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(InLobby);
+    }
 }
