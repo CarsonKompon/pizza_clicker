@@ -1,123 +1,133 @@
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
 @using Blessings;
 
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
+@if (Player == null) {
+    return;
+}
+
 <root>
     <div class="header">
         <h1>Ascension</h1>
+
         <div class="info">
             <div class="panel">
                 <p class="head">Ascension Level:</p>
-                <p>@NumberHelper.ToStringAbbreviated(GameMenu.Instance.LocalPlayer.LegacyDough)</p>
+                <p>@NumberHelper.ToStringAbbreviated(Player.LegacyDough)</p>
             </div>
+
             <div class="panel">
                 <p class="head">Heavenly Crust:</p>
-                <p>@NumberHelper.ToStringAbbreviated(GameMenu.Instance.LocalPlayer.HeavenlyCrust)</p>
+                <p>@NumberHelper.ToStringAbbreviated(Player.HeavenlyCrust)</p>
             </div>
         </div>
     </div>
+
     <div class="content">
         <div class="tier">
-            <BlessingButton Blessing=@Blessing.GetBlessing("ascension") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("ascension") />
         </div>
+
         <div class="tier">
-            <BlessingButton Blessing=@Blessing.GetBlessing("research_1") />
-            <BlessingButton Blessing=@Blessing.GetBlessing("pizzas_per_friend_01") />
-            <BlessingButton Blessing=@Blessing.GetBlessing("starting_rolling_pins") />
-            <BlessingButton Blessing=@Blessing.GetBlessing("gold_pizzas_1") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("research_1") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("pizzas_per_friend_01") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("starting_rolling_pins") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("gold_pizzas_1") />
         </div>
+
         <div class="tier">
             <div class="spacer" />
             <div class="spacer" />
             <div class="spacer" />
-            <BlessingButton Blessing=@Blessing.GetBlessing("starting_crew") />
-            <BlessingButton Blessing=@Blessing.GetBlessing("gold_pizzas_2") />
-            <BlessingButton Blessing=@Blessing.GetBlessing("golden_switch_1") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("starting_crew") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("gold_pizzas_2") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("golden_switch_1") />
         </div>
+
         <div class="tier">
             <div class="half" />
             <div class="spacer" />
             <div class="spacer" />
-            <BlessingButton Blessing=@Blessing.GetBlessing("upgrade_discount_01") />
-            <BlessingButton Blessing=@Blessing.GetBlessing("building_discount_01") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("upgrade_discount_01") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("building_discount_01") />
             <div class="half" />
-            <BlessingButton Blessing=@Blessing.GetBlessing("golden_switch_2") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("golden_switch_2") />
         </div>
+
         <div class="tier">
             <div class="spacer" />
-            <BlessingButton Blessing=@Blessing.GetBlessing("upgrade_discount_02") />
-            <BlessingButton Blessing=@Blessing.GetBlessing("starting_gloves_1") />
-            <div class="spacer" />           
-        </div>
-        <div class="tier">
-            <div class="spacer" />
-            <div class="spacer" />
-            <BlessingButton Blessing=@Blessing.GetBlessing("starting_gloves_2") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("upgrade_discount_02") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("starting_gloves_1") />
             <div class="spacer" />
         </div>
+
         <div class="tier">
             <div class="spacer" />
             <div class="spacer" />
-            <BlessingButton Blessing=@Blessing.GetBlessing("starting_gloves_3") />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("starting_gloves_2") />
+            <div class="spacer" />
+        </div>
+
+        <div class="tier">
+            <div class="spacer" />
+            <div class="spacer" />
+            <BlessingButton Player=@Player Blessing=@Blessing.GetBlessing("starting_gloves_3") />
             <div class="spacer" />
         </div>
     </div>
+
     <div @ref="AscendButton" class="ascend-button">
         <div class="bar">
             <div @ref="ProgressFill" class="bar-fill" />
         </div>
+
         <p>Complete Ascension</p>
     </div>
 </root>
 
-
 @code
 {
     public Player Player { get; set; }
-    Panel ProgressFill { get; set; }
-    Panel AscendButton { get; set; }
 
-    float Progress = 0f;
+    private Panel ProgressFill { get; set; }
+    private Panel AscendButton { get; set; }
+
+    private float Progress = 0f;
 
     public override void Tick()
     {
         ProgressFill.Style.Width = Length.Percent(Progress * 100f);
-        
-        if(AscendButton.HasActive)
-        {
+
+        if (AscendButton.HasActive) {
             Progress += Time.Delta / 3f;
-            if(Progress >= 1f)
-            {
+
+            if (Progress >= 1f) {
                 Progress = 0f;
-                GameMenu.Instance.LocalPlayer.Ascend();
+
+                Player.Ascend();
             }
-        }
-        else
-        {
+        } else {
             Progress -= Time.Delta * 4f;
-            if(Progress < 0f)
-            {
+
+            if (Progress < 0f) {
                 Progress = 0f;
             }
         }
 
-        Random rand = new Random();
+        Random rand = new();
         var shake = 100f * Progress;
-        AscendButton.Style.Top = Length.Pixels(rand.Float(-shake,shake));
-        AscendButton.Style.Left = Length.Pixels(rand.Float(-shake,shake));
+
+        AscendButton.Style.Top = Length.Pixels(rand.Float(-shake, shake));
+        AscendButton.Style.Left = Length.Pixels(rand.Float(-shake, shake));
     }
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(Player?.TotalPizzasBaked);
+        return HashCode.Combine(Player.TotalPizzasBaked);
     }
 }

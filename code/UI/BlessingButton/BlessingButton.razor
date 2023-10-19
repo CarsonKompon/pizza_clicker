@@ -1,9 +1,5 @@
-@using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
 @using System.Linq;
 @using Blessings;
 
@@ -11,8 +7,11 @@
 
 @namespace PizzaClicker
 
-<root onclick=@Pressed class=@CanAfford() >
+@if (Player == null || Blessing == null) {
+    return;
+}
 
+<root onclick=@Pressed class=@CanAfford>
     <div class="button">
         <img src=@Blessing.Icon class="icon" />
     </div>
@@ -20,53 +19,50 @@
 
 @code
 {
-    BlessingHover HoverPanel { get; set; }
-
+    public Player Player { get; set; }
     public Blessing Blessing { get; set; }
 
-    string CanAfford()
-    {
-        if(GameMenu.Instance.LocalPlayer.HasBlessing(Blessing.Ident))
-        {
-            return "owned";
-        }
+    private BlessingHover HoverPanel { get; set; }
 
-        foreach(var ident in Blessing.Requires)
-        {
-            if(!string.IsNullOrEmpty(ident))
-            {
-                if(!GameMenu.Instance.LocalPlayer.HasBlessing(ident))
-                {
-                    return "cant-afford";   
-                }
+    private string CanAfford
+    {
+        get {
+            if (Player.HasBlessing(Blessing.Ident)) {
+                return "owned";
             }
+
+            if (Blessing.Requires.Any(b => !Player.HasBlessing(b))) {
+                return "cant-afford";
+            }
+
+            if (!Player.HasBlessing(Blessing.Ident) && Player.HeavenlyCrust < Blessing.Cost) {
+                return "cant-afford";
+            }
+
+            return "";
         }
-        if(!GameMenu.Instance.LocalPlayer.HasBlessing(Blessing.Ident) && GameMenu.Instance.LocalPlayer.HeavenlyCrust < Blessing.Cost) return "cant-afford";
-        return "";
     }
 
-    void Pressed()
+    private void Pressed()
     {
-        GameMenu.Instance.LocalPlayer.BuyBlessing(Blessing);
+        Player.BuyBlessing(Blessing);
     }
 
     protected override void OnMouseOver(MousePanelEvent e)
     {
-        if(HoverPanel == null)
-        {
-            HoverPanel = new BlessingHover()
-            {
+        if (HoverPanel == null) {
+            HoverPanel = new() {
                 Blessing = Blessing,
-                Player = GameMenu.Instance.LocalPlayer
+                Player = Player
             };
+
             GameMenu.Instance.AddChild(HoverPanel);
         }
     }
 
     protected override void OnMouseOut(MousePanelEvent e)
     {
-        if(HoverPanel != null)
-        {
+        if (HoverPanel != null) {
             HoverPanel.Delete(true);
             HoverPanel = null;
         }
@@ -74,6 +70,6 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(CanAfford());
+        return HashCode.Combine(CanAfford);
     }
 }

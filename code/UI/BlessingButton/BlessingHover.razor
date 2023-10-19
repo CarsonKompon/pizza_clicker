@@ -1,76 +1,58 @@
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
 @using Blessings;
 
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
-<root>
+@if (Player == null || Blessing == null) {
+    return;
+}
 
+<root>
     <div class="header">
         <img src=@Blessing.Icon class="icon" />
+
         <div class="info">
             <p class="name">@Blessing.Name</p>
         </div>
+
         <p class="price">@(CostString) heavenly crust</p>
     </div>
+
     <div class="body">
         <p>@Blessing.Description</p>
     </div>
-    
-    @if(GameMenu.Instance.LocalPlayer.HasBlessing(Blessing.Ident))
-    {
+
+    @if (Player.HasBlessing(Blessing.Ident)) {
         <div class="requires">
             <p>(Owned)</p>
         </div>
-    }
-    else if(HasRequirements())
-    {
+    } else if (HasRequirements) {
         <div class="requires">
             <p>Requires:</p>
-            @foreach(var requirement in Blessing.Requires)
-            {
-                @if(!string.IsNullOrEmpty(requirement))
-                {
-                    <p>- @(Blessing.GetBlessing(requirement).Name)</p>
-                }
+
+            @foreach (var requirement in Blessing.Requires) {
+                <p>- @(Blessing.GetBlessing(requirement).Name)</p>
             }
         </div>
     }
-
 </root>
 
 @code
 {
-    // Code References
-    public Blessing Blessing { get; set; }
     public Player Player { get; set; }
+    public Blessing Blessing { get; set; }
 
-    // string that returns Cost as string with commas
-    string CostString => NumberHelper.ToStringAbbreviated(Blessing.Cost);
+    private string CostString => NumberHelper.ToStringAbbreviated(Blessing.Cost);
+    private bool HasRequirements => Blessing.Requires.Length > 0;
 
     public override void Tick()
     {
         Style.Top = Length.Pixels((Mouse.Position.y + 10f) * ScaleFromScreen);
         Style.Left = Length.Pixels((Mouse.Position.x + 10f) * ScaleFromScreen);
-    }
-
-    bool HasRequirements()
-    {
-        foreach(var requirement in Blessing.Requires)
-        {
-            if(!string.IsNullOrEmpty(requirement))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     protected override int BuildHash()

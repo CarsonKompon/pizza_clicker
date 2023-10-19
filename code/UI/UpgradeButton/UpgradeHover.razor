@@ -1,29 +1,30 @@
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
 @using Upgrades;
 
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
+@if (Player == null || Upgrade == null) {
+    return;
+}
+
 <root>
-
     <div class="header">
-            <img src=@Upgrade.Icon class="icon" />
-            <div class="info">
-                <p class="name">@Upgrade.Name</p>
-            </div>
-            <p class="price">@(CostString) pizzas</p>
-        </div>
-        <div class="body">
-            <p>@Upgrade.Description</p>
+        <img src=@Upgrade.Icon class="icon" />
+
+        <div class="info">
+            <p class="name">@Upgrade.Name</p>
         </div>
 
+        <p class="price">@(CostString) pizzas</p>
+    </div>
+
+    <div class="body">
+        <p>@Upgrade.Description</p>
+    </div>
 </root>
 
 @code
@@ -34,15 +35,15 @@
     public Panel ParentButton { get; set; }
 
     // string that returns Cost as string with commas
-    string CostString => NumberHelper.ToStringAbbreviated(Upgrade.GetCost(Player));
+    private string CostString => NumberHelper.ToStringAbbreviated(Upgrade.GetCost(Player));
 
     public override void Tick()
     {
-        if(!ParentButton.IsValid())
-        {
+        if (!ParentButton.IsValid()) {
             Delete();
             return;
         }
+
         Style.Top = Length.Pixels(ParentButton.Box.Top * ScaleFromScreen);
     }
 

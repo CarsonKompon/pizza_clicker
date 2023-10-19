@@ -1,63 +1,65 @@
 using Sandbox;
 using Sandbox.UI;
-using Sandbox.UI.Construct;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace PizzaClicker;
 
 [StyleSheet]
 public class GoldPizza : Panel
 {
-    float Duration = 8f;
-    float Opacity = 0f;
-    bool fadeOut = false;
+	private Player _player;
+	private float _duration = 8f;
+	private float _opacity = 0f;
+	private bool _fadeOut = false;
 
-    public GoldPizza(Vector2 pos, float duration = 8f)
-    {
-        Style.Top = Length.Percent(pos.y);
-        Style.Left = Length.Percent(pos.x);
-        Duration = duration;
-    }
+	public GoldPizza( Player player, Vector2 pos, float duration = 8f )
+	{
+		_player = player;
+		_duration = duration;
 
-    public override void Tick()
-    {
-        if(!fadeOut)
-        {
-            Opacity += Time.Delta / 2;
-            if (Opacity >= 1f)
-            {
-                Opacity = 1f;
-                fadeOut = true;
-            }
-        }
-        else
-        {
-            if(Duration > 0f)
-            {
-                Duration -= Time.Delta;
-            }
-            else
-            {
-                Opacity -= Time.Delta / 5;
-                if (Opacity <= 0f)
-                {
-                    Opacity = 0f;
-                    Delete(true);
-                }
-            }
-        }
+		Style.Top = Length.Percent( pos.y );
+		Style.Left = Length.Percent( pos.x );
+	}
 
-        Style.Opacity = Opacity;
-    }
+	public override void Tick()
+	{
+		if ( !_fadeOut )
+		{
+			_opacity += Time.Delta / 2;
+
+			if ( _opacity >= 1f )
+			{
+				_opacity = 1f;
+				_fadeOut = true;
+			}
+		}
+		else
+		{
+			if ( _duration > 0f )
+			{
+				_duration -= Time.Delta;
+			}
+			else
+			{
+				_opacity -= Time.Delta / 5;
+
+				if ( _opacity <= 0f )
+				{
+					_opacity = 0f;
+
+					Delete( true );
+				}
+			}
+		}
+
+		Style.Opacity = _opacity;
+	}
 
 	protected override void OnMouseUp( MousePanelEvent e )
 	{
 		base.OnMouseUp( e );
 
-        GameMenu.Instance.LocalPlayer?.GoldenClick(Mouse.Position * ScaleFromScreen);
-        Delete(true);
-	}
+		_player.GoldenClick( Mouse.Position * ScaleFromScreen );
 
+		Delete( true );
+	}
 }

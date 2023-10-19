@@ -1,59 +1,54 @@
-@using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
 @using Upgrades;
 
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
-<root onclick=@Pressed class=@CanAfford >
+@if (Player == null || Upgrade == null) {
+    return;  
+}
 
+<root onclick=@Pressed class=@CanAfford>
     <div class="button">
         <img src=@Upgrade.Icon class="icon" />
     </div>
-
 </root>
 
 @code
 {
-    UpgradeHover HoverPanel { get; set; }
-
     // Code References
     public Upgrade Upgrade { get; set; }
     public Player Player { get; set; }
 
     // string that returns Cost as string with commas
-    string CostString => NumberHelper.ToStringAbbreviated(Upgrade.GetCost(Player));
-    string CanAfford => (Player.Pizzas >= Upgrade.GetCost(Player)) ? "" : "cant-afford";
+    private string CostString => NumberHelper.ToStringAbbreviated(Upgrade.GetCost(Player));
+    private string CanAfford => (Player.Pizzas >= Upgrade.GetCost(Player)) ? "" : "cant-afford";
 
-    void Pressed()
+    private UpgradeHover HoverPanel { get; set; }
+
+    private void Pressed()
     {
         Player.GiveUpgrade(Upgrade.Ident);
     }
 
     protected override void OnMouseOver(MousePanelEvent e)
     {
-        if(HoverPanel == null)
-        {
-            HoverPanel = new UpgradeHover()
-            {
+        if (HoverPanel == null) {
+            HoverPanel = new UpgradeHover() {
                 Upgrade = Upgrade,
                 Player = Player,
                 ParentButton = this
             };
+
             GameMenu.Instance.AddChild(HoverPanel);
         }
     }
 
     protected override void OnMouseOut(MousePanelEvent e)
     {
-        if(HoverPanel != null)
-        {
+        if (HoverPanel != null) {
             HoverPanel.Delete(true);
             HoverPanel = null;
         }

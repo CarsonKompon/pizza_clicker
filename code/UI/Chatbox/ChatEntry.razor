@@ -1,14 +1,15 @@
 @using Sandbox;
 @using Sandbox.UI;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
 <root class="message">
-    @if(!string.IsNullOrEmpty(Avatar))
-    {
+    @if (!string.IsNullOrEmpty(Avatar)) {
         <img src=@Avatar class="avatar" />
     }
+
     <p class="name">@(Name)</p>
     <p class="content">@Content</p>
 </root>
@@ -19,13 +20,17 @@
     public string Content { get; set; }
     public string Avatar { get; set; }
 
-    RealTimeSince TimeSinceBorn = 0;
+    private RealTimeSince TimeSinceBorn = 0;
 
     public void SetMessage(string name, string content, long steamid = -1)
     {
         Name = name;
         Content = content;
-        if(steamid != -1) Avatar = $"avatar:{steamid}";
+
+        if (steamid != -1) {
+            Avatar = $"avatar:{steamid}";
+        }
+
         StateHasChanged();
     }
 
@@ -33,8 +38,7 @@
     {
         base.Tick();
 
-        if ( TimeSinceBorn > 10 && !HasClass("fade") )
-        {
+        if (TimeSinceBorn > 10 && !HasClass("fade")) {
             AddClass("fade");
         }
     }

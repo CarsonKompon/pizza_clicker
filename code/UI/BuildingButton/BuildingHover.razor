@@ -1,82 +1,81 @@
-@using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
 @using Buildings;
 
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
-<root>
+@if (Player == null || Building == null) {
+    return;
+}
 
+<root>
     <div class="header">
         <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
+
         <div class="info">
             <p class="name">@Building.Name</p>
             <p class="count">(Owned: @(BuildingCount.ToString()))</p>
         </div>
+
         <p class="price">@(CostString) pizzas</p>
     </div>
+
     <div class="body">
         <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.GetIndividualPizzasPerSecond(Player))) pizzas/sec</p>
-        @if(BuildingCount > 0)
-        {
-            <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas/sec (@(GetTotalPPSPercentage())% of your total PpS)</p>
+
+        @if (BuildingCount > 0) {
+            <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(TotalPPS) pizzas/sec (@(TotalPPSPercentage)% of your total PpS)</p>
         }
     </div>
-
 </root>
 
 @code
 {
-    Panel ProgressBar { get; set; }
-
-    // Code References
     public Building Building { get; set; }
     public Player Player { get; set; }
     public Panel ParentButton { get; set; }
 
-    double BuildingCount => Player.GetBuildingCount(Building.Ident);
+    private Panel ProgressBar { get; set; }
 
-    // string that returns Cost as string with commas
-    string CostString => NumberHelper.ToStringAbbreviated(Building.GetCost(Player));
+    private double BuildingCount => Player.GetBuildingCount(Building.Ident);
+    private string CostString => NumberHelper.ToStringAbbreviated(Building.GetCost(Player));
+
+    private string PPS
+    {
+        get {
+            var pps = Building.GetPizzasPerSecond(Player);
+            if (pps < 1000) {
+                return pps.ToString("F1").TrimEnd(new[] { '0', '.' });
+            }
+
+            return NumberHelper.ToStringAbbreviated(pps);
+        }
+    }
+
+    private string TotalPPS
+    {
+        get {
+            var buildingPPS = Building.GetPizzasPerSecond(Player);
+            return NumberHelper.ToStringAbbreviated(buildingPPS);
+        }
+    }
+
+    private string TotalPPSPercentage
+    {
+        get {
+            var totalPPS = Player.PizzasPerSecond;
+            var buildingPPS = Building.GetPizzasPerSecond(Player);
+            var percentage = (buildingPPS * 100) / totalPPS;
+
+            return percentage.ToString("F1");
+        }
+    }
 
     public override void Tick()
     {
         Style.Top = Length.Pixels(ParentButton.Box.Top * ScaleFromScreen);
-    }
-
-    string GetPPS()
-    {
-        var pps = Building.GetPizzasPerSecond(Player);
-        if(pps < 1000)
-        {
-            var result = pps.ToString("F1");
-            if(result.EndsWith(".0"))
-            {
-                result = result.Substring(0, result.Length - 2);
-            }
-            return result;
-        }
-        return NumberHelper.ToStringAbbreviated(pps);
-    }
-
-    string GetTotalPPS()
-    {
-        var buildingPPS = Building.GetPizzasPerSecond(Player);
-        return NumberHelper.ToStringAbbreviated(buildingPPS);
-    }
-
-    string GetTotalPPSPercentage()
-    {
-        var totalPPS = Player.PizzasPerSecond;
-        var buildingPPS = Building.GetPizzasPerSecond(Player);
-        var percentage = (buildingPPS * 100) / totalPPS;
-        return percentage.ToString("F1");
     }
 
     protected override int BuildHash()

@@ -31,7 +31,7 @@
         <AscensionHeader Player=@LocalPlayer />
 
         @if (LocalPlayer?.HasBlessing("golden_switch_1") ?? false) {
-            <GoldenSwitch />
+            <GoldenSwitch Player=@LocalPlayer />
         }
 
         <div class="pizza-button" onclick=@ClickPizza />
@@ -174,7 +174,8 @@
     public void SpawnGoldPizza()
     {
         Random rand = new();
-        GoldPizza goldenPizza = new(new(rand.Next(10, 80), rand.Next(10, 80)), LocalPlayer.GoldDuration);
+        Vector2 pos = new(rand.Next(10, 80), rand.Next(10, 80));
+        GoldPizza goldenPizza = new(LocalPlayer, pos, LocalPlayer.GoldDuration);
 
         AddChild(goldenPizza);
     }

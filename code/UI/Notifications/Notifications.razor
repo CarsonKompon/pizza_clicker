@@ -1,10 +1,5 @@
-@using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
-@using System;
-@using System.Collections.Generic;
-@using System.Linq;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
@@ -26,13 +21,15 @@
 
     public static void Popup(string header, string text, string styles = "", string icon = null, float duration = 8f)
     {
-        var popup = new Popup();
+        Popup popup = new() {
+            Header = header,
+            Text = text,
+            Icon = icon,
+            Duration = duration,
+        };
+
         popup.AddClass(styles);
-        popup.Header = header;
-        popup.Text = text;
-        popup.Icon = icon;
-        popup.Duration = duration;;
+
         Instance.AddChild(popup);
     }
-
 }
