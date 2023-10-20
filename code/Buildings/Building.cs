@@ -45,7 +45,7 @@ public class Building
 
 		if ( player.AchievementMultiplier > 0 )
 		{
-			val *= 1d + (player.GetAchievementCount() * player.AchievementMultiplier);
+			val *= 1d + (player.AchievementCount * player.AchievementMultiplier);
 		}
 
 		if ( player.HasBlessing( "pizzas_per_friend_01" ) )

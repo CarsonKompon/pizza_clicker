@@ -13,7 +13,7 @@ public class UpgradePizzaClicker14 : Upgrade
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-		return player.GetTotalBuildingResearch() >= 1500;
+		return player.TotalBuildingResearch >= 1500;
 	}
 
 	public override void OnPurchase( Player player )

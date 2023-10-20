@@ -35,8 +35,7 @@
     {
         var lobbies = (await Game.Menu.QueryLobbiesAsync())
             .Where(l => l.MemberCount < l.MaxMembers)
-            .OrderByDescending(l => l.MemberCount)
-            .ToList();
+            .OrderByDescending(l => l.MemberCount);
 
         foreach (var lobby in lobbies) {
             if (await lobby.JoinAsync()) {

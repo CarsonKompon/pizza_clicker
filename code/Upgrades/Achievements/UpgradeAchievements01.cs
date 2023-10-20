@@ -13,7 +13,7 @@ public class UpgradeAchievements1 : Upgrade
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-		return player.GetAchievementResearch() >= 10;
+		return player.AchievementResearch >= 10;
 	}
 
 	public override void OnPurchase( Player player )

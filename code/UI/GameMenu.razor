@@ -38,11 +38,11 @@
 
         <div class="shop">
             @if (LocalPlayer != null) {
-                <div class="upgrades @((LocalPlayer.AvailableUpgrades().Count > 0) ? "" : "hidden")">
+                <div class="upgrades @((LocalPlayer.AvailableUpgrades.Count() > 0) ? "" : "hidden")">
                     <h1>Upgrades</h1>
 
                     <div class="upgrade-content">
-                        @foreach (var upgrade in LocalPlayer.AvailableUpgrades().OrderBy(u => u.Cost)) {
+                        @foreach (var upgrade in LocalPlayer.AvailableUpgrades.OrderBy(u => u.Cost)) {
                             <UpgradeButton Upgrade=@upgrade Player=@LocalPlayer />
                         }
                     </div>

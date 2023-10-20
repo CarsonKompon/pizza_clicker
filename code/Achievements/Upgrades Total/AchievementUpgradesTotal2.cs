@@ -14,7 +14,7 @@ public class AchievementUpgradesTotal2 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetTotalUpgradeCount() >= 50;
+        return player.TotalUpgradeCount >= 50;
 	}
 
 }
