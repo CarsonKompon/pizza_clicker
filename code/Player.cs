@@ -240,7 +240,7 @@ public class Player
 		FileSystem.Data.WriteJson( Game.SteamId.ToString(), this );
 	}
 
-	public double GetBuildingCount( string ident )
+	public ulong GetBuildingCount( string ident )
 	{
 		if ( !Buildings.ContainsKey( ident ) )
 		{
@@ -285,7 +285,7 @@ public class Player
 
 	public bool BuyBuilding( Building building )
 	{
-		var cost = building.GetCost( this );
+		var cost = building.GetCost( this, GetBuildingCount( building.Ident ) );
 		if ( Pizzas < cost )
 		{
 			return false;
@@ -483,7 +483,7 @@ public class Player
 				continue;
 			}
 
-			var buildingPps = building.GetPizzasPerSecond( this );
+			var buildingPps = building.GetPizzasPerSecond( this, GetBuildingCount( building.Ident ) );
 			PizzasPerSecond += buildingPps;
 
 			if ( !_buildingTimers.ContainsKey( building.Ident ) )

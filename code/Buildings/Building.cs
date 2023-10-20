@@ -12,10 +12,9 @@ public class Building
 	public virtual double Cost => 0;
 	public virtual double PizzasPerSecond => 0;
 
-	public double GetCost( Player player, ulong free = 0 )
+	public double GetCost( Player player, ulong count )
 	{
-		var amount = player.GetBuildingCount( Ident );
-		var cost = Cost * Math.Pow( 1.15, amount - free );
+		var cost = Cost * Math.Pow( 1.15, count );
 
 		if ( player.HasBlessing( "building_discount_01" ) )
 		{
@@ -30,10 +29,10 @@ public class Building
 		return PizzasPerSecond * player.GetBuildingMultiplier( Ident ) * player.GetTemporaryMultiplier( Ident );
 	}
 
-	public double GetPizzasPerSecond( Player player )
+	public double GetPizzasPerSecond( Player player, ulong count )
 	{
 		var val = PizzasPerSecond
-				 * player.GetBuildingCount( Ident )
+				 * count
 				 * player.GetBuildingMultiplier( Ident )
 				 * player.GetTemporaryMultiplier( Ident )
 				 * player.TotalMultiplier;
