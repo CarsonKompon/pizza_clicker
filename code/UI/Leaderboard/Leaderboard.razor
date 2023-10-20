@@ -1,33 +1,38 @@
-
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
 @using System.Collections.Generic;
 @using System.Linq;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
+
+@if (Players == null) {
+    return;
+}
 
 <root class="leaderboard @(IsOpen ? "open" : "") ">
     <div class="open-close" onclick=@ToggleLeaderboard>
         <i class="open @(IsOpen ? "hide" : "") ">leaderboard</i>
         <i class="close @(IsOpen ? "" : "hide") ">minimize</i>
     </div>
+
     <h1>Players</h1>
+
     <div class="leaderboard-header">
         <div class="name">Name</div>
         <div class="pizzas">Pizzas</div>
         <div class="pizzas-per-second">Pizzas/Sec</div>
     </div>
+
     <div class="leaderboard-entries">
         @foreach(var player in Players.OrderByDescending(p => p.PizzasPerSecond))
         {
             <div class="leaderboard-entry">
                 <div class="name">@player.Member.Name</div>
                 <div class="pizzas">@NumberHelper.ToStringAbbreviated(player.Pizzas, 2, false)</div>
-                <div class="pizzas-per-second">@player.GetPizzasPerSecond()</div>
+                <div class="pizzas-per-second">@NumberHelper.ToStringAbbreviated(player.PizzasPerSecond, 2, false)</div>
             </div>
         }
     </div>
@@ -35,27 +40,26 @@
 
 @code
 {
-    public List<Player> Players { get; set; }
+    public IEnumerable<Player> Players { get; set; }
+
     public bool IsOpen { get; set; } = true;
 
-    void ToggleLeaderboard()
+    private void ToggleLeaderboard()
     {
         IsOpen = !IsOpen;
     }
 
     public override void Tick()
     {
-        if(Input.Pressed("score"))
-        {
+        if (Input.Pressed("score")) {
             ToggleLeaderboard();
         }
     }
 
     protected override int BuildHash()
     {
-        int hash = 0;
-        foreach (var player in Players)
-        {
+        var hash = 0;
+        foreach (var player in Players) {
             hash = HashCode.Combine(hash, player.Pizzas);
         }
         return HashCode.Combine(hash, IsOpen);

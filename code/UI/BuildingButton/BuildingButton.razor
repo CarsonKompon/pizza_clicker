@@ -1,147 +1,117 @@
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
+@using Buildings;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
-<root onclick=@Pressed class="@GetClassNames()" >
+@if (Player == null || Building == null) {
+    return;
+}
 
+<root onclick=@Pressed class="@ClassNames">
     <div class="main">
         <p class="count">@("x" + BuildingCount.ToString())</p>
 
         <div class="content">
-        
             <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
-            
-            <div class="info">
 
+            <div class="info">
                 <p class="name">@Building.Name</p>
 
                 <div class="sub-info">
-
                     <p class="price">@(CostString) pizzas</p>
                     <p class="pps">@(NumberHelper.ToStringAbbreviated(Building.GetIndividualPizzasPerSecond(Player))) pizzas/sec</p>
-
                 </div>
-
             </div>
 
             <div class="progress-bar">
                 <div @ref="ProgressBar" class="progress-fill" />
             </div>
-
         </div>
     </div>
-
-    @* <div class="hover-info">
-        <div class="header">
-            <img src="/ui/buildings/@(Building.Ident).png" class="icon" />
-            <div class="info">
-                <p class="name">@Building.Name</p>
-                <p class="count">(Owned: @(BuildingCount.ToString()))</p>
-            </div>
-            <p class="price">@(CostString) pizzas</p>
-        </div>
-        <div class="body">
-            <p>Each @(Building.Name) produces @(NumberHelper.ToStringAbbreviated(Building.GetIndividualPizzasPerSecond(Player))) pizzas per second</p>
-            @if(BuildingCount > 0)
-            {
-                <p>You have @(BuildingCount.ToString()) @(Building.Name)s producing @(GetTotalPPS()) pizzas per second (@(GetTotalPPSPercentage())% of your total PpS)</p>
-            }
-        </div>
-    </div> *@
-
 </root>
 
 @code
 {
-    Panel ProgressBar { get; set; }
-
-    // Code References
     public Building Building { get; set; }
     public Player Player { get; set; }
 
-    double BuildingCount => Player.GetBuildingCount(Building.Ident);
+    private ulong BuildingCount => Player.GetBuildingCount(Building.Ident);
+    private double BuildingCost => Building.GetCost(Player, BuildingCount);
+    private double BuildingPPS => Building.GetPizzasPerSecond(Player, BuildingCount);
+    private string CostString => NumberHelper.ToStringAbbreviated(BuildingCost);
+    private string PPSString => PPS;
+    private string CanAfford => (Player.Pizzas >= BuildingCost && BuildingCount < 4000) ? "" : "cant-afford";
+    private string IsUnlocked => (Building.Ident == "rolling_pin" || BuildingCount > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
+    private string IsVisible => (Building.Ident == "rolling_pin" || BuildingCount > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
 
-    // string that returns Cost as string with commas
-    string CostString => NumberHelper.ToStringAbbreviated(Building.GetCost(Player));
-    string PPSString => GetPPS();
-    string CanAfford => (Player.Pizzas >= Building.GetCost(Player) && Player.GetBuildingCount(Building.Ident) < 4000) ? "" : "cant-afford";
-    string IsUnlocked => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
-    string IsVisible => (Building.Ident == "rolling_pin" || Player.GetBuildingCount(Building.Ident) > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
-
-    string GetClassNames()
+    private string ClassNames
     {
-        string val = $"{CanAfford} {IsUnlocked} {IsVisible}";
-        if(Player.GetTemporaryMultiplier(Building.Ident) > 1)
-        {
-            val += " gold";
-        }
-        return val;
-    }
+        get {
+            var val = $"{CanAfford} {IsUnlocked} {IsVisible}";
 
-    BuildingHover HoverPanel;
-
-    string GetPPS()
-    {
-        var pps = Building.GetPizzasPerSecond(Player);
-        if(pps < 1000)
-        {
-            var result = pps.ToString("F1");
-            if(result.EndsWith(".0"))
-            {
-                result = result.Substring(0, result.Length - 2);
+            if (Player.GetTemporaryMultiplier(Building.Ident) > 1) {
+                val += " gold";
             }
-            return result;
+
+            return val;
         }
-        return NumberHelper.ToStringAbbreviated(pps);
     }
 
-    string GetTotalPPS()
+    private Panel ProgressBar { get; set; }
+
+    private BuildingHover HoverPanel;
+
+    private bool IsInitialized => ProgressBar != null;
+
+    private string PPS
     {
-        var buildingPPS = Building.GetPizzasPerSecond(Player);
-        return NumberHelper.ToStringAbbreviated(buildingPPS);
+        get {
+            var pps = BuildingPPS;
+            if (pps < 1000) {
+                return pps.ToString("F1").TrimEnd(new[] { '0', '.' });
+            }
+
+            return NumberHelper.ToStringAbbreviated(pps);
+        }
     }
 
-    string GetTotalPPSPercentage()
+    private string TotalPPS => NumberHelper.ToStringAbbreviated(BuildingPPS);
+
+    private string TotalPPSPercentage
     {
-        var totalPPS = Player.PizzasPerSecond;
-        var buildingPPS = Building.GetPizzasPerSecond(Player);
-        var percentage = (buildingPPS * 100) / totalPPS;
-        return percentage.ToString("F1");
+        get {
+            var percentage = (BuildingPPS * 100) / Player.PizzasPerSecond;
+            return percentage.ToString("F1");
+        }
     }
 
-    void Pressed()
+    private void Pressed()
     {
-        if(Player.GetBuildingCount(Building.Ident) < 4000)
-        {
+        if (BuildingCount < 4000) {
             Player.BuyBuilding(Building);
         }
     }
 
     protected override void OnMouseOver(MousePanelEvent e)
     {
-        if(HoverPanel == null)
-        {
-            HoverPanel = new BuildingHover()
-            {
+        if (HoverPanel == null) {
+            HoverPanel = new() {
                 Building = Building,
                 Player = Player,
                 ParentButton = this
             };
+
             GameMenu.Instance.AddChild(HoverPanel);
         }
     }
 
     protected override void OnMouseOut(MousePanelEvent e)
     {
-        if(HoverPanel != null)
-        {
+        if (HoverPanel != null) {
             HoverPanel.Delete(true);
             HoverPanel = null;
         }
@@ -149,7 +119,11 @@
 
     public override void Tick()
     {
-        var progress = MathX.Clamp((float)((Player.Pizzas * 100) / Building.GetCost(Player)), 0, 100);
+        if (!IsInitialized) {
+            return;
+        }
+
+        var progress = MathX.Clamp((float)((Player.Pizzas * 100) / BuildingCost), 0, 100);
         ProgressBar.Style.Width = Length.Percent(progress);
     }
 

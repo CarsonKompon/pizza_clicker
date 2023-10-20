@@ -1,94 +1,101 @@
 using System.Linq;
+using System.Text;
 using Sandbox;
 using Sandbox.Menu;
 
 namespace PizzaClicker;
 
-enum NETWORK_MESSAGE
+internal enum NETWORK_MESSAGE : byte
 {
-    NONE,
-    PLAYER_UPDATE,
-    ACHIEVEMENT_UNLOCK
+	NONE,
+	PLAYER_UPDATE,
+	ACHIEVEMENT_UNLOCK
 }
 
 public partial class GameMenu
 {
-    void OnNetworkMessage(ILobby.NetworkMessage msg)
-    {
+	private void OnNetworkMessage( ILobby.NetworkMessage msg )
+	{
+		var data = msg.Data;
+		var messageId = data.Read<NETWORK_MESSAGE>();
 
-        ByteStream data = msg.Data;
+		switch ( messageId )
+		{
+			// Player Update Network Message
+			case NETWORK_MESSAGE.PLAYER_UPDATE:
+				if ( msg.Source.Id == Game.SteamId )
+				{
+					return;
+				}
 
-        byte messageId = data.Read<byte>();
+				var playerId = msg.Source.Id;
+				var player = Players.FirstOrDefault( p => p.Member.Id == playerId, null );
 
-        switch((NETWORK_MESSAGE)messageId)
-        {
+				if ( player == null )
+				{
+					player = new( msg.Source.Id );
+					Players.Add( player );
+				}
 
-            // Player Update Network Message
-            case NETWORK_MESSAGE.PLAYER_UPDATE:
-                if(msg.Source.Id == Game.SteamId) return;
+				player.ReadDataStream( data );
 
-                Player player = null;
-                foreach(var p in Players)
-                {
-                    if(p.Member.Id == msg.Source.Id)
-                    {
-                        player = p;
-                        break;
-                    }
-                }
-                if(player == null)
-                {
-                    player = new Player(msg.Source.Id);
-                    Players.Add(player);
-                }
-                player.ReadDataStream(data);
+				break;
 
-                break;
+			// Achievement Unlock Network Message
+			case NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK:
+				var byteLength = data.Read<int>();
+				var wordBytes = new byte[byteLength];
 
-            // Achievement Unlock Network Message
-            case NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK:
+				for ( int i = 0; i < byteLength; i++ )
+				{
+					wordBytes[i] = data.Read<byte>();
+				}
 
-                int byteLength = data.Read<int>();
-                byte[] wordBytes = new byte[byteLength];
-                for(int i=0; i<byteLength; i++)
-                {
-                    wordBytes[i] = data.Read<byte>();
-                }
-                var ident = System.Text.Encoding.Unicode.GetString(wordBytes);
+				var ident = Encoding.Unicode.GetString( wordBytes );
+				var achievement = AllAchievements.FirstOrDefault( a => a.Ident == ident, null );
+				if ( achievement == null )
+				{
+					break;
+				}
 
-                foreach(var achievement in AllAchievements)
-                {
-                    if(achievement.Ident == ident)
-                    {
-                        Chat.CreateChatEntry("", msg.Source.Name + " unlocked the achievement \"" + achievement.Name + "\"", "achievement");
-                        break;
-                    }
-                }
+				Chat.CreateChatEntry( "", $"{msg.Source.Name} unlocked the achievement \"{achievement.Name}\"", "achievement" );
 
-                break;
+				break;
 
-        }
-    }
+			case NETWORK_MESSAGE.NONE:
+			default:
+				break;
+		}
+	}
 
-    void NetworkPlayerUpdate(Player player)
-    {
-        if(player == null) return;
-        Lobby.BroadcastMessage(player.GetDataStream());
-    }
+	private void NetworkPlayerUpdate( Player player )
+	{
+		if ( player == null )
+		{
+			return;
+		}
 
-    public void NetworkAchievementUnlock(Player player, string ident)
-    {
-        if(player == null) return;
-        byte[] wordBytes = System.Text.Encoding.Unicode.GetBytes(ident);
-        ByteStream data = ByteStream.Create(5 + wordBytes.Length);
-        data.Write((byte)NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK);
-        data.Write((int)wordBytes.Length);
-        for(int i=0; i<wordBytes.Length; i++)
-        {
-            data.Write(wordBytes[i]);
-        }
+		Lobby.BroadcastMessage( player.GetDataStream() );
+	}
 
-        Lobby.BroadcastMessage(data);
-    }
+	public void NetworkAchievementUnlock( Player player, string ident )
+	{
+		if ( player == null )
+		{
+			return;
+		}
 
+		var wordBytes = Encoding.Unicode.GetBytes( ident );
+		var data = ByteStream.Create( 5 + wordBytes.Length );
+
+		data.Write( NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK );
+		data.Write( wordBytes.Length );
+
+		for ( int i = 0; i < wordBytes.Length; i++ )
+		{
+			data.Write( wordBytes[i] );
+		}
+
+		Lobby.BroadcastMessage( data );
+	}
 }

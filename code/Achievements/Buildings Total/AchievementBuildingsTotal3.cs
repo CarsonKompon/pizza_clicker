@@ -2,7 +2,7 @@ using Sandbox;
 using Sandbox.UI;
 using System;
 
-namespace PizzaClicker;
+namespace PizzaClicker.Achievements;
 
 [Library]
 public class AchievementBuildingsTotal3 : Achievement
@@ -14,7 +14,7 @@ public class AchievementBuildingsTotal3 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetTotalBuildingCount() >= 1_000;
+        return player.TotalBuildingCount >= 1_000;
 	}
 
 }

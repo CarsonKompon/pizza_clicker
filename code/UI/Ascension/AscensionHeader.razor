@@ -1,126 +1,112 @@
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
-<root class="header @GetClassNames()">
+@if (Player == null) {
+    return;
+}
+
+<root class="header @ClassNames">
     <div @ref="ButtonPanel" class="ascend-button">
         <div class="bar">
             <div @ref="ProgressFill" class="bar-fill" />
         </div>
+
         <div class="info">
             <p>Press and hold to ascend</p>
-            <p class="sub">You will ascend with @(GetLevels()) level(s)</p>
+            <p class="sub">You will ascend with @(Levels) level(s)</p>
         </div>
-
 
         <div class="hover-panel">
             <div class="stuff">
-                <p>@(NumberHelper.ToStringAbbreviated(GetLevels())) levels will bring you to level @(NumberHelper.ToStringAbbreviated(GetPlayerLevel())) and will grant you +@(GetLevels())% pizzas/sec in your next life.</p>
-                <p>You need @(NumberHelper.ToStringAbbreviated(GetRemainingPizzas())) more pizzas for the next level.</p>
+                <p>@(NumberHelper.ToStringAbbreviated(Levels)) levels will bring you to level @(NumberHelper.ToStringAbbreviated(PlayerLevel)) and will grant you +@(Levels)% pizzas/sec in your next life.</p>
+                <p>You need @(NumberHelper.ToStringAbbreviated(RemainingPizzas)) more pizzas for the next level.</p>
             </div>
+
             <div class="bar">
                 <div @ref="NextProgressFill" class="bar-fill" />
             </div>
         </div>
-    
     </div>
 </root>
 
-
 @code
 {
-    Panel ProgressFill { get; set; }
-    Panel NextProgressFill { get; set; }
-    Panel ButtonPanel { get; set; }
-    float Progress = 0f;
-
     public Player Player { get; set; }
+
+    private Panel ProgressFill { get; set; }
+    private Panel NextProgressFill { get; set; }
+    private Panel ButtonPanel { get; set; }
+    private float Progress = 0f;
+
+    private string ClassNames => (PlayerLevel == 0) ? "hidden" : "";
+    private double PlayerLevel => Player.LegacyDough;
+    private double Levels => PlayerLevel - Player.LastLevel;
+    private double TotalPizzaCount => Player.TotalPizzasBaked + Player.TotalPizzasBakedAllTime;
+
+    private double NextCost
+    {
+        get {
+            var cost = GetLevelCost(PlayerLevel + 1);
+
+            while ((TotalPizzaCount - Player.TotalLegacyBaked) >= cost) {
+                Player.TotalLegacyBaked += cost;
+                Player.LegacyDough += 1;
+
+                cost = GetLevelCost(PlayerLevel + 1);
+            }
+
+            return cost;
+        }
+    }
+
+    private double RemainingPizzas => NextCost - (TotalPizzaCount - Player.TotalLegacyBaked);
+    private float NextProgress => (float)((TotalPizzaCount - Player.TotalLegacyBaked) / NextCost);
+
+    private bool IsInitialized => ProgressFill != null && NextProgressFill != null && ButtonPanel != null;
 
     public override void Tick()
     {
-        ProgressFill.Style.Width = Length.Percent(Progress * 100f);
-        NextProgressFill.Style.Width = Length.Percent(GetNextProgress() * 100f);
+        if (!IsInitialized) {
+            return;
+        }
 
-        if(HasActive && !GameMenu.Instance.Ascending)
-        {
+        ProgressFill.Style.Width = Length.Percent(Progress * 100f);
+        NextProgressFill.Style.Width = Length.Percent(NextProgress * 100f);
+
+        if (HasActive && !GameMenu.Instance.Ascending) {
             Progress += Time.Delta / 10f;
-            if(Progress >= 1f)
-            {
+
+            if (Progress >= 1f) {
                 Progress = 1f;
                 Player.StartAscension();
             }
-        }
-        else
-        {
+        } else {
             Progress -= Time.Delta * 4f;
-            if(Progress <= 0f)
-            {
+
+            if (Progress <= 0f) {
                 Progress = 0f;
             }
         }
 
-        Random rand = new Random();
+        Random rand = new();
         var shake = 10f * Progress;
-        ButtonPanel.Style.Top = Length.Pixels(rand.Float(-shake,shake));
-        ButtonPanel.Style.Left = Length.Pixels(rand.Float(-shake,shake));
+
+        ButtonPanel.Style.Top = Length.Pixels(rand.Float(-shake, shake));
+        ButtonPanel.Style.Left = Length.Pixels(rand.Float(-shake, shake));
     }
 
-    string GetClassNames()
-    {
-        return (GetPlayerLevel() == 0) ? "hidden" : "";
-    }
-
-    double GetLevelCost(double level)
+    private double GetLevelCost(double level)
     {
         return Math.Pow(level, 3d) * 1_000_000_000_000d;
     }
 
-    double GetPlayerLevel()
-    {
-        return Player?.LegacyDough ?? 0;
-    }
-
-    double GetLevels()
-    {
-        return GetPlayerLevel() - (Player?.LastLevel ?? 0);
-    }
-
-    double GetTotalPizzaCount()
-    {
-        return ((Player?.TotalPizzasBaked ?? 0) + (Player?.TotalPizzasBakedAllTime ?? 0));
-    }
-
-    double GetNextCost()
-    {
-        double cost = GetLevelCost(GetPlayerLevel() + 1);
-        while((GetTotalPizzaCount() - (Player?.TotalLegacyBaked ?? 0)) >= cost)
-        {
-            Player.TotalLegacyBaked += cost;
-            Player.LegacyDough += 1;
-            cost = GetLevelCost(GetPlayerLevel() + 1);
-        }
-        return cost;
-    }
-
-    float GetNextProgress()
-    {
-        return (float)((GetTotalPizzaCount() - (Player?.TotalLegacyBaked ?? 0)) / GetNextCost());
-    }
-
-    double GetRemainingPizzas()
-    {
-        return GetNextCost() - (GetTotalPizzaCount() - (Player?.TotalLegacyBaked ?? 0));
-    }
-
     protected override int BuildHash()
     {
-        return HashCode.Combine(GetTotalPizzaCount());
+        return HashCode.Combine(TotalPizzaCount);
     }
 }

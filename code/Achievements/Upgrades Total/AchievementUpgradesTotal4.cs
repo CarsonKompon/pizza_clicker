@@ -2,7 +2,7 @@ using Sandbox;
 using Sandbox.UI;
 using System;
 
-namespace PizzaClicker;
+namespace PizzaClicker.Achievements;
 
 [Library]
 public class AchievementUpgradesTotal4 : Achievement
@@ -14,7 +14,7 @@ public class AchievementUpgradesTotal4 : Achievement
 
 	public override bool CheckUnlockCondition( Player player )
 	{
-        return player.GetTotalUpgradeCount() >= 200;
+        return player.TotalUpgradeCount >= 200;
 	}
 
 }

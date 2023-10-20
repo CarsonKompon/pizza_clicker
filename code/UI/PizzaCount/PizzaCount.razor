@@ -1,38 +1,39 @@
-@using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
-<root class="header @GetClassNames()">
-    <p class="pizza-count">@GetPizzaCount() Pizzas</p>
-    <p class="pps-count">@(Player?.GetPizzasPerSecond()) pizzas/sec</p>
-</root>
+@if (Player == null) {
+    return;
+}
 
+<root class="header @ClassNames">
+    <p class="pizza-count">@PizzaCountValue Pizzas</p>
+    <p class="pps-count">@(Player.PizzasPerSecond) pizzas/sec</p>
+</root>
 
 @code
 {
     public Player Player { get; set; }
 
-    string GetPizzaCount()
+    private string PizzaCountValue
     {
-        double pizzas = Player?.Pizzas ?? 0;
-        if(pizzas < 1000000) return NumberHelper.ToStringWithCommas(pizzas);
-        return NumberHelper.ToStringWithWords(pizzas, false);
+        get
+        {
+            var pizzas = Player.Pizzas;
+            if (pizzas < 1_000_000) {
+                return NumberHelper.ToStringWithCommas(pizzas);
+            }
+            return NumberHelper.ToStringWithWords(pizzas, false);
+        }
     }
 
-    string GetClassNames()
-    {
-        return ((Player?.FrenzyTime > 0) ? "gold" : "");
-    }
+    private string ClassNames => (Player.FrenzyTime > 0) ? "gold" : "";
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(Player?.Pizzas);
+        return HashCode.Combine(Player.Pizzas);
     }
 }

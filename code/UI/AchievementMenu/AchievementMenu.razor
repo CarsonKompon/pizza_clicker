@@ -1,65 +1,71 @@
-
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
 @using System.Linq;
+@using Achievements;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
+@if (Player == null) {
+    return;
+}
+
 <root class="achievements @(IsOpen ? "open" : "") ">
-        <div class="open-close" onclick=@ToggleMenu>
-            <i class="open @(IsOpen ? "hide" : "") ">emoji_events</i>
-            <i class="close @(IsOpen ? "" : "hide") ">minimize</i>
-        </div>
-        <h1>Achievements</h1>
-        <div class="content">
-            @foreach(var achievement in GameMenu.AllAchievements.OrderBy(x => x.Ident))
-            {
-                <div class="achievement @((Player?.HasAchievement(achievement.Ident) ?? false) ? "unlocked" : "") ">
-                    <img src="@achievement.Icon" class="icon" />
-                    <div class="info">
-                        <p class="name" >@achievement.Name</p>
-                        <p class="desc" >@achievement.Description</p>
-                    </div>
+    <div class="open-close" onclick=@ToggleMenu>
+        <i class="open @(IsOpen ? "hide" : "") ">emoji_events</i>
+        <i class="close @(IsOpen ? "" : "hide") ">minimize</i>
+    </div>
+
+    <h1>Achievements</h1>
+
+    <div class="content">
+        @foreach (var achievement in GameMenu.AllAchievements.OrderBy(x => x.Ident)) {
+            <div class="achievement @(Player.HasAchievement(achievement.Ident) ? "unlocked" : "") ">
+                <img src="@achievement.Icon" class="icon" />
+
+                <div class="info">
+                    <p class="name">@achievement.Name</p>
+                    <p class="desc">@achievement.Description</p>
                 </div>
-            }
-        </div>
-        <p class="achievement-count">@AchievementProgress()</p>
+            </div>
+        }
+    </div>
+
+    <p class="achievement-count">@AchievementProgress</p>
 </root>
 
 @code
 {
     public Player Player { get; set; }
-    public bool IsOpen { get; set; } = false;
 
-    void ToggleMenu()
+    private bool IsOpen { get; set; } = false;
+
+    private string AchievementProgress
+    {
+        get {
+            var unlocked = Player.Achievements.Count(x => x.Value);
+            var total = GameMenu.AllAchievements.Count;
+
+            return $"{unlocked}/{total}";
+        }
+    }
+
+    private void ToggleMenu()
     {
         IsOpen = !IsOpen;
     }
 
     public override void Tick()
     {
-        if(Input.Pressed("slot1"))
-        {
+        if (Input.Pressed("slot1")) {
             ToggleMenu();
         }
     }
 
-    string AchievementProgress()
-    {
-        if(Player == null || Player.Achievements == null) return "";
-        var unlocked = Player.Achievements.Count(x => x.Value);
-        var total = GameMenu.AllAchievements.Count;
-        return $"{unlocked}/{total}";
-    }
-
     protected override int BuildHash()
     {
-        return HashCode.Combine(IsOpen, AchievementProgress());
+        return HashCode.Combine(IsOpen, AchievementProgress);
     }
-
 }

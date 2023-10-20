@@ -1,39 +1,36 @@
-
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.UI.Construct;
-@using Sandbox.Menu;
 @using System;
-@using System.Collections.Generic;
-@using System.Linq;
+
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
-<root onclick=@Pressed class="@GetClasses()" >
+@if (Player == null) {
+    return;
+}
+
+<root onclick=@Pressed class="@ClassNames">
 
 </root>
 
 @code
 {
+    public Player Player { get; set; }
+
     public static bool Enabled = false;
-   
+
+    private string ClassNames => Enabled ? "on" : "off";
+
     public void Pressed()
     {
         Enabled = !Enabled;
 
-        var player = GameMenu.Instance.LocalPlayer;
-        player.GoldTimer = new Random().Float(player.GoldMinTime, player.GoldMaxTime);
-    }
-
-    string GetClasses()
-    {
-        return Enabled ? "on" : "off";
+        Player.GoldTimer = new Random().Float(Player.GoldMinTime, Player.GoldMaxTime);
     }
 
     protected override int BuildHash()
     {
         return HashCode.Combine(Enabled);
     }
-
 }
