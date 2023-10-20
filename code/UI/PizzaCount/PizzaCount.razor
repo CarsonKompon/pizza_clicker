@@ -11,7 +11,7 @@
 
 <root class="header @ClassNames">
     <p class="pizza-count">@PizzaCountValue Pizzas</p>
-    <p class="pps-count">@(Player.PizzasPerSecond) pizzas/sec</p>
+    <p class="pps-count">@PizzaPerSecondValue pizzas/sec</p>
 </root>
 
 @code
@@ -27,6 +27,18 @@
                 return NumberHelper.ToStringWithCommas(pizzas);
             }
             return NumberHelper.ToStringWithWords(pizzas, false);
+        }
+    }
+
+    private string PizzaPerSecondValue
+    {
+        get
+        {
+            var pps = Player.PizzasPerSecond;
+            if (pps < 1_000) {
+                return NumberHelper.ToStringWithCommas(pps);
+            }
+            return NumberHelper.ToStringAbbreviated(pps);
         }
     }
 
