@@ -67,8 +67,14 @@
     private double RemainingPizzas => NextCost - (TotalPizzaCount - Player.TotalLegacyBaked);
     private float NextProgress => (float)((TotalPizzaCount - Player.TotalLegacyBaked) / NextCost);
 
+    private bool IsInitialized => ProgressFill != null && NextProgressFill != null && ButtonPanel != null;
+
     public override void Tick()
     {
+        if (!IsInitialized) {
+            return;
+        }
+
         ProgressFill.Style.Width = Length.Percent(Progress * 100f);
         NextProgressFill.Style.Width = Length.Percent(NextProgress * 100f);
 

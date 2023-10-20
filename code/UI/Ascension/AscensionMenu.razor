@@ -99,8 +99,14 @@
 
     private float Progress = 0f;
 
+    private bool IsInitialized => ProgressFill != null && AscendButton != null;
+
     public override void Tick()
     {
+        if (!IsInitialized) {
+            return;
+        }
+
         ProgressFill.Style.Width = Length.Percent(Progress * 100f);
 
         if (AscendButton.HasActive) {

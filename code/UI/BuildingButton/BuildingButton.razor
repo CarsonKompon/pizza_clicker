@@ -60,7 +60,10 @@
     }
 
     private Panel ProgressBar { get; set; }
+
     private BuildingHover HoverPanel;
+
+    private bool IsInitialized => ProgressBar != null;
 
     private string PPS
     {
@@ -123,6 +126,10 @@
 
     public override void Tick()
     {
+        if (!IsInitialized) {
+            return;
+        }
+
         var progress = MathX.Clamp((float)((Player.Pizzas * 100) / Building.GetCost(Player)), 0, 100);
         ProgressBar.Style.Width = Length.Percent(progress);
     }

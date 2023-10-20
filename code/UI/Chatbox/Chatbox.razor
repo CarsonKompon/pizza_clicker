@@ -20,6 +20,8 @@
     private TextEntry ChatTextEntry { get; set; }
     private string ChatText { get; set; }
 
+    private bool IsInitialized => ChatTextEntry != null;
+
     protected override void OnAfterTreeRender(bool firstTime)
     {
         base.OnAfterTreeRender(firstTime);
@@ -31,6 +33,10 @@
 
     public override void Tick()
     {
+        if (!IsInitialized) {
+            return;
+        }
+
         if ((Input.Pressed("chat") || ChatTextEntry.HasActive) && !HasClass("show")) {
             ShowChat();
         } else if (!ChatTextEntry.HasFocus && HasClass("show")) {
