@@ -9,7 +9,7 @@
 <root class="chatbox">
     <div @ref="ChatPanel" class="chat"></div>
 
-    <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@SendChat onblur=@CloseChat Value:bind=@ChatText Placeholder="Enter message..." AllowEmojiReplace=@(true)></TextEntry>
+    <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@Submit onblur=@Close Placeholder="Enter message..." AllowEmojiReplace=@(true)></TextEntry>
 </root>
 
 @code
@@ -18,7 +18,6 @@
 
     private Panel ChatPanel { get; set; }
     private TextEntry ChatTextEntry { get; set; }
-    private string ChatText { get; set; }
 
     private bool IsInitialized => ChatTextEntry != null;
 
@@ -28,6 +27,8 @@
 
         if (firstTime) {
             Lobby.OnChatMessage += OnChatMessage;
+
+            ChatTextEntry.PreferScrollToBottom = true;
         }
     }
 
@@ -37,10 +38,12 @@
             return;
         }
 
-        if ((Input.Pressed("chat") || ChatTextEntry.HasActive) && !HasClass("show")) {
-            ShowChat();
-        } else if (!ChatTextEntry.HasFocus && HasClass("show")) {
-            CloseChat();
+        if ((Input.Pressed("chat") || ChatTextEntry.HasActive) && !HasClass("open")) {
+            CreateChatEntry("test", "this is a very very very very very very very very very very very very very verylong message", "", 76561198054820824);
+
+            Open();
+        } else if (!ChatTextEntry.HasFocus && HasClass("open")) {
+            Close();
         }
     }
 
@@ -64,24 +67,30 @@
         Audio.Play("ui.button.press");
     }
 
-    private void ShowChat()
+    private void Open()
     {
-        AddClass("show");
+        AddClass("open");
         ChatTextEntry.Focus();
+        ChatPanel.TryScrollToBottom();
     }
 
-    private void CloseChat()
+    private void Close()
     {
-        RemoveClass("show");
+        RemoveClass("open");
         ChatTextEntry.Blur();
     }
 
-    private void SendChat()
+    private void Submit()
     {
-        Lobby.SendChat(ChatText);
+        var message = ChatTextEntry.Text.Trim();
+        if (string.IsNullOrWhiteSpace(message)) {
+            return;
+        }
+
+        Lobby.SendChat(message);
 
         ChatTextEntry.Text = "";
 
-        CloseChat();
+        Close();
     }
 }

@@ -6,11 +6,16 @@
 @namespace PizzaClicker
 
 <root class="message">
-    @if (!string.IsNullOrEmpty(Avatar)) {
-        <img src=@Avatar class="avatar" />
+    @if (!string.IsNullOrEmpty(Avatar) || !string.IsNullOrEmpty(Name)) {
+        <div class="header">
+            @if (!string.IsNullOrEmpty(Avatar)) {
+                <img src=@Avatar class="avatar" />
+            }
+
+            <h2 class="name">@(Name)</h2>
+        </div>
     }
 
-    <p class="name">@(Name)</p>
     <p class="content">@Content</p>
 </root>
 
