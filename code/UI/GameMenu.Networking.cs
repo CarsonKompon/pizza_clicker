@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sandbox;
@@ -14,6 +15,9 @@ internal enum NETWORK_MESSAGE : byte
 
 public partial class GameMenu
 {
+	private readonly Dictionary<long, RealTimeSince> LastPlayersAchievementNetworkMessage = new();
+	private readonly Dictionary<long, RealTimeSince> LastPlayersAchievementUnlock = new();
+
 	private void OnNetworkMessage( ILobby.NetworkMessage msg )
 	{
 		var data = msg.Data;
@@ -30,7 +34,6 @@ public partial class GameMenu
 
 				var playerId = msg.Source.Id;
 				var player = Players.FirstOrDefault( p => p.Member.Id == playerId, null );
-
 				if ( player == null )
 				{
 					player = new( msg.Source.Id );
@@ -43,10 +46,15 @@ public partial class GameMenu
 
 			// Achievement Unlock Network Message
 			case NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK:
+				if ( LastPlayersAchievementNetworkMessage.TryGetValue( msg.Source.Id, out var value ) && value < 1f )
+				{
+					return;
+				}
+
 				var byteLength = data.Read<int>();
 				var wordBytes = new byte[byteLength];
 
-				for ( int i = 0; i < byteLength; i++ )
+				for ( var i = 0; i < byteLength; i++ )
 				{
 					wordBytes[i] = data.Read<byte>();
 				}
@@ -59,6 +67,8 @@ public partial class GameMenu
 				}
 
 				Chat.CreateChatEntry( "", $"{msg.Source.Name} unlocked the achievement \"{achievement.Name}\"", "achievement" );
+
+				LastPlayersAchievementNetworkMessage[msg.Source.Id] = 0;
 
 				break;
 
@@ -85,17 +95,24 @@ public partial class GameMenu
 			return;
 		}
 
+		if ( LastPlayersAchievementUnlock.TryGetValue( player.Member.Id, out var value ) && value < 1f )
+		{
+			return;
+		}
+
 		var wordBytes = Encoding.Unicode.GetBytes( ident );
 		var data = ByteStream.Create( 5 + wordBytes.Length );
 
 		data.Write( NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK );
 		data.Write( wordBytes.Length );
 
-		for ( int i = 0; i < wordBytes.Length; i++ )
+		for ( var i = 0; i < wordBytes.Length; i++ )
 		{
 			data.Write( wordBytes[i] );
 		}
 
 		Lobby.BroadcastMessage( data );
+
+		LastPlayersAchievementUnlock[player.Member.Id] = 0;
 	}
 }
