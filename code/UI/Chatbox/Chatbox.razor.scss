@@ -1,14 +1,11 @@
 
-Chatbox
-{
+Chatbox {
     position: absolute;
     bottom: 16px;
     left: 16px;
     width: 450px;
-    height: 500px;
     padding: 16px;
     z-index: 250;
-
     background-color: rgba(black, 0);
     flex-direction: column;
     padding: 8px;
@@ -17,34 +14,30 @@ Chatbox
     font-size: 18px;
     transition: all 0.1s ease-out;
 
-    .chat
-    {
+    .chat {
         flex-grow: 1;
         flex-direction: column-reverse;
-        overflow-y: scroll;
+        overflow: scroll;
         gap: 4px;
         pointer-events: none;
+        max-height: 480px;
 
-        chatentry
-        {
+        chatentry {
             opacity: 1;
             transition: all 0.1s ease-out;
             left: 0px;
 
-            &.fade
-            {
+            &.fade {
                 opacity: 0;
             }
 
-            &:intro
-            {
+            &:intro {
                 left: 8px;
             }
         }
     }
 
-    textentry
-    {
+    textentry {
         opacity: 1;
         color: white;
         font-size: 20px;
@@ -52,35 +45,29 @@ Chatbox
         background-color: rgba(black, 0.2);
         transition: all 0.1s ease-out;
 
-        .placeholder
-        {
+        .placeholder {
             color: rgba(white, 1);
         }
 
-        &:hover
-        {
+        &:hover {
             background-color: rgba(black, 0.5);
         }
     }
 
-    &.show
-    {
+    &.open {
         background-color: rgba(black, 0.4);
 
-        .chat
-        {
+        .chat {
             pointer-events: all;
-            chatentry
-            {
-                &.fade
-                {
+
+            chatentry {
+                &.fade {
                     opacity: 1;
                 }
             }
         }
 
-        textentry
-        {
+        textentry {
             background-color: rgba(black, 0.6);
         }
     }

@@ -1,51 +1,49 @@
-ChatEntry
-{
-    gap: 4px;
-    flex-shrink: 0;
-    align-items: center;
+ChatEntry {
     color: white;
+    background-color: rgb(0, 0, 0, 0.4);
     text-shadow: 1px 1px 3px black;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    flex-shrink: 0;
+    flex-grow: 0;
 
-    .avatar
-    {
-        width: 32px;
-        height: 32px;
-        border-radius: 16px;
+    .header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 4px;
+        padding-bottom: 8px;
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 100%;
+        }
+
+        .name {
+            white-space: nowrap;
+            font-weight: bold;
+        }
     }
 
-    .name
-    {
-        white-space: nowrap;
-        font-weight: black;
+    .content {
+        font-weight: normal;
     }
 
-    .content
-    {
-        font-weight: 500;
-    }
-
-    &.system
-    {
+    &.system {
         color: grey;
     }
 
-    &.guess-correct
-    {
-        color: limegreen;
-    }
-
-    &.join-message
-    {
+    &.join-message {
         color: rgb(120, 255, 149);
     }
 
-    &.leave-message
-    {
+    &.leave-message {
         color: rgb(255, 108, 108);
     }
 
-    &.achievement
-    {
+    &.achievement {
         color: rgb(168, 246, 252);
     }
 }
