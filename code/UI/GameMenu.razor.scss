@@ -1,39 +1,31 @@
-
-GameMenu
-{
+GameMenu {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-
     background-image: url("/ui/backgrounds/cutting_board.jpg");
-
     animation: scrolling-background 600s linear infinite;
 
-    .background-overlay
-    {
+    .background-overlay {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-
         background-color: rgba(24, 13, 0, 0.555);
     }
 
-    .menu-buttons
-    {
+    .menu-buttons {
         margin-top: 8px;
         margin-left: 8px;
         flex-direction: column;
         gap: 8px;
-        z-index: 500;
+        z-index: 100;
         pointer-events: none;
     }
 
-    .pizza-button
-    {
+    .pizza-button {
         position: absolute;
         top: 50%;
         left: 50%;
@@ -44,28 +36,22 @@ GameMenu
         transform: scale(1 1);
         z-index: 100;
         cursor: pointer;
-
-        
-        
         background-image: url("/ui/pizzas/cheese_pizza.png");
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
 
-        &:hover
-        {
+        &:hover {
             transform: scale(1.025 1.025);
         }
 
-        &:active
-        {
+        &:active {
             transform: scale(1.1 0.95);
             transition: all 0.05s ease-in-out;
         }
     }
 
-    .shop
-    {
+    .shop {
         position: absolute;
         right: 0px;
         top: 0px;
@@ -76,8 +62,7 @@ GameMenu
         margin: 32px;
         gap: 8px;
 
-        h1
-        {
+        h1 {
             font-family: Verdana;
             width: 380px;
             font-size: 32px;
@@ -87,19 +72,17 @@ GameMenu
             text-shadow: 0 0 10px black;
         }
 
-        .upgrades
-        {
+        .upgrades {
             flex-direction: column;
             align-items: flex-end;
             justify-content: center;
             gap: 4px;
-            z-index: 400;
+            z-index: 100;
             opacity: 1;
             width: 100%;
             transition: all 0.2s ease-out;
 
-            h1
-            {
+            h1 {
                 font-family: Verdana;
                 width: 380px;
                 font-size: 32px;
@@ -110,8 +93,7 @@ GameMenu
                 justify-content: center;
             }
 
-            .upgrade-content
-            {
+            .upgrade-content {
                 background-color: rgba(black, 0.4);
                 flex-grow: 1;
                 width: 380px;
@@ -124,39 +106,33 @@ GameMenu
                 max-height: 240px;
             }
 
-            &.hidden
-            {
+            &.hidden {
                 height: 0px;
                 opacity: 0;
                 background-color: rgba(black, 0);
 
-                .upgrade-content
-                {
+                .upgrade-content {
                     background-color: rgba(black, 0);
                 }
             }
         }
 
-        .buildings
-        {
+        .buildings {
             flex-direction: column;
             justify-content: center;
             align-items: flex-end;
             gap: 4px;
-            z-index: 400;
+            z-index: 100;
 
-            h1
-            {
+            h1 {
                 justify-content: center;
             }
 
-            .building-list
-            {
+            .building-list {
                 flex-direction: column;
                 overflow-y: scroll;
                 align-items: flex-end;
                 gap: 4px;
-                
                 width: 1000px;
                 max-height: 550px;
             }
@@ -164,14 +140,12 @@ GameMenu
     }
 }
 
-@keyframes scrolling-background
-{
-    from
-    {
+@keyframes scrolling-background {
+    from {
         background-position: 0 0;
     }
-    to
-    {
+
+    to {
         background-position: -8192px -1024px;
     }
 }
