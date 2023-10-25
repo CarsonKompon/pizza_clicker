@@ -16,7 +16,7 @@ Chatbox {
 
     .chat {
         flex-grow: 1;
-        flex-direction: column-reverse;
+        flex-direction: column;
         overflow: scroll;
         gap: 4px;
         pointer-events: none;
