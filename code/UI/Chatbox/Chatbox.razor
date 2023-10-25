@@ -6,10 +6,14 @@
 
 @namespace PizzaClicker
 
-<root class="chatbox">
-    <div @ref="ChatPanel" class="chat"></div>
+<root>
+    <div class="backdrop" onclick=@Close></div>
 
-    <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@Submit onblur=@Close Placeholder="Enter message..." AllowEmojiReplace=@(true)></TextEntry>
+    <div class="chatbox">
+        <div @ref="ChatPanel" class="chat"></div>
+
+        <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@Submit onblur=@Close Placeholder="Enter message..." AllowEmojiReplace=@(true)></TextEntry>
+    </div>
 </root>
 
 @code

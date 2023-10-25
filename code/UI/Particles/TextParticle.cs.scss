@@ -1,7 +1,4 @@
-
-TextParticle
-{
-
+TextParticle {
     position: absolute;
     top: 0;
     left: 0;
@@ -9,36 +6,29 @@ TextParticle
     transition: all 0.4s linear;
     transform: translate(-50% -50%);
     pointer-events: none;
-
     font-family: Verdana;
     font-size: 32px;
     font-weight: black;
     color: white;
     text-shadow: 1px 1px 0px black;
     text-align: center;
+    z-index: 175;
 
-    z-index: 250;
-
-    &.gained
-    {
+    &.gained {
         opacity: 0.2;
     }
 
-    &.gold
-    {
+    &.gold {
         color: gold;
         text-shadow: 0 0 4px rgb(180, 153, 0);
     }
 
-    &:intro
-    {
+    &:intro {
         opacity: 0;
     }
 
-    &:outro
-    {
+    &:outro {
         transition: all 0.2s ease-out;
         opacity: 0;
     }
-
 }
