@@ -14,4 +14,9 @@ public class AchievementPlanetOfPizzaCount2 : Achievement
 	{
 		return player.GetBuildingCount( "planet_of_pizza" ) >= 50;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "planet_of_pizza" ) / 50d;
+	}
 }

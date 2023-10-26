@@ -1,6 +1,4 @@
 using Sandbox;
-using Sandbox.UI;
-using System;
 
 namespace PizzaClicker.Achievements;
 
@@ -17,5 +15,8 @@ public class AchievementBuildingsTotal4 : Achievement
         return player.TotalBuildingCount >= 2_500;
 	}
 
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.TotalBuildingCount / 2_500d;
+	}
 }
-

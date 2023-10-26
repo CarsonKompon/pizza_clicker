@@ -14,4 +14,9 @@ public class AchievementPizzaGPTCount3 : Achievement
 	{
 		return player.GetBuildingCount( "pizza_gpt" ) >= 100;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "pizza_gpt" ) / 100d;
+	}
 }

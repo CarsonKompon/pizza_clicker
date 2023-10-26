@@ -14,4 +14,9 @@ public class AchievementPizzaFederationCount5 : Achievement
 	{
 		return player.GetBuildingCount( "pizza_federation" ) >= 200;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "pizza_federation" ) / 200d;
+	}
 }

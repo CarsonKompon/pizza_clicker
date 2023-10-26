@@ -14,4 +14,9 @@ public class AchievementAscension2 : Achievement
 	{
 		return player.AscensionCount >= 5;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.AscensionCount / 5d;
+	}
 }

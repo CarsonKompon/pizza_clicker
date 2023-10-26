@@ -14,4 +14,9 @@ public class AchievementSboxConsoleCount9 : Achievement
 	{
 		return player.GetBuildingCount( "sbox_console" ) >= 400;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "sbox_console" ) / 400d;
+	}
 }

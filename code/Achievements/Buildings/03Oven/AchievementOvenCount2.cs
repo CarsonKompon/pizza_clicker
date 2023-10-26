@@ -14,4 +14,9 @@ public class AchievementOvenCount2 : Achievement
 	{
 		return player.GetBuildingCount( "oven" ) >= 50;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "oven" ) / 50d;
+	}
 }

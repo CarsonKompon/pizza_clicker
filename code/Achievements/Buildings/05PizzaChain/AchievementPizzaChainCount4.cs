@@ -14,4 +14,9 @@ public class AchievementPizzaChainCount4 : Achievement
 	{
 		return player.GetBuildingCount( "pizza_chain" ) >= 150;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "pizza_chain" ) / 150d;
+	}
 }

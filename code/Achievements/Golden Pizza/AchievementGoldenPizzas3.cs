@@ -1,6 +1,4 @@
 using Sandbox;
-using Sandbox.UI;
-using System;
 
 namespace PizzaClicker.Achievements;
 
@@ -17,5 +15,8 @@ public class AchievementGoldenPizzas3 : Achievement
         return player.TotalGoldClicks >= 27;
 	}
 
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.TotalGoldClicks / 27d;
+	}
 }
-
