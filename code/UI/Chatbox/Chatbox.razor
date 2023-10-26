@@ -51,6 +51,13 @@
         }
     }
 
+    public async void ScrollToLastMessage()
+    {
+        await GameTask.Delay(1); // dirty trick
+
+        ChatPanel.TryScrollToBottom();
+    }
+
     private void OnChatMessage(Friend friend, string message)
     {
         CreateChatEntry($"{friend.Name}:", message, "", friend.Id);
@@ -70,14 +77,14 @@
 
         Audio.Play("ui.button.press");
 
-        ChatPanel.TryScrollToBottom();
+        ScrollToLastMessage();
     }
 
     private void Open()
     {
         AddClass("open");
         ChatTextEntry.Focus();
-        ChatPanel.TryScrollToBottom();
+        ScrollToLastMessage();
     }
 
     private void Close()
