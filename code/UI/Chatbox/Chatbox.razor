@@ -6,14 +6,20 @@
 
 @namespace PizzaClicker
 
-<root class="chatbox">
-    <div @ref="ChatPanel" class="chat"></div>
+<root>
+    <div class="backdrop" onclick=@Close></div>
 
-    <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@Submit onblur=@Close Placeholder="Enter message..." AllowEmojiReplace=@(true)></TextEntry>
+    <div class="chatbox">
+        <div @ref="ChatPanel" class="chat"></div>
+
+        <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@Submit onblur=@Close Placeholder="Enter message..." AllowEmojiReplace=@(true)></TextEntry>
+    </div>
 </root>
 
 @code
 {
+    private readonly int MAX_ENTRIES = 100;
+
     public ILobby Lobby { get; set; }
 
     private Panel ChatPanel { get; set; }
@@ -45,6 +51,13 @@
         }
     }
 
+    public async void ScrollToLastMessage()
+    {
+        await GameTask.Delay(1); // dirty trick
+
+        ChatPanel.TryScrollToBottom();
+    }
+
     private void OnChatMessage(Friend friend, string message)
     {
         CreateChatEntry($"{friend.Name}:", message, "", friend.Id);
@@ -56,20 +69,22 @@
         entry.SetMessage(name, message, steamid);
         entry.AddClass(styles);
 
-        if (ChatPanel.ChildrenCount > 200) {
-            ChatPanel.GetChild(ChatPanel.ChildrenCount - 1).Delete();
+        ChatPanel.SetChildIndex(entry, ChatPanel.ChildrenCount - 1);
+
+        if (ChatPanel.ChildrenCount > MAX_ENTRIES) {
+            ChatPanel.GetChild(0).Delete();
         }
 
-        ChatPanel.SetChildIndex(entry, 0);
-
         Audio.Play("ui.button.press");
+
+        ScrollToLastMessage();
     }
 
     private void Open()
     {
         AddClass("open");
         ChatTextEntry.Focus();
-        ChatPanel.TryScrollToBottom();
+        ScrollToLastMessage();
     }
 
     private void Close()

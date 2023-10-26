@@ -1,6 +1,5 @@
 
-GoldPizza
-{
+GoldPizza {
     position: absolute;
     top: 0;
     left: 0;
@@ -8,23 +7,19 @@ GoldPizza
     width: 150px;
     height: 150px;
     opacity: 0;
-    z-index: 10000;
+    z-index: 200;
     cursor: pointer;
-
     background-image: url("/ui/pizzas/gold_pizza.png");
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-
     transition: transform 0.2s ease-out;
 
-    &:hover
-    {
+    &:hover {
         transform: translate(-50%, -50%) scale(1.025 1.025);
     }
 
-    &:active
-    {
+    &:active {
         transform: translate(-50%, -50%) scale(1.1 0.95);
         transition: all 0.05s ease-in-out;
     }
