@@ -39,8 +39,6 @@
         }
 
         if ((Input.Pressed("chat") || ChatTextEntry.HasActive) && !HasClass("open")) {
-            CreateChatEntry("test", "this is a very very very very very very very very very very very very very verylong message", "", 76561198054820824);
-
             Open();
         } else if (!ChatTextEntry.HasFocus && HasClass("open")) {
             Close();
