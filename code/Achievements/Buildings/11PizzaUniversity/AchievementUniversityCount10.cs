@@ -14,4 +14,9 @@ public class AchievementUniversityCount10 : Achievement
 	{
 		return player.GetBuildingCount( "pizza_university" ) >= 450;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "pizza_university" ) / 450d;
+	}
 }

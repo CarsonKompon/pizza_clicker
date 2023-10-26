@@ -14,4 +14,9 @@ public class AchievementThemeParkCount5 : Achievement
 	{
 		return player.GetBuildingCount( "pizza_theme_park" ) >= 200;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "pizza_theme_park" ) / 200d;
+	}
 }

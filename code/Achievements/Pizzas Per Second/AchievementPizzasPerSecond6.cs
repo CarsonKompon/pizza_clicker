@@ -1,6 +1,4 @@
 using Sandbox;
-using Sandbox.UI;
-using System;
 
 namespace PizzaClicker.Achievements;
 
@@ -17,5 +15,8 @@ public class AchievementPizzasPerSecond6 : Achievement
         return player.PizzasPerSecond >= 100_000;
 	}
 
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.PizzasPerSecond / 100_000d;
+	}
 }
-

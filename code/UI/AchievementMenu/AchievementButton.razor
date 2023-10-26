@@ -1,0 +1,52 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using System;
+@using System.Linq;
+@using Achievements;
+
+@attribute [StyleSheet]
+
+@namespace PizzaClicker
+
+@if (Player == null) {
+    return;
+}
+
+<root class="@(Player.HasAchievement(Achievement.Ident) ? "unlocked" : "")">
+    <img src="@Achievement.Icon" class="icon" />
+
+    <div class="info">
+        <p class="name">@Achievement.Name</p>
+        <p class="desc">@Achievement.Description</p>
+    </div>
+
+    <div class="progress-bar">
+        <div @ref="ProgressBar" class="progress-fill" />
+    </div>
+</root>
+
+@code
+{
+    public Player Player { get; set; }
+    public Achievement Achievement { get; set; }
+
+    private Panel ProgressBar { get; set; }
+
+    private bool IsInitialized => ProgressBar != null;
+
+    private float Progression => (float)Achievement.GetProgression(Player) * 100f;
+
+    public override void Tick()
+    {
+        if (!IsInitialized) {
+            return;
+        }
+
+        ProgressBar.Style.Width = Length.Percent(Progression);
+    }
+
+    protected override int BuildHash()
+    {
+        return HashCode.Combine(Progression);
+    }
+}

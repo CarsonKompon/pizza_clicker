@@ -1,6 +1,4 @@
 using Sandbox;
-using Sandbox.UI;
-using System;
 
 namespace PizzaClicker.Achievements;
 
@@ -17,5 +15,8 @@ public class AchievementPizzasBaked10 : Achievement
         return player.TotalPizzasBaked >= 1_000_000_000_000_000;
 	}
 
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.TotalPizzasBaked / 1_000_000_000_000_000d;
+	}
 }
-

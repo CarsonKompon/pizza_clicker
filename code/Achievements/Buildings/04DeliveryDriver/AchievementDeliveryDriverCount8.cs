@@ -14,4 +14,9 @@ public class AchievementDeliveryDriverCount8 : Achievement
 	{
 		return player.GetBuildingCount( "delivery_driver" ) >= 350;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "delivery_driver" ) / 350d;
+	}
 }

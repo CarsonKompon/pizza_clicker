@@ -1,0 +1,55 @@
+AchievementButton {
+    align-items: center;
+    background-color: rgba(black, 0.4);
+    width: 100%;
+    flex-shrink: 0;
+    font-size: 18px;
+    padding: 8px;
+
+    .icon {
+        width: 32px;
+        height: 32px;
+        margin-right: 8px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .info {
+        flex-direction: column;
+        opacity: 0.4;
+    }
+
+    &.unlocked {
+        background-color: rgba(black, 0.6);
+
+        .name {
+            font-weight: black;
+        }
+
+        .info {
+            opacity: 1;
+        }
+
+        .progress-bar {
+            opacity: 0;
+        }
+    }
+
+    .progress-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        opacity: 0.5;
+
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background-color: rgba(white, 1);
+        }
+    }
+}

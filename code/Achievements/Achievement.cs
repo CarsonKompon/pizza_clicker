@@ -21,6 +21,16 @@ public class Achievement
 
 	}
 
+	public double GetProgression(Player player)
+	{
+		return CheckUnlockCondition(player) ? 1 : GetAchievementProgression(player);
+	}
+
+	protected virtual double GetAchievementProgression( Player player )
+	{
+		return CheckUnlockCondition( player ) ? 1 : 0;
+	}
+
 	public static void Unlock( Player player, string ident )
 	{
 		if ( !player.GiveAchievement( ident ) )

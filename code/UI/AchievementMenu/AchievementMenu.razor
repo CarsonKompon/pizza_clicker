@@ -22,14 +22,7 @@
 
     <div class="content">
         @foreach (var achievement in GameMenu.AllAchievements.OrderBy(x => x.Ident)) {
-            <div class="achievement @(Player.HasAchievement(achievement.Ident) ? "unlocked" : "") ">
-                <img src="@achievement.Icon" class="icon" />
-
-                <div class="info">
-                    <p class="name">@achievement.Name</p>
-                    <p class="desc">@achievement.Description</p>
-                </div>
-            </div>
+            <AchievementButton Player=@Player Achievement=@achievement />
         }
     </div>
 

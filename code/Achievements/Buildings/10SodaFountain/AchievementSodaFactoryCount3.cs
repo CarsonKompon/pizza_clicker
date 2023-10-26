@@ -14,4 +14,9 @@ public class AchievementSodaFactoryCount3 : Achievement
 	{
 		return player.GetBuildingCount( "soda_fountain_factory" ) >= 100;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "soda_fountain_factory" ) / 100d;
+	}
 }
