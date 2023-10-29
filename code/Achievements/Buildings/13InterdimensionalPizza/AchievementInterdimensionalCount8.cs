@@ -14,4 +14,9 @@ public class AchievementInterdimensionalCount8 : Achievement
 	{
 		return player.GetBuildingCount( "interdimensional_pizzeria" ) >= 350;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "interdimensional_pizzeria" ) / 350d;
+	}
 }

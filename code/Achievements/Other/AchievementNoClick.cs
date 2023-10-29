@@ -1,6 +1,4 @@
 using Sandbox;
-using Sandbox.UI;
-using System;
 
 namespace PizzaClicker.Achievements;
 
@@ -17,5 +15,13 @@ public class AchievementNoClick : Achievement
         return player.TotalPizzasBaked >= 1_000 && player.TotalClicks == 0;
 	}
 
-}
+	protected override double GetAchievementProgression( Player player )
+	{
+		if (player.TotalClicks != 0)
+		{
+			return 0;
+		}
 
+		return player.TotalPizzasBaked / 1_000d;
+	}
+}

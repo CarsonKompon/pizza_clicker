@@ -14,4 +14,9 @@ public class AchievementMozzaMineCount2 : Achievement
 	{
 		return player.GetBuildingCount( "mozzarella_mine" ) >= 50;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "mozzarella_mine" ) / 50d;
+	}
 }

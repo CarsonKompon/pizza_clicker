@@ -14,4 +14,9 @@ public class AchievementInfiniteLoopCount7 : Achievement
 	{
 		return player.GetBuildingCount( "infinite_pizza_loop" ) >= 300;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "infinite_pizza_loop" ) / 300d;
+	}
 }

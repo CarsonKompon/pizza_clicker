@@ -14,4 +14,9 @@ public class AchievementRollingPinCount6 : Achievement
 	{
 		return player.GetBuildingCount( "rolling_pin" ) >= 250;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "rolling_pin" ) / 250d;
+	}
 }

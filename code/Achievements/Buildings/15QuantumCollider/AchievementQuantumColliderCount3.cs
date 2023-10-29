@@ -14,4 +14,9 @@ public class AchievementQuantumColliderCount3 : Achievement
 	{
 		return player.GetBuildingCount( "quantum_pizza_collider" ) >= 100;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "quantum_pizza_collider" ) / 100d;
+	}
 }

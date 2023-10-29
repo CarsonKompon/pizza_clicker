@@ -14,4 +14,9 @@ public class AchievementAnimatronicCount5 : Achievement
 	{
 		return player.GetBuildingCount( "animatronic_arcade" ) >= 200;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "animatronic_arcade" ) / 200d;
+	}
 }

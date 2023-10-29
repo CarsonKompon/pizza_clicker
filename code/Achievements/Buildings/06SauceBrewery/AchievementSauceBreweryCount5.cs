@@ -14,4 +14,9 @@ public class AchievementSauceBreweryCount5 : Achievement
 	{
 		return player.GetBuildingCount( "sauce_brewery" ) >= 200;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "sauce_brewery" ) / 200d;
+	}
 }

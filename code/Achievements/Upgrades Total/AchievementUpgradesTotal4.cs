@@ -1,6 +1,4 @@
 using Sandbox;
-using Sandbox.UI;
-using System;
 
 namespace PizzaClicker.Achievements;
 
@@ -17,5 +15,8 @@ public class AchievementUpgradesTotal4 : Achievement
         return player.TotalUpgradeCount >= 200;
 	}
 
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.TotalUpgradeCount / 200d;
+	}
 }
-

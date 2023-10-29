@@ -70,42 +70,13 @@ AchievementMenu {
 
     .content {
         flex-direction: column;
-        background-color: rgba(black, 0.5);
         flex-grow: 1;
         width: 100%;
         overflow-y: scroll;
         pointer-events: all;
-        padding: 4px;
-        gap: 6px;
+        gap: 4px;
         opacity: 0;
-
-        .achievement {
-            width: 100%;
-            flex-shrink: 0;
-            opacity: 0.3;
-            font-size: 18px;
-
-            .icon {
-                width: 32px;
-                height: 32px;
-                margin-right: 8px;
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: center;
-            }
-
-            .info {
-                flex-direction: column;
-            }
-
-            &.unlocked {
-                opacity: 1;
-
-                .name {
-                    font-weight: black;
-                }
-            }
-        }
+        padding-top: 8px;
     }
 
     &.open {

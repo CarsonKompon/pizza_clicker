@@ -14,4 +14,9 @@ public class AchievementCheeseGraterCount11 : Achievement
 	{
 		return player.GetBuildingCount( "cheese_grater" ) >= 500;
 	}
+
+	protected override double GetAchievementProgression( Player player )
+	{
+		return player.GetBuildingCount( "cheese_grater" ) / 500d;
+	}
 }

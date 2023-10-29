@@ -1,4 +1,5 @@
 using Sandbox;
+using System;
 
 namespace PizzaClicker.Achievements;
 
@@ -14,5 +15,9 @@ public class AchievementAscensionAmount1 : Achievement
 	{
 		return GameMenu.Instance.Ascending &&
 			player.TotalPizzasBaked >= 1_000_000;
+	}
+	protected override double GetAchievementProgression( Player player )
+	{
+		return Math.Min( player.TotalPizzasBaked / 1_000_000d, 1 );
 	}
 }
