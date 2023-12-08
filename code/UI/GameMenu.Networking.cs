@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Sandbox;
-using Sandbox.Menu;
+using Sandbox.Network;
+using PizzaClicker.Achievements;
+using PizzaClicker.Blessings;
+using PizzaClicker.Buildings;
+using PizzaClicker.Upgrades;
 
 namespace PizzaClicker;
 
@@ -18,101 +23,198 @@ public partial class GameMenu
 	private readonly Dictionary<long, RealTimeSince> LastPlayersAchievementNetworkMessage = new();
 	private readonly Dictionary<long, RealTimeSince> LastPlayersAchievementUnlock = new();
 
-	private void OnNetworkMessage( ILobby.NetworkMessage msg )
+	// UI References
+	public static GameMenu Instance { get; set; }
+	public static Chatbox Chat { get; set; }
+
+	// Lobby Variables
+	public LobbyInformation Lobby { get; set; }
+	public List<Player> Players { get; set; } = new List<Player>();
+
+	// Game Variables
+	public Player LocalPlayer => Players.FirstOrDefault( p => p.Member.Id == Game.SteamId );
+	public static List<Building> AllBuildings { get; set; } = new List<Building>();
+	public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
+	public static List<Upgrade> AllUpgrades { get; set; } = new List<Upgrade>();
+	public static List<Blessing> AllBlessings { get; set; } = new List<Blessing>();
+	public bool Ascending = false;
+
+	// Timers
+	private RealTimeSince _lastSave = 0f;
+	private RealTimeSince _lastNetworkSync = 0f;
+
+	protected override void OnAwake()
 	{
-		var data = msg.Data;
-		var messageId = data.Read<NETWORK_MESSAGE>();
+		Instance = this;
 
-		switch ( messageId )
+		AllBuildings = TypeLibrary.GetTypes<Building>()
+			.Select( t => TypeLibrary.Create<Building>( t.TargetType ) )
+			.Where( b => b.Cost > 0 )
+			.OrderBy( b => b.Cost )
+			.ToList();
+
+		AllAchievements = TypeLibrary.GetTypes<Achievement>()
+			.Select( t => TypeLibrary.Create<Achievement>( t.TargetType ) )
+			.Where( a => a.Ident != "none" )
+			.ToList();
+
+		AllUpgrades = TypeLibrary.GetTypes<Upgrade>()
+			.Select( t => TypeLibrary.Create<Upgrade>( t.TargetType ) )
+			.Where( u => u.Cost > 0 )
+			.OrderBy( u => u.Cost )
+			.ToList();
+
+		AllBlessings = TypeLibrary.GetTypes<Blessing>()
+			.Select( t => TypeLibrary.Create<Blessing>( t.TargetType ) )
+			.Where( b => b.Cost > 0 )
+			.ToList();
+
+		InitPlayer( Game.SteamId );
+	}
+
+	protected override async void OnStart()
+	{
+		if ( !GameNetworkSystem.IsActive )
 		{
-			// Player Update Network Message
-			case NETWORK_MESSAGE.PLAYER_UPDATE:
-				if ( msg.Source.Id == Game.SteamId )
-				{
-					return;
-				}
+			var lobbies = (await GameNetworkSystem.QueryLobbies())
+				.Where( l => l.Members < l.MaxMembers )
+				.OrderByDescending( l => l.Members );
 
-				var playerId = msg.Source.Id;
-				var player = Players.FirstOrDefault( p => p.Member.Id == playerId, null );
-				if ( player == null )
-				{
-					player = new( msg.Source.Id );
-					Players.Add( player );
-				}
-
-				player.ReadDataStream( data );
-
-				break;
-
-			// Achievement Unlock Network Message
-			case NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK:
-				if ( LastPlayersAchievementNetworkMessage.TryGetValue( msg.Source.Id, out var value ) && value < 1f )
-				{
-					return;
-				}
-
-				var byteLength = data.Read<int>();
-				var wordBytes = new byte[byteLength];
-
-				for ( var i = 0; i < byteLength; i++ )
-				{
-					wordBytes[i] = data.Read<byte>();
-				}
-
-				var ident = Encoding.Unicode.GetString( wordBytes );
-				var achievement = AllAchievements.FirstOrDefault( a => a.Ident == ident, null );
-				if ( achievement == null )
-				{
-					break;
-				}
-
-				Chat.CreateChatEntry( "", $"{msg.Source.Name} unlocked the achievement \"{achievement.Name}\"", "achievement" );
-
-				LastPlayersAchievementNetworkMessage[msg.Source.Id] = 0;
-
-				break;
-
-			case NETWORK_MESSAGE.NONE:
-			default:
-				break;
+			if ( lobbies.Count() > 0 )
+			{
+				Lobby = lobbies.First();
+				GameNetworkSystem.Connect( Lobby.LobbyId );
+			}
+			else
+			{
+				GameNetworkSystem.CreateLobby();
+			}
 		}
 	}
 
-	private void NetworkPlayerUpdate( Player player )
+	protected override void OnUpdate()
 	{
-		if ( player == null )
+		if ( !Ascending )
 		{
-			return;
+			LocalPlayer?.Update();
+
+			if ( _lastSave > 1f )
+			{
+				LocalPlayer?.Save();
+				_lastSave = 0f;
+			}
 		}
 
-		Lobby.BroadcastMessage( player.GetDataStream() );
+		if ( _lastNetworkSync > 2f )
+		{
+			NetworkPlayerUpdate( LocalPlayer.Pizzas, LocalPlayer.PizzasPerSecond );
+			_lastNetworkSync = 0f;
+		}
+
 	}
 
-	public void NetworkAchievementUnlock( Player player, string ident )
+	private void InitPlayer( long steamid )
 	{
+		Player player;
+
+		if ( steamid == Game.SteamId )
+		{
+			player = Player.LoadPlayer();
+			Players.Add( player );
+
+			NetworkPlayerUpdate( player.Pizzas, player.PizzasPerSecond );
+		}
+		else
+		{
+			player = new Player( steamid );
+			Players.Add( player );
+		}
+
+		Chat?.CreateChatEntry( "", $"{player.Member.Name} opened their pizzeria!", "join-message" );
+	}
+
+	private void ClickPizza()
+	{
+		var val = LocalPlayer.Click();
+		var particleText = "+" + NumberHelper.ToStringAbbreviated( val );
+		TextParticle particle = new( Mouse.Position * Panel.ScaleFromScreen, particleText, (LocalPlayer.ClickFrenzy > 0 ? "gold" : ""), true );
+
+		Panel.AddChild( particle );
+	}
+
+	public void SpawnGoldPizza()
+	{
+		Random rand = new();
+		Vector2 pos = new( rand.Next( 10, 80 ), rand.Next( 10, 80 ) );
+		GoldPizza goldenPizza = new( LocalPlayer, pos, LocalPlayer.GoldDuration );
+
+		Panel.AddChild( goldenPizza );
+	}
+
+	[Broadcast]
+	public void SendChat( string message )
+	{
+		Chat.CreateChatEntry( $"{Rpc.Caller.Name}:", message, "", (long)Rpc.Caller.SteamId );
+	}
+
+
+	[Broadcast]
+	private void NetworkPlayerUpdate( double pizzas, double pizzasPerSecond )
+	{
+		if ( Rpc.Caller.IsHost ) return;
+
+		var playerId = Rpc.Caller.Id;
+		var player = Players.FirstOrDefault( p => p.Member.Id == (long)Rpc.Caller.SteamId, null );
 		if ( player == null )
 		{
-			return;
+			player = new( (long)Rpc.Caller.SteamId );
+			Players.Add( player );
 		}
 
-		if ( LastPlayersAchievementUnlock.TryGetValue( player.Member.Id, out var value ) && value < 1f )
+		player.Pizzas = pizzas;
+		player.PizzasPerSecond = pizzasPerSecond;
+	}
+
+	[Broadcast]
+	public void NetworkAchievementUnlock( string ident )
+	{
+		if ( Rpc.Caller.IsHost ) return;
+		if ( LastPlayersAchievementUnlock.TryGetValue( (long)Rpc.Caller.SteamId, out var value ) && value < 1f )
 		{
 			return;
 		}
 
-		var wordBytes = Encoding.Unicode.GetBytes( ident );
-		var data = ByteStream.Create( 5 + wordBytes.Length );
-
-		data.Write( NETWORK_MESSAGE.ACHIEVEMENT_UNLOCK );
-		data.Write( wordBytes.Length );
-
-		for ( var i = 0; i < wordBytes.Length; i++ )
+		var achievement = AllAchievements.FirstOrDefault( a => a.Ident == ident, null );
+		if ( achievement == null )
 		{
-			data.Write( wordBytes[i] );
+			return;
 		}
 
-		Lobby.BroadcastMessage( data );
+		Chat.CreateChatEntry( "", $"{Rpc.Caller.Name} unlocked the achievement \"{achievement.Name}\"", "achievement" );
 
-		LastPlayersAchievementUnlock[player.Member.Id] = 0;
+		LastPlayersAchievementNetworkMessage[(long)Rpc.Caller.SteamId] = 0;
+
+		LastPlayersAchievementUnlock[(long)Rpc.Caller.SteamId] = 0;
+	}
+
+	void OnConnected( Connection conn )
+	{
+		InitPlayer( (long)conn.SteamId );
+	}
+
+	void OnDisconnected( Connection conn )
+	{
+		Players.RemoveAll( p => p.Member.Id == (long)conn.SteamId );
+
+		Chat.CreateChatEntry( "", $"{conn.Name} has closed their pizzeria!", "leave-message" );
+	}
+
+	void OnActive( Connection conn )
+	{
+	}
+
+	protected override int BuildHash()
+	{
+		return HashCode.Combine( Ascending, GameNetworkSystem.IsActive );
 	}
 }

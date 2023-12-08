@@ -102,7 +102,7 @@ public class Player
 			value *= 777d;
 		}
 
-		Sound.FromScreen( "mouse.click" );
+		Sound.Play( "mouse.click" );
 
 		HandMadePizzas += value;
 
@@ -149,7 +149,7 @@ public class Player
 				break;
 			default:
 				var buildings = OwnedBuildings;
-				var building = buildings.ElementAt(rand.Next( buildings.Count() ));
+				var building = buildings.ElementAt( rand.Next( buildings.Count() ) );
 				var multiplier = (10 * GetBuildingCount( building.Ident ) + 100d) / 100d;
 
 				_temporaryMultipliers[building.Ident] = multiplier;
@@ -164,7 +164,7 @@ public class Player
 		++TotalGoldClicks;
 
 		TextParticle particle = new( pos, particleText, "gold", true, 2 );
-		GameMenu.Instance.AddChild( particle );
+		GameMenu.Instance.Panel.AddChild( particle );
 	}
 
 	public void StartAscension()
@@ -543,11 +543,11 @@ public class Player
 			{
 				var particleText = "+" + NumberHelper.ToStringAbbreviated( val );
 				Random rand = new();
-				TextParticle particle = new( Screen.Size * new Vector2( rand.Float(), rand.Float( 0.5f, 1f ) ) * GameMenu.Instance.ScaleFromScreen, particleText );
+				TextParticle particle = new( Screen.Size * new Vector2( rand.Float(), rand.Float( 0.5f, 1f ) ) * GameMenu.Instance.Panel.ScaleFromScreen, particleText );
 
 				particle.AddClass( "gained" );
 
-				GameMenu.Instance.AddChild( particle );
+				GameMenu.Instance.Panel.AddChild( particle );
 
 				_particleTimer = 0f;
 			}
@@ -599,9 +599,9 @@ public class Player
 		return data;
 	}
 
-	public void ReadDataStream( ByteStream data )
-	{
-		Pizzas = data.Read<double>();
-		PizzasPerSecond = data.Read<double>();
-	}
+	// public void ReadDataStream( ByteStream data )
+	// {
+	// 	Pizzas = data.Read<double>();
+	// 	PizzasPerSecond = data.Read<double>();
+	// }
 }

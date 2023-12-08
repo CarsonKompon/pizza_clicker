@@ -20,8 +20,6 @@
 {
     private readonly int MAX_ENTRIES = 100;
 
-    public ILobby Lobby { get; set; }
-
     private Panel ChatPanel { get; set; }
     private TextEntry ChatTextEntry { get; set; }
 
@@ -32,8 +30,6 @@
         base.OnAfterTreeRender(firstTime);
 
         if (firstTime) {
-            Lobby.OnChatMessage += OnChatMessage;
-
             ChatTextEntry.PreferScrollToBottom = true;
         }
     }
@@ -75,7 +71,7 @@
             ChatPanel.GetChild(0).Delete();
         }
 
-        Audio.Play("ui.button.press");
+        Sound.Play("ui.button.press");
 
         ScrollToLastMessage();
     }
@@ -100,7 +96,7 @@
             return;
         }
 
-        Lobby.SendChat(message);
+        GameMenu.Instance.SendChat(message);
 
         ChatTextEntry.Text = "";
 

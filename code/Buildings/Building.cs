@@ -49,7 +49,7 @@ public class Building
 
 		if ( player.HasBlessing( "pizzas_per_friend_01" ) )
 		{
-			val *= 1d + (GameMenu.Instance.Lobby.MemberCount / 100d);
+			val *= 1d + (GameMenu.Instance.Lobby.Members / 100d);
 		}
 
 		if ( GoldenSwitch.Enabled )

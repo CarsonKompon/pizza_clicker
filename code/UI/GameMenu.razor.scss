@@ -6,6 +6,7 @@ GameMenu {
     height: 100%;
     background-image: url("/ui/backgrounds/cutting_board.jpg");
     animation: scrolling-background 600s linear infinite;
+    pointer-events: all;
 
     .background-overlay {
         position: absolute;

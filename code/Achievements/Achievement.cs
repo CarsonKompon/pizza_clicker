@@ -21,9 +21,9 @@ public class Achievement
 
 	}
 
-	public double GetProgression(Player player)
+	public double GetProgression( Player player )
 	{
-		return CheckUnlockCondition(player) ? 1 : GetAchievementProgression(player);
+		return CheckUnlockCondition( player ) ? 1 : GetAchievementProgression( player );
 	}
 
 	protected virtual double GetAchievementProgression( Player player )
@@ -45,7 +45,7 @@ public class Achievement
 		}
 
 		Notifications.Popup( "Achievement Unlocked!", achievement.Name, "achievement", achievement.Icon );
-		GameMenu.Instance?.NetworkAchievementUnlock( player, ident );
+		GameMenu.Instance?.NetworkAchievementUnlock( ident );
 		achievement.OnAchievementUnlock( player );
 	}
 }

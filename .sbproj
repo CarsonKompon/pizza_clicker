@@ -26,6 +26,7 @@
     "PerMapRanking": false,
     "LeaderboardType": "None",
     "ProjectTemplate": null,
-    "CsProjName": ""
+    "CsProjName": "",
+    "StartupScene": "pizza.scene"
   }
 }

@@ -1,20 +1,20 @@
 @using Sandbox;
 @using Sandbox.UI;
 @using Sandbox.UI.Construct;
-@using Sandbox.Menu;
+@using Sandbox.Network;
 @using System;
 @using System.Collections.Generic;
 @using System.Linq;
-@using Achievements;
-@using Blessings;
-@using Buildings;
-@using Upgrades;
+@inherits PanelComponent;
+@implements Component.INetworkListener;
 
 @attribute [StyleSheet]
 
 @namespace PizzaClicker
 
 <root>
+    @if(!GameNetworkSystem.IsActive) return;
+
     <div class="background-overlay" />
 
     @if (Ascending) {
@@ -64,136 +64,5 @@
 
     <Notifications />
 
-    <Chatbox @ref="Chat" Lobby=@Lobby />
+    <Chatbox @ref="Chat" />
 </root>
-
-@code
-{
-    // UI References
-    public static GameMenu Instance { get; set; }
-    public static Chatbox Chat { get; set; }
-
-    // Lobby Variables
-    public ILobby Lobby { get; set; }
-    public List<Player> Players { get; set; } = new List<Player>();
-
-    // Game Variables
-    public Player LocalPlayer => Players.FirstOrDefault(p => p.Member.Id == Game.SteamId);
-    public static List<Building> AllBuildings { get; set; } = new List<Building>();
-    public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
-    public static List<Upgrade> AllUpgrades { get; set; } = new List<Upgrade>();
-    public static List<Blessing> AllBlessings { get; set; } = new List<Blessing>();
-    public bool Ascending = false;
-
-    // Timers
-    private RealTimeSince _lastSave = 0f;
-    private RealTimeSince _lastNetworkSync = 0f;
-
-    protected override void OnAfterTreeRender(bool firstTime)
-    {
-        base.OnAfterTreeRender(firstTime);
-
-        if (firstTime) {
-            Instance = this;
-
-            Lobby.OnMemberEnter += OnPlayerJoined;
-            Lobby.OnMemberLeave += OnPlayerLeft;
-
-            AllBuildings = TypeLibrary.GetTypes<Building>()
-                .Select(t => TypeLibrary.Create<Building>(t.TargetType))
-                .Where(b => b.Cost > 0)
-                .OrderBy(b => b.Cost)
-                .ToList();
-
-            AllAchievements = TypeLibrary.GetTypes<Achievement>()
-                .Select(t => TypeLibrary.Create<Achievement>(t.TargetType))
-                .Where(a => a.Ident != "none")
-                .ToList();
-
-            AllUpgrades = TypeLibrary.GetTypes<Upgrade>()
-                .Select(t => TypeLibrary.Create<Upgrade>(t.TargetType))
-                .Where(u => u.Cost > 0)
-                .OrderBy(u => u.Cost)
-                .ToList();
-
-            AllBlessings = TypeLibrary.GetTypes<Blessing>()
-                .Select(t => TypeLibrary.Create<Blessing>(t.TargetType))
-                .Where(b => b.Cost > 0)
-                .ToList();
-
-            InitPlayer(Game.SteamId);
-        }
-    }
-
-    public override void Tick()
-    {
-        Lobby.ReceiveMessages(OnNetworkMessage);
-
-        if (!Ascending) {
-            LocalPlayer?.Update();
-
-            if (_lastSave > 1f) {
-                LocalPlayer?.Save();
-                _lastSave = 0f;
-            }
-        }
-
-        if (_lastNetworkSync > 2f) {
-            NetworkPlayerUpdate(LocalPlayer);
-            _lastNetworkSync = 0f;
-        }
-
-    }
-
-    private void InitPlayer(long steamid)
-    {
-        Player player;
-
-        if (steamid == Game.SteamId) {
-            player = Player.LoadPlayer();
-            Players.Add(player);
-
-            NetworkPlayerUpdate(player);
-        } else {
-            player = new Player(steamid);
-            Players.Add(player);
-        }
-
-        Chat.CreateChatEntry("", $"{player.Member.Name} opened their pizzeria!", "join-message");
-    }
-
-    private void ClickPizza()
-    {
-        var val = LocalPlayer.Click();
-        var particleText = "+" + NumberHelper.ToStringAbbreviated(val);
-        TextParticle particle = new(Mouse.Position * ScaleFromScreen, particleText, (LocalPlayer.ClickFrenzy > 0 ? "gold" : ""), true);
-
-        AddChild(particle);
-    }
-
-    public void SpawnGoldPizza()
-    {
-        Random rand = new();
-        Vector2 pos = new(rand.Next(10, 80), rand.Next(10, 80));
-        GoldPizza goldenPizza = new(LocalPlayer, pos, LocalPlayer.GoldDuration);
-
-        AddChild(goldenPizza);
-    }
-
-    private void OnPlayerJoined(Friend member)
-    {
-        InitPlayer(member.Id);
-    }
-
-    private void OnPlayerLeft(Friend member)
-    {
-        Players.RemoveAll(p => p.Member.Id == member.Id);
-
-        Chat.CreateChatEntry("", $"{member.Name} has closed their pizzeria!", "leave-message");
-    }
-
-    protected override int BuildHash()
-    {
-        return HashCode.Combine(Ascending);
-    }
-}
