@@ -154,15 +154,13 @@ public partial class GameMenu
 	[Broadcast]
 	public void SendChat( string message )
 	{
-		Chat.CreateChatEntry( $"{Rpc.Caller.Name}:", message, "", (long)Rpc.Caller.SteamId );
+		Chat.CreateChatEntry( $"{Rpc.Caller.DisplayName}:", message, "", (long)Rpc.Caller.SteamId );
 	}
 
 
 	[Broadcast]
 	private void NetworkPlayerUpdate( double pizzas, double pizzasPerSecond )
 	{
-		if ( Rpc.Caller.IsHost ) return;
-
 		var playerId = Rpc.Caller.Id;
 		var player = Players.FirstOrDefault( p => p.Member.Id == (long)Rpc.Caller.SteamId, null );
 		if ( player == null )
@@ -178,7 +176,6 @@ public partial class GameMenu
 	[Broadcast]
 	public void NetworkAchievementUnlock( string ident )
 	{
-		if ( Rpc.Caller.IsHost ) return;
 		if ( LastPlayersAchievementUnlock.TryGetValue( (long)Rpc.Caller.SteamId, out var value ) && value < 1f )
 		{
 			return;
@@ -190,7 +187,7 @@ public partial class GameMenu
 			return;
 		}
 
-		Chat.CreateChatEntry( "", $"{Rpc.Caller.Name} unlocked the achievement \"{achievement.Name}\"", "achievement" );
+		Chat.CreateChatEntry( "", $"{Rpc.Caller.DisplayName} unlocked the achievement \"{achievement.Name}\"", "achievement" );
 
 		LastPlayersAchievementNetworkMessage[(long)Rpc.Caller.SteamId] = 0;
 
