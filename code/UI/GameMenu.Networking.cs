@@ -77,8 +77,10 @@ public partial class GameMenu
 		if ( !GameNetworkSystem.IsActive )
 		{
 			var lobbies = (await GameNetworkSystem.QueryLobbies())
-				.Where( l => l.Members < l.MaxMembers )
+				.Where( l => l.Members < l.MaxMembers && l.Name == "Pizza Clicker" )
 				.OrderByDescending( l => l.Members );
+
+			BaseSoundComponent
 
 			if ( lobbies.Count() > 0 )
 			{

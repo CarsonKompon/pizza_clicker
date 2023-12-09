@@ -56,7 +56,7 @@
     "FixedUpdateFrequency": 50,
     "NetworkFrequency": 60
   },
-  "Title": "pizza",
-  "Description": "",
+  "Title": "Pizza Clicker",
+  "Description": "Who up clicking they pizza?",
   "__references": []
 }
