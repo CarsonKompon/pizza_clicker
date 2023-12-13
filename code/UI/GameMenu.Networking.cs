@@ -80,8 +80,6 @@ public partial class GameMenu
 				.Where( l => l.Members < l.MaxMembers && l.Name == "Pizza Clicker" )
 				.OrderByDescending( l => l.Members );
 
-			BaseSoundComponent
-
 			if ( lobbies.Count() > 0 )
 			{
 				Lobby = lobbies.First();
