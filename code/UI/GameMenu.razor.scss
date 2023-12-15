@@ -141,6 +141,31 @@ GameMenu {
     }
 }
 
+.top-right-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 8px;
+    gap: 8px;
+    z-index: 100;
+    pointer-events: none;
+    color: rgba(white, 0.7);
+    font-size: 32px;
+
+    i {
+        cursor: pointer;
+        pointer-events: all;
+
+        &:hover {
+            color: white;
+        }
+
+        &:active {
+            color: white;
+        }
+    }
+}
+
 @keyframes scrolling-background {
     from {
         background-position: 0 0;
