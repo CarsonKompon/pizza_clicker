@@ -105,6 +105,10 @@ public partial class GameMenu
 	private void InitPlayer( long steamid )
 	{
 		Player player;
+		if ( Application.IsHeadless || Application.IsDedicatedServer )
+		{
+			return;
+		}
 
 		if ( steamid == Game.SteamId )
 		{
