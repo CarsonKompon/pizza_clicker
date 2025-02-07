@@ -1,98 +1,356 @@
-Chatbox {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  z-index: 300;
-  pointer-events: none;
 
-  .backdrop {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    background-color: rgba(black, 0.4);
-    transition: all 0.4s ease-out;
-    pointer-events: all;
-  }
+label, p
+{
+    &.rainbow
+    {
+        animation-name: rainbowcycle;
+        animation-duration: 4s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+}
 
-  .chatbox {
-    position: absolute;
-    bottom: 16px;
-    left: 16px;
-    width: 450px;
-    padding: 16px;
-    z-index: 350;
-    background-color: rgba(black, 0);
-    flex-direction: column;
-    padding: 8px;
-    gap: 8px;
-    font-family: Verdana;
-    font-size: 18px;
-    transition: all 0.1s ease-out;
+.rainbow
+{
+	> .name
+	{
+		animation-name: rainbowcycle;
+        animation-duration: 4s;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+	}
+}
 
-    .chat {
-      flex-grow: 1;
-      flex-direction: column;
-      overflow: scroll;
-      gap: 4px;
-      pointer-events: none;
-      max-height: 480px;
+@keyframes rainbowcycle
+{
+	0%
+	{
+		color: hsl(0, 100%, 75%);
+	}
 
-      chatentry {
-        opacity: 1;
-        transition: all 0.1s ease-out;
-        left: 0px;
+	20%
+	{
+		color: hsl(45, 100%, 75%);
+	}
 
-        &.fade {
-          opacity: 0;
+	40%
+	{
+		color: hsl(125, 100%, 75%);
+	}
+
+	60%
+	{
+		color: hsl(180, 100%, 75%);
+	}
+
+	80%
+	{
+		color: hsl(275, 100%, 75%);
+	}
+
+	100%
+	{
+		color: hsl(0, 100%, 75%);
+	}
+}
+
+
+Chatbox
+{
+	position: absolute;
+	bottom: 0px;
+	left: 48px;
+	z-index: 100;
+	flex-direction: column;
+	justify-content: space-between;
+	width: 500px;
+	font-family: Prompt;
+	font-weight: 500;
+	font-size: 14px;
+	max-height: 400px;
+	height: 400px;
+	pointer-events: none;
+
+	.chat_canvas
+	{
+		flex-direction: column;
+        justify-content: flex-end;
+		align-items: stretch;
+		flex-grow: 1;
+		height: 100px;
+
+		overflow: scroll;
+
+		ChatEntry
+		{
+			&.fade
+			{
+				opacity: 0;
+			}
+		}
+	}
+
+	.input_canvas
+	{
+		flex-direction: row;
+
+		textentry
+		{
+			background-color: black;
+			color: white;
+			background-color: rgba( black, 0 );
+			font-size: 14px;
+			// flex-shrink: 0;
+			// flex-grow: 1;
+			width: 450px;
+			padding: 4px;
+		}
+
+		.btn-settings
+		{
+			opacity: 0;
+			top: -2px;
+			left: 8px;
+			text-align: center;
+			justify-content: center;
+			align-items: center;
+			font-size: 24px;
+			transition: transform 0.5s ease-out;
+
+			&:hover
+			{
+				background-color: rgba(0, 0, 0, 0);
+				text-shadow: 0 0 8px rgba(white, 0.8);
+				sound-in: ui.button.over;
+			}
+
+			&:active
+			{
+				transition: transform 0s ease-out;
+				transform: scale( 0.9 );
+			}
+		}
+	}
+
+	ChatCommandPanel
+	{
+		opacity: 0;
+		color: lightgrey;
+		text-align: left;
+		margin-top: 10px;
+		gap: 8px;
+		overflow-x: scroll;
+
+		ChatCommandPanelEntry
+		{
+			gap: 4px;
+			flex-shrink: 0;
+			background-color: rgba( black, 0.5 );
+			padding: 4px;
+
+			label
+			{
+				gap: 4px;
+			}
+		}
+	}
+
+	&.open
+	{
+		background-color: rgba( black, 0.5);
+		pointer-events: all;
+
+		textentry
+		{
+			background-color: rgba( black, 0.5 );
+			backdrop-filter: blur( 10px );
+		}
+
+		.chat_canvas
+		{
+			background-color: rgba(black, 0.25);
+
+			ChatEntry
+			{
+				&.fade
+				{
+					opacity: 1;
+				}
+			}
+		}
+
+		.input_canvas
+		{
+			.btn-settings
+			{
+				opacity: 1;
+			}
+		}
+
+		ChatCommandPanel
+		{
+			opacity: 1;
+		}
+
+		ChatSettingsPanel
+		{
+			opacity: 1;
+		}
+
+	}
+
+	&.hide-avatars
+	{
+		.chat_canvas
+		{
+			ChatEntry
+			{
+				padding: 4px;
+
+				image
+				{
+					display: none;
+				}
+
+				.name
+				{
+					align-self: flex-start;
+				}
+			}
+		}
+	}
+}
+
+ChatEntry
+{
+	//background-color: rgba( black, 0.7 );
+	margin-bottom: 0px;
+	color: white;
+	transition: all 0.1s ease-out;
+	opacity: 1;
+	flex-shrink: 0;
+	flex-grow: 0;
+	padding: 6px;
+//	min-height: 47px;
+	width: 100%;
+	transform: scale( 1 );
+
+	align-items: center;
+	text-shadow: 0 0 4px black;
+
+	&:intro
+	{
+		max-height: 0px;
+		padding-top: 0;
+		padding-bottom: 0;
+		margin-bottom: 0;
+		opacity: 0;
+		transform: scale( 0 );
+	}
+
+	&:outro
+	{
+		opacity: 0;
+	}
+
+	.avatar
+	{
+		height: 32px;
+		min-height: 32px;
+		width: 32px;
+		min-width: 32px;
+		border-radius: 100%;
+		text-shadow: 0 0 4px black;
+		
+	}
+
+	.name
+	{
+		padding-left: 4px;
+		padding-right: 5px;
+		flex-shrink: 0;
+		align-self: center;
+
+        color: #CCF45A;
+	}
+
+	.message
+	{
+		
+		
+	}
+
+	&.is-lobby
+	{
+		.name
+		{
+			color: #ff80f5;
+		}
+	}
+
+    &.notification
+    {
+        .message
+        {
+            color: #F5FA3C;
+        }
+    
+    }
+}
+
+ChatSettingsPanel
+{
+	opacity: 0;
+	position: absolute;
+	left: 100%;
+	top: 0;
+	height: 100%;
+	width: 0px;
+	overflow: hidden;
+	background-color: rgba(black, 0.5);
+	transition: width 0.4s ease-out;
+	flex-direction: column;
+	padding-top: 12px;
+
+    .settings
+    {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+	.setting
+	{
+		width: 100%;
+		justify-content: space-between;
+
+		label
+		{
+            max-height: 24px;
+			color: white;
+			font-size: 16px;
+			justify-content: center;
+			align-items: center;
+			overflow: hidden;
+			text-overflow: ellipsis;
+            flex-grow: 1;
+		}
+
+        SwitchControl
+        {
+            flex-shrink: 1;
+            flex-grow: 0;
+            width: 70px;
         }
 
-        &:intro {
-          left: 8px;
-        }
-      }
-    }
+		// .button.popupbutton.dropdown
+		// {
+		// 	overflow: hidden;
+		// 	text-overflow: ellipsis;
+		// }
+	}
 
-    textentry {
-      opacity: 1;
-      color: white;
-      font-size: 20px;
-      flex-shrink: 0;
-      background-color: rgba(black, 0.2);
-      transition: all 0.1s ease-out;
-      pointer-events: all;
-
-      .placeholder {
-        color: rgba(white, 1);
-      }
-
-      &:hover {
-        background-color: rgba(black, 0.5);
-      }
-    }
-  }
-
-  &.open {
-    .chat {
-      pointer-events: all;
-
-      chatentry {
-        &.fade {
-          opacity: 1;
-        }
-      }
-    }
-
-    textentry {
-      background-color: rgba(black, 0.6);
-    }
-
-    .backdrop {
-      opacity: 1;
-    }
-  }
+	&.open
+	{
+		width: 200px;
+	}
 }

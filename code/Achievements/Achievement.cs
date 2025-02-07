@@ -18,7 +18,7 @@ public class Achievement
 
 	public virtual void OnAchievementUnlock( Player player )
 	{
-
+		Sandbox.Services.Achievements.Unlock( Ident );
 	}
 
 	public double GetProgression( Player player )

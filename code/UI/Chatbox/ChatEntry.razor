@@ -1,52 +1,39 @@
 @using Sandbox;
 @using Sandbox.UI;
 
-@attribute [StyleSheet]
-
+@inherits Panel
 @namespace PizzaClicker
 
-<root class="message">
-    @if (!string.IsNullOrEmpty(Avatar) || !string.IsNullOrEmpty(Name)) {
-        <div class="header">
-            @if (!string.IsNullOrEmpty(Avatar)) {
-                <img src=@Avatar class="avatar" />
-            }
+<root class="@(Entry.Styles)">
 
-            <h2 class="name">@(Name)</h2>
-        </div>
+    @if (Entry.SteamId != 0)
+    {
+        <img class="avatar" src="@($"avatar:{Entry.SteamId}")" />
     }
+    <p class="name">@Entry.Name</p>
+    <div class="message-content">
+        <p class="message">@Entry.Message</p>
+    </div>
 
-    <p class="content">@Content</p>
 </root>
 
 @code
 {
-    public string Name { get; set; }
-    public string Content { get; set; }
-    public string Avatar { get; set; }
-
-    private RealTimeSince TimeSinceBorn = 0;
-
-    public void SetMessage(string name, string content, long steamid = -1)
-    {
-        Name = name;
-        Content = content;
-
-        if (steamid != -1) {
-            Avatar = $"avatar:{steamid}";
-        }
-
-        StateHasChanged();
-    }
+    public Chatbox.Entry Entry { get; set; }
 
     public override void Tick()
     {
         base.Tick();
 
-        if (TimeSinceBorn > 10 && !HasClass("fade")) {
+        if (Entry.TimeSinceBorn > 10 && !HasClass("fade"))
+        {
             AddClass("fade");
         }
+
+        if (Entry.TimeSinceBorn > 60 * 10f)
+        {
+            Delete();
+        }
     }
+
 }
-
-

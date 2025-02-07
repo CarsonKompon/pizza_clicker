@@ -1,6 +1,7 @@
 
 UpgradeButton
 {
+    position: relative;
     color: white;
     font-family: Verdana;
     font-size: 18px;
@@ -19,6 +20,7 @@ UpgradeButton
     
     .button
     {
+        position: relative;
         width: 64px;
         height: 64px;
         background-color: rgba(rgb(0, 0, 0), 0.7);

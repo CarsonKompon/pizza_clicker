@@ -88,9 +88,15 @@ public static class NumberHelper
 	// To String with commas (such as 1,041 or 1,456,235)
 	public static string ToStringWithCommas( double value )
 	{
-		if (value == 0)
+		if ( value == 0 )
 		{
 			return "0";
+		}
+
+		// Return normal string if less than 1000
+		if ( value < 1000 )
+		{
+			return Format( value, 2, true );
 		}
 
 		return value.ToString( "##,#", CultureInfo.InvariantCulture );

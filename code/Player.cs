@@ -224,7 +224,7 @@ public class Player
 
 	public void Save()
 	{
-		if ( Member.Id != Game.SteamId )
+		if ( Member.Id != (ulong)Game.SteamId )
 		{
 			return;
 		}
@@ -234,7 +234,24 @@ public class Player
 
 		foreach ( var achievement in achievements )
 		{
-			Achievement.Unlock( this, achievement.Ident );
+			PizzaClicker.Achievements.Achievement.Unlock( this, achievement.Ident );
+		}
+
+		Sandbox.Services.Stats.SetValue( "pizzas", Pizzas );
+		Sandbox.Services.Stats.SetValue( "pizzas_per_second", PizzasPerSecond );
+		Sandbox.Services.Stats.SetValue( "total_pizzas_baked", TotalPizzasBaked );
+		Sandbox.Services.Stats.SetValue( "hand_made_pizzas", HandMadePizzas );
+		Sandbox.Services.Stats.SetValue( "total_clicks", TotalClicks );
+		Sandbox.Services.Stats.SetValue( "total_gold_clicks", TotalGoldClicks );
+		Sandbox.Services.Stats.SetValue( "legacy_dough", LegacyDough );
+		Sandbox.Services.Stats.SetValue( "total_legacy_baked", TotalLegacyBaked );
+		Sandbox.Services.Stats.SetValue( "total_pizzas_baked_all_time", TotalPizzasBakedAllTime );
+		Sandbox.Services.Stats.SetValue( "heavenly_crust", HeavenlyCrust );
+		Sandbox.Services.Stats.SetValue( "ascension_count", AscensionCount );
+
+		foreach ( var building in Buildings )
+		{
+			Sandbox.Services.Stats.SetValue( "building_" + building.Key, building.Value );
 		}
 
 		FileSystem.Data.WriteJson( Game.SteamId.ToString(), this );
@@ -584,6 +601,13 @@ public class Player
 		foreach ( var blessing in GameMenu.AllBlessings.Where( b => data.HasBlessing( b.Ident ) ) )
 		{
 			blessing.OnActivate( data );
+		}
+
+		foreach ( var achievement in data.Achievements )
+		{
+			if ( !achievement.Value ) continue;
+
+			Sandbox.Services.Achievements.Unlock( achievement.Key );
 		}
 
 		return data;

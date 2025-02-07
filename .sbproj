@@ -3,16 +3,12 @@
   "Type": "game",
   "Org": "carsonk",
   "Ident": "pizza_clicker",
-  "Tags": "tycoon idle clicker ui multiplayer lobby 2d cookie pizza",
   "Schema": 1,
-  "HasAssets": true,
-  "AssetsPath": "",
-  "Resources": null,
-  "MenuResources": "/ui/*\n/fonts/*\n/sounds/*",
-  "HasCode": true,
-  "CodePath": "/code/",
+  "IncludeSourceFiles": false,
+  "Resources": "/ui/*",
   "PackageReferences": [],
   "EditorReferences": null,
+  "IsWhitelistDisabled": false,
   "Metadata": {
     "MaxPlayers": 64,
     "MinPlayers": 1,
@@ -27,6 +23,7 @@
     "LeaderboardType": "None",
     "ProjectTemplate": null,
     "CsProjName": "",
-    "StartupScene": "pizza.scene"
+    "StartupScene": "pizza.scene",
+    "LaunchMode": "QuickPlay"
   }
 }

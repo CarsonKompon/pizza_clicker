@@ -8,7 +8,8 @@
 
 @namespace PizzaClicker
 
-@if (Player == null) {
+@if (Player == null)
+{
     return;
 }
 
@@ -28,7 +29,7 @@
 @code
 {
     public Player Player { get; set; }
-    public Achievement Achievement { get; set; }
+    public PizzaClicker.Achievements.Achievement Achievement { get; set; }
 
     private Panel ProgressBar { get; set; }
 
@@ -38,7 +39,8 @@
 
     public override void Tick()
     {
-        if (!IsInitialized) {
+        if (!IsInitialized)
+        {
             return;
         }
 

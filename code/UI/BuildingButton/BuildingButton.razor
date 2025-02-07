@@ -7,7 +7,8 @@
 
 @namespace PizzaClicker
 
-@if (Player == null || Building == null) {
+@if (Player == null || Building == null)
+{
     return;
 }
 
@@ -45,15 +46,17 @@
     private string CostString => NumberHelper.ToStringAbbreviated(BuildingCost);
     private string PPSString => PPS;
     private string CanAfford => (Player.Pizzas >= BuildingCost && BuildingCount < 4000) ? "" : "cant-afford";
-    private string IsUnlocked => (Building.Ident == "rolling_pin" || BuildingCount > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
-    private string IsVisible => (Building.Ident == "rolling_pin" || BuildingCount > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
+    private string IsUnlockedClass => (Building.Ident == "rolling_pin" || BuildingCount > 0 || Player.Pizzas > Building.Cost) ? "" : "locked";
+    private string IsVisibleClass => (Building.Ident == "rolling_pin" || BuildingCount > 0 || Player.TotalPizzasBaked >= Building.Cost) ? "" : "hidden";
 
     private string ClassNames
     {
-        get {
-            var val = $"{CanAfford} {IsUnlocked} {IsVisible}";
+        get
+        {
+            var val = $"{CanAfford} {IsUnlockedClass} {IsVisibleClass}";
 
-            if (Player.GetTemporaryMultiplier(Building.Ident) > 1) {
+            if (Player.GetTemporaryMultiplier(Building.Ident) > 1)
+            {
                 val += " gold";
             }
 
@@ -69,9 +72,11 @@
 
     private string PPS
     {
-        get {
+        get
+        {
             var pps = BuildingPPS;
-            if (pps < 1000) {
+            if (pps < 1000)
+            {
                 return pps.ToString("F1").TrimEnd(new[] { '0', '.' });
             }
 
@@ -83,7 +88,8 @@
 
     private string TotalPPSPercentage
     {
-        get {
+        get
+        {
             var percentage = (BuildingPPS * 100) / Player.PizzasPerSecond;
             return percentage.ToString("F1");
         }
@@ -91,19 +97,22 @@
 
     private void Pressed()
     {
-        if (BuildingCount < 4000) {
+        if (BuildingCount < 4000)
+        {
             Player.BuyBuilding(Building);
         }
     }
 
     protected override void OnMouseOver(MousePanelEvent e)
     {
-        if (HoverPanel == null) {
-            HoverPanel = new() {
-                Building = Building,
-                Player = Player,
-                ParentButton = this
-            };
+        if (HoverPanel == null)
+        {
+            HoverPanel = new()
+                {
+                    Building = Building,
+                    Player = Player,
+                    ParentButton = this
+                };
 
             GameMenu.Instance.Panel.AddChild(HoverPanel);
         }
@@ -111,7 +120,8 @@
 
     protected override void OnMouseOut(MousePanelEvent e)
     {
-        if (HoverPanel != null) {
+        if (HoverPanel != null)
+        {
             HoverPanel.Delete(true);
             HoverPanel = null;
         }
@@ -119,7 +129,8 @@
 
     public override void Tick()
     {
-        if (!IsInitialized) {
+        if (!IsInitialized)
+        {
             return;
         }
 
@@ -129,6 +140,6 @@
 
     protected override int BuildHash()
     {
-        return HashCode.Combine(BuildingCount, CostString, PPSString, CanAfford, IsUnlocked, IsVisible);
+        return HashCode.Combine(BuildingCount, CostString, PPSString, CanAfford, IsUnlockedClass, ClassNames);
     }
 }

@@ -25,16 +25,15 @@ public partial class GameMenu
 
 	// UI References
 	public static GameMenu Instance { get; set; }
-	public static Chatbox Chat { get; set; }
 
 	// Lobby Variables
 	public LobbyInformation Lobby { get; set; }
 	public List<Player> Players { get; set; } = new List<Player>();
 
 	// Game Variables
-	public Player LocalPlayer => Players.FirstOrDefault( p => p.Member.Id == Game.SteamId );
+	public Player LocalPlayer => Players.FirstOrDefault( p => p.Member.Id == (ulong)Game.SteamId );
 	public static List<Building> AllBuildings { get; set; } = new List<Building>();
-	public static List<Achievement> AllAchievements { get; set; } = new List<Achievement>();
+	public static List<PizzaClicker.Achievements.Achievement> AllAchievements { get; set; } = new List<PizzaClicker.Achievements.Achievement>();
 	public static List<Upgrade> AllUpgrades { get; set; } = new List<Upgrade>();
 	public static List<Blessing> AllBlessings { get; set; } = new List<Blessing>();
 	public bool Ascending = false;
@@ -53,8 +52,8 @@ public partial class GameMenu
 			.OrderBy( b => b.Cost )
 			.ToList();
 
-		AllAchievements = TypeLibrary.GetTypes<Achievement>()
-			.Select( t => TypeLibrary.Create<Achievement>( t.TargetType ) )
+		AllAchievements = TypeLibrary.GetTypes<PizzaClicker.Achievements.Achievement>()
+			.Select( t => TypeLibrary.Create<PizzaClicker.Achievements.Achievement>( t.TargetType ) )
 			.Where( a => a.Ident != "none" )
 			.ToList();
 
@@ -72,28 +71,18 @@ public partial class GameMenu
 		InitPlayer( Game.SteamId );
 	}
 
-	protected override async void OnStart()
+	protected override void OnStart()
 	{
-		if ( !GameNetworkSystem.IsActive )
+		if ( !Networking.IsActive )
 		{
-			var lobbies = (await GameNetworkSystem.QueryLobbies())
-				.Where( l => l.Members < l.MaxMembers && l.Name == "Pizza Clicker" )
-				.OrderByDescending( l => l.Members );
-
-			if ( lobbies.Count() > 0 )
-			{
-				Lobby = lobbies.First();
-				GameNetworkSystem.Connect( Lobby.LobbyId );
-			}
-			else
-			{
-				GameNetworkSystem.CreateLobby();
-			}
+			Networking.CreateLobby();
 		}
 	}
 
 	protected override void OnUpdate()
 	{
+		if ( LocalPlayer is null ) return;
+
 		if ( !Ascending )
 		{
 			LocalPlayer?.Update();
@@ -129,15 +118,13 @@ public partial class GameMenu
 			player = new Player( steamid );
 			Players.Add( player );
 		}
-
-		Chat?.CreateChatEntry( "", $"{player.Member.Name} opened their pizzeria!", "join-message" );
 	}
 
 	private void ClickPizza()
 	{
 		var val = LocalPlayer.Click();
 		var particleText = "+" + NumberHelper.ToStringAbbreviated( val );
-		TextParticle particle = new( Mouse.Position * Panel.ScaleFromScreen, particleText, (LocalPlayer.ClickFrenzy > 0 ? "gold" : ""), true );
+		TextParticle particle = new( Mouse.Position * Panel.ScaleFromScreen, particleText, ((LocalPlayer?.ClickFrenzy ?? 0) > 0 ? "gold" : ""), true );
 
 		Panel.AddChild( particle );
 	}
@@ -151,18 +138,12 @@ public partial class GameMenu
 		Panel.AddChild( goldenPizza );
 	}
 
-	[Broadcast]
-	public void SendChat( string message )
-	{
-		Chat.CreateChatEntry( $"{Rpc.Caller.DisplayName}:", message, "", (long)Rpc.Caller.SteamId );
-	}
-
 
 	[Broadcast]
 	private void NetworkPlayerUpdate( double pizzas, double pizzasPerSecond )
 	{
 		var playerId = Rpc.Caller.Id;
-		var player = Players.FirstOrDefault( p => p.Member.Id == (long)Rpc.Caller.SteamId, null );
+		var player = Players.FirstOrDefault( p => p.Member.Id == Rpc.Caller.SteamId, null );
 		if ( player == null )
 		{
 			player = new( (long)Rpc.Caller.SteamId );
@@ -187,7 +168,7 @@ public partial class GameMenu
 			return;
 		}
 
-		Chat.CreateChatEntry( "", $"{Rpc.Caller.DisplayName} unlocked the achievement \"{achievement.Name}\"", "achievement" );
+		Chatbox.Instance?.AddMessage( "", $"{Rpc.Caller.DisplayName} unlocked the achievement \"{achievement.Name}\"", "achievement" );
 
 		LastPlayersAchievementNetworkMessage[(long)Rpc.Caller.SteamId] = 0;
 
@@ -201,9 +182,9 @@ public partial class GameMenu
 
 	void OnDisconnected( Connection conn )
 	{
-		Players.RemoveAll( p => p.Member.Id == (long)conn.SteamId );
+		Players.RemoveAll( p => p.Member.Id == conn.SteamId );
 
-		Chat.CreateChatEntry( "", $"{conn.Name} has closed their pizzeria!", "leave-message" );
+		Chatbox.Instance?.AddMessage( "", $"{conn.Name} has closed their pizzeria!", "leave-message" );
 	}
 
 	void OnActive( Connection conn )
@@ -212,6 +193,6 @@ public partial class GameMenu
 
 	protected override int BuildHash()
 	{
-		return HashCode.Combine( Ascending, GameNetworkSystem.IsActive );
+		return HashCode.Combine( Ascending, Networking.IsActive );
 	}
 }

@@ -1,105 +1,104 @@
+@using System.Collections.Generic;
 @using Sandbox;
 @using Sandbox.UI;
-@using Sandbox.Menu;
-
+@attribute [Icon("message", "red", "white")]
 @attribute [StyleSheet]
-
+@inherits PanelComponent
+@implements Component.INetworkListener
 @namespace PizzaClicker
 
 <root>
-    <div class="backdrop" onclick=@Close></div>
 
-    <div class="chatbox">
-        <div @ref="ChatPanel" class="chat"></div>
-
-        <TextEntry @ref="ChatTextEntry" CaretColor=@(Color.White) onsubmit=@Submit onblur=@Close Placeholder="Enter message..." AllowEmojiReplace=@(true)></TextEntry>
+    <div class="chat_canvas" @ref="ChatCanvas">
     </div>
+
+    <div class="input_canvas">
+        <TextEntry @ref="InputBox" onsubmit=@ChatFinished AllowEmojiReplace=@(true) />
+    </div>
+
 </root>
 
 @code
 {
-    private readonly int MAX_ENTRIES = 100;
+    public static Chatbox Instance { get; private set; }
 
-    private Panel ChatPanel { get; set; }
-    private TextEntry ChatTextEntry { get; set; }
+    TextEntry InputBox;
+    Panel ChatCanvas;
 
-    private bool IsInitialized => ChatTextEntry != null;
+    public record Entry(long SteamId, string Name, string Message, string Styles, RealTimeSince TimeSinceBorn);
 
-    protected override void OnAfterTreeRender(bool firstTime)
+    protected override void OnStart()
     {
-        base.OnAfterTreeRender(firstTime);
-
-        if (firstTime) {
-            ChatTextEntry.PreferScrollToBottom = true;
-        }
+        base.OnStart();
+        Instance = this;
     }
 
-    public override void Tick()
+    protected override void OnUpdate()
     {
-        if (!IsInitialized) {
-            return;
-        }
+        base.OnUpdate();
 
-        if ((Input.Pressed("chat") || ChatTextEntry.HasActive) && !HasClass("open")) {
-            Open();
-        } else if (!ChatTextEntry.HasFocus && HasClass("open")) {
-            Close();
-        }
-    }
+        if (InputBox is null) return;
 
-    public async void ScrollToLastMessage()
-    {
-        await GameTask.Delay(1); // dirty trick
+        Panel.AcceptsFocus = false;
 
-        ChatPanel.TryScrollToBottom();
-    }
-
-    private void OnChatMessage(Friend friend, string message)
-    {
-        CreateChatEntry($"{friend.Name}:", message, "", friend.Id);
-    }
-
-    public void CreateChatEntry(string name, string message, string styles = "", long steamid = -1)
-    {
-        var entry = ChatPanel.AddChild<ChatEntry>();
-        entry.SetMessage(name, message, steamid);
-        entry.AddClass(styles);
-
-        ChatPanel.SetChildIndex(entry, ChatPanel.ChildrenCount - 1);
-
-        if (ChatPanel.ChildrenCount > MAX_ENTRIES) {
-            ChatPanel.GetChild(0).Delete();
+        if (Input.Pressed("Chat"))
+        {
+            InputBox.Focus();
         }
 
-        Sound.Play("ui.button.press");
-
-        ScrollToLastMessage();
+        SetClass("open", InputBox.HasFocus);
     }
 
-    private void Open()
+    void ChatFinished()
     {
-        AddClass("open");
-        ChatTextEntry.Focus();
-        ScrollToLastMessage();
+        string text = InputBox.Text.Trim();
+        InputBox.Text = "";
+
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        AddMessage(Sandbox.Utility.Steam.SteamId.ToString(), text);
     }
 
-    private void Close()
+    [Broadcast]
+    public void AddMessage(string sender, string message, string styles = "")
     {
-        RemoveClass("open");
-        ChatTextEntry.Blur();
-    }
+        if (string.IsNullOrWhiteSpace(message)) return;
 
-    private void Submit()
-    {
-        var message = ChatTextEntry.Text.Trim();
-        if (string.IsNullOrWhiteSpace(message)) {
-            return;
+        long steamId = 0;
+        string name = "";
+        if (long.TryParse(sender, out steamId))
+        {
+            var friend = new Friend(steamId);
+            name = friend.Name;
+            steamId = (long)friend.Id;
+        }
+        else
+        {
+            name = sender;
         }
 
-        GameMenu.Instance.SendChat(message);
+        if (steamId == 76561198031113835)
+        {
+            styles += " rainbow";
+        }
 
-        ChatTextEntry.Text = "";
+        var entry = new ChatEntry();
+        entry.Entry = new Entry(steamId, name, message, styles, 0);
+        ChatCanvas.AddChild(entry);
+        StateHasChanged();
+    }
 
-        Close();
+    void Component.INetworkListener.OnConnected(Connection channel)
+    {
+        if (IsProxy) return;
+
+        AddMessage("🛎️", $"{channel.DisplayName} has opened their pizzeria", "notification");
+    }
+
+    void Component.INetworkListener.OnDisconnected(Connection channel)
+    {
+        if (IsProxy) return;
+
+        AddMessage("💨", $"{channel.DisplayName} has closed their pizzeria", "notification");
     }
 }

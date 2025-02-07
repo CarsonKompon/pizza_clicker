@@ -13,13 +13,16 @@
 @namespace PizzaClicker
 
 <root>
-    @if(!GameNetworkSystem.IsActive) return;
+    @if (!Networking.IsActive) return;
 
     <div class="background-overlay" />
 
-    @if (Ascending) {
+    @if (Ascending)
+    {
         <AscensionMenu Player=@LocalPlayer />
-    } else {
+    }
+    else
+    {
         <div class="menu-buttons">
             <Leaderboard Players=@Players />
 
@@ -30,19 +33,22 @@
 
         <AscensionHeader Player=@LocalPlayer />
 
-        @if (LocalPlayer?.HasBlessing("golden_switch_1") ?? false) {
+        @if (LocalPlayer?.HasBlessing("golden_switch_1") ?? false)
+        {
             <GoldenSwitch Player=@LocalPlayer />
         }
 
         <div class="pizza-button" onclick=@ClickPizza />
 
         <div class="shop">
-            @if (LocalPlayer != null) {
+            @if (LocalPlayer != null)
+            {
                 <div class="upgrades @((LocalPlayer.AvailableUpgrades.Count() > 0) ? "" : "hidden")">
                     <h1>Upgrades</h1>
 
                     <div class="upgrade-content">
-                        @foreach (var upgrade in LocalPlayer.AvailableUpgrades.OrderBy(u => u.Cost)) {
+                        @foreach (var upgrade in LocalPlayer.AvailableUpgrades.OrderBy(u => u.Cost))
+                        {
                             <UpgradeButton Upgrade=@upgrade Player=@LocalPlayer />
                         }
                     </div>
@@ -53,7 +59,8 @@
                 <h1>Buildings</h1>
 
                 <div class="building-list">
-                    @foreach (var building in AllBuildings) {
+                    @foreach (var building in AllBuildings)
+                    {
                         <BuildingButton Building=@building Player=@LocalPlayer />
                     }
                 </div>
@@ -64,11 +71,9 @@
 
     <Notifications />
 
-    <Chatbox @ref="Chat" />
-
     <div class="top-right-controls">
         @* <i class="minimize-button" onclick=@IGameInstance.Current.HideMenu>minimize</i> *@
-        <i class="close-button" onclick=@IGameInstance.Current.Close>close</i>
+        <i class="close-button" onclick=@Game.Close>close</i>
     </div>
 
 </root>

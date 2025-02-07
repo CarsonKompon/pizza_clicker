@@ -5,6 +5,7 @@
 # Auto-generated code editor files
 .vs/*
 .vscode/*
+.sbox/*
 *.csproj
 obj/*
 Properties/*

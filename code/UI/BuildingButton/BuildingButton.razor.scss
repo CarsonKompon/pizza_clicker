@@ -1,6 +1,7 @@
 
 BuildingButton
 {
+    position: relative;
     background-color: rgba(black, 0.4);
     width: 370px;
     height: 80px;
@@ -42,6 +43,7 @@ BuildingButton
 
     .content
     {
+        position: relative;
         overflow: hidden;
         padding-left: 8px;
         padding-bottom: 4px;

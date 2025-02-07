@@ -1,0 +1,10 @@
+{
+  "Sequences": [
+    {
+      "Source": "ui/pizzas/pepperoni_pizza.png",
+      "IsLooping": true,
+      "Frames": 64
+    }
+  ],
+  "OutputTypeString": "2D"
+}
