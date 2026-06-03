@@ -51,7 +51,10 @@ public class GoldPizza : Panel
 			}
 		}
 
-		Style.Opacity = _opacity;
+		if ( Style is not null )
+		{
+			Style.Opacity = _opacity;
+		}
 	}
 
 	protected override void OnMouseUp( MousePanelEvent e )

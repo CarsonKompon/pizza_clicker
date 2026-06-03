@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Sandbox;
-using Sandbox.Network;
-using PizzaClicker.Achievements;
 using PizzaClicker.Blessings;
 using PizzaClicker.Buildings;
 using PizzaClicker.Upgrades;
+using Sandbox;
+using Sandbox.Network;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PizzaClicker;
 
@@ -126,6 +124,8 @@ public partial class GameMenu
 
 	private void ClickPizza()
 	{
+		if ( !Panel.IsValid() ) return;
+
 		var val = LocalPlayer.Click();
 		var particleText = "+" + NumberHelper.ToStringAbbreviated( val );
 		TextParticle particle = new( Mouse.Position * Panel.ScaleFromScreen, particleText, ((LocalPlayer?.ClickFrenzy ?? 0) > 0 ? "gold" : ""), true );
